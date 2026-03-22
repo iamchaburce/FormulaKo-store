@@ -14,35 +14,54 @@
 <style>
 /* ── THEMES ─────────────────────────────── */
 /* ── DEFAULT: Forest Black (dark) ── */
+/* ── THEMES ─────────────────────────────── */
+
+/* 🌲 FOREST (dark default) */
 :root {
-  --bg:#0A0C0A; --surf:#0f1a0f; --surf2:#172017;
-  --bdr:rgba(255,255,255,0.09); --acc:#22C483; --acc2:#5ecfaa;
+  --bg:#0A0C0A; --surf:#111a11; --surf2:#192319;
+  --bdr:rgba(255,255,255,0.08); --acc:#22C483; --acc2:#5ecfaa;
   --acc3:#F5D070; --acc4:#e07b8a; --txt:#FAF8F0;
-  --mut:#3d5c3d; --mut2:#7aaa7a;
+  --mut:#3a5a3a; --mut2:#6a9a6a;
 }
 
-/* ── WARM CREAM (soft light) ── */
+/* 🖤 OBSIDIAN (dark charcoal) */
+[data-theme="obsidian"]{
+  --bg:#141414; --surf:#1e1e1e; --surf2:#282828;
+  --bdr:rgba(255,255,255,0.08); --acc:#22C483; --acc2:#5ecfaa;
+  --acc3:#F5D070; --acc4:#e07b8a; --txt:#f2f2f2;
+  --mut:#505050; --mut2:#909090;
+}
+
+/* 🌙 MIDNIGHT (dark navy) */
+[data-theme="midnight"]{
+  --bg:#0d1117; --surf:#161b22; --surf2:#21262d;
+  --bdr:rgba(255,255,255,0.08); --acc:#3fb884; --acc2:#58a6ff;
+  --acc3:#F5D070; --acc4:#f85149; --txt:#e6edf3;
+  --mut:#30363d; --mut2:#8b949e;
+}
+
+/* ☀️ WARM CREAM (light warm) */
 [data-theme="light"]{
-  --bg:#FAF8F0; --surf:#ffffff; --surf2:#f2efe6;
-  --bdr:rgba(10,12,10,0.07); --acc:#22C483; --acc2:#0A9C5A;
-  --acc3:#C8860A; --acc4:#d95f6e; --txt:#1a1a0a;
-  --mut:#9a9a80; --mut2:#5a5a40;
+  --bg:#faf8f2; --surf:#ffffff; --surf2:#f0ece0;
+  --bdr:rgba(0,0,0,0.08); --acc:#1aad72; --acc2:#0A9C5A;
+  --acc3:#b87020; --acc4:#c04060; --txt:#1a180a;
+  --mut:#a09060; --mut2:#5a4828;
 }
 
-/* ── SOFT SAGE (muted green light) ── */
-[data-theme="sage"]{
-  --bg:#f4f7f4; --surf:#ffffff; --surf2:#e8f0e8;
-  --bdr:rgba(0,0,0,0.06); --acc:#22C483; --acc2:#3a8a6a;
-  --acc3:#C8860A; --acc4:#c05a6a; --txt:#1a2a1a;
-  --mut:#8aaa8a; --mut2:#4a6a4a;
+/* 🪨 STONE (light grey) */
+[data-theme="stone"]{
+  --bg:#f4f4f4; --surf:#ffffff; --surf2:#ebebeb;
+  --bdr:rgba(0,0,0,0.07); --acc:#22C483; --acc2:#2a8a60;
+  --acc3:#b87a20; --acc4:#c04060; --txt:#1a1a1a;
+  --mut:#909090; --mut2:#505050;
 }
 
-/* ── IVORY GOLD (warm neutral light) ── */
-[data-theme="ivory"]{
-  --bg:#fdf6e8; --surf:#fffdf5; --surf2:#f5edd8;
-  --bdr:rgba(30,20,0,0.08); --acc:#22C483; --acc2:#0A9C5A;
-  --acc3:#b87020; --acc4:#c05060; --txt:#1a1400;
-  --mut:#a09060; --mut2:#6a5a30;
+/* 📄 PAPER (light parchment) */
+[data-theme="paper"]{
+  --bg:#f7f3e8; --surf:#fffef5; --surf2:#eee8d5;
+  --bdr:rgba(20,15,0,0.09); --acc:#1aad72; --acc2:#3a7a50;
+  --acc3:#9a6010; --acc4:#b84050; --txt:#1e1600;
+  --mut:#9a8050; --mut2:#5a4020;
 }
 
 /* ── BASE ───────────────────────────────── */
@@ -287,8 +306,8 @@ select.field-in{appearance:none}
 .user-btn:active{transform:scale(.95)}
 
 /* ── THEME PICKER ───────────────────────── */
-.theme-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-.theme-card{width:calc(50% - 5px);border-radius:18px;border:2px solid transparent;padding:14px;cursor:pointer;position:relative;transition:all .2s}
+.theme-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.theme-card{border-radius:16px;border:2px solid transparent;padding:12px;cursor:pointer;position:relative;transition:all .2s}
 .theme-card:active{transform:scale(.96)}
 .theme-card.selected{border-color:var(--acc)}
 .theme-check{position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;display:none;align-items:center;justify-content:center;font-size:11px;font-weight:900}
@@ -297,7 +316,7 @@ select.field-in{appearance:none}
 .theme-dot{width:14px;height:14px;border-radius:50%}
 .theme-name{font-size:13px;font-weight:900;margin-bottom:2px}
 .theme-desc{font-size:10px;opacity:.7}
-.theme-card.navy-wide{}
+
 
 /* ── DUE ALERTS SHEET ───────────────────── */
 .due-item{background:var(--surf2);border-radius:16px;padding:14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;border-left:4px solid var(--acc3)}
@@ -371,6 +390,7 @@ h1, h2, h3, .section-title-syne { font-family: 'Syne', sans-serif !important; }
 
 /* ══ DESKTOP / RESPONSIVE LAYOUT ══════════ */
 @media (min-width: 768px) {
+  .theme-grid { grid-template-columns: repeat(3,1fr); }
 
   body { align-items: flex-start; }
 
@@ -1121,9 +1141,12 @@ h1, h2, h3, .section-title-syne { font-family: 'Syne', sans-serif !important; }
 
       </div><!-- end loan-results -->
 
-      <!-- Saved Loans -->
+      <!-- Saved Loans / Payment Reference -->
       <div id="saved-loans-section" style="display:none">
-        <div class="sec-title" style="margin-top:16px">💾 Saved Loan Scenarios</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;margin-bottom:10px">
+          <div class="sec-title" style="margin:0">📋 Saved Loan References</div>
+          <div style="font-size:11px;color:var(--mut2)" id="saved-loans-count"></div>
+        </div>
         <div id="saved-loans-list"></div>
       </div>
 
@@ -1289,14 +1312,12 @@ const HTYPES = {
   rent:     {icon:'🏡',color:'#2ebd8f'}, others:{icon:'📦',color:'#8898aa'},
 };
 const THEMES = [
-  // Dark themes
-  {key:'dark',     name:'Forest',      emoji:'🌲', desc:'Dark · Deep forest green',  bg:'#0A0C0A', dots:['#22C483','#F5D070','#e07b8a'], acc:'#22C483', txt:'#FAF8F0'},
-  {key:'obsidian', name:'Obsidian',    emoji:'🖤', desc:'Dark · Pure charcoal',       bg:'#141414', dots:['#22C483','#5ecfaa','#F5D070'], acc:'#22C483', txt:'#f0f0f0'},
-  {key:'midnight', name:'Midnight',    emoji:'🌙', desc:'Dark · Deep navy blue',      bg:'#0d1117', dots:['#22C483','#58a6ff','#F5D070'], acc:'#22C483', txt:'#e6edf3'},
-  // Light themes
-  {key:'light',    name:'Warm Cream',  emoji:'☀️', desc:'Light · Soft warm ivory',   bg:'#faf8f2', dots:['#1aad72','#b87020','#d04060'], acc:'#1aad72', txt:'#1a1a0a'},
-  {key:'stone',    name:'Stone',       emoji:'🪨', desc:'Light · Clean neutral grey', bg:'#f5f5f5', dots:['#22C483','#2d8a6a','#c04060'], acc:'#22C483', txt:'#1a1a1a'},
-  {key:'paper',    name:'Paper',       emoji:'📄', desc:'Light · Warm parchment',     bg:'#f8f4ec', dots:['#1aad72','#9a6010','#b84050'], acc:'#1aad72', txt:'#201800'},
+  {key:'dark',     name:'Forest',     emoji:'🌲', desc:'Dark · Deep forest green',   bg:'#0A0C0A', dots:['#22C483','#F5D070','#e07b8a'], acc:'#22C483', txt:'#FAF8F0'},
+  {key:'obsidian', name:'Obsidian',   emoji:'🖤', desc:'Dark · Pure charcoal',        bg:'#141414', dots:['#22C483','#5ecfaa','#F5D070'], acc:'#22C483', txt:'#f2f2f2'},
+  {key:'midnight', name:'Midnight',   emoji:'🌙', desc:'Dark · Deep navy blue',       bg:'#0d1117', dots:['#3fb884','#58a6ff','#F5D070'], acc:'#3fb884', txt:'#e6edf3'},
+  {key:'light',    name:'Warm Cream', emoji:'☀️', desc:'Light · Soft warm ivory',    bg:'#faf8f2', dots:['#1aad72','#b87020','#c04060'], acc:'#1aad72', txt:'#1a180a'},
+  {key:'stone',    name:'Stone',      emoji:'🪨', desc:'Light · Clean neutral grey',  bg:'#f4f4f4', dots:['#22C483','#2a8a60','#c04060'], acc:'#22C483', txt:'#1a1a1a'},
+  {key:'paper',    name:'Paper',      emoji:'📄', desc:'Light · Warm parchment',      bg:'#f7f3e8', dots:['#1aad72','#9a6010','#b84050'], acc:'#1aad72', txt:'#1e1600'},
 ];
 const BCAT = {
   food:    {icon:'🍚',label:'Food & Groceries', color:'#5ecfaa'},
@@ -2998,21 +3019,32 @@ function saveLoanResult() {
   const principal = parseFloat(document.getElementById('loan-amount').value) || 0;
   const rate      = parseFloat(document.getElementById('loan-rate').value) || 0;
   const term      = parseFloat(document.getElementById('loan-term').value) || 0;
-  if (!principal||!rate||!term) return toast('⚠️ Fill in loan details first');
+  if (!principal || !rate || !term) return toast('⚠️ Fill in loan details first');
+  if (!window._lastSchedule?.length) return toast('⚠️ Compute first before saving');
+
   const payment = document.getElementById('loan-payment')?.textContent || '₱0';
   const total   = document.getElementById('lr-total')?.textContent || '₱0';
   const interest= document.getElementById('lr-interest')?.textContent || '₱0';
   const endDate = document.getElementById('lr-end-date')?.textContent || '—';
-  const label   = loanType.charAt(0).toUpperCase()+loanType.slice(1)+' Loan — '+fmt(principal);
+
+  // Ask for a custom name
+  const defaultName = loanType.charAt(0).toUpperCase()+loanType.slice(1)+' Loan — '+fmt(principal);
+  const customName  = prompt('Give this loan a name:', defaultName);
+  if (customName === null) return; // cancelled
+
   savedLoans.unshift({
-    id:_loanId++, label, principal, rate, term, termUnit,
-    freq:payFreq, rateType, interestMethod,
-    payment, total, interest, type:loanType, endDate,
-    savedAt:new Date().toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'})
+    id: _loanId++,
+    label: customName || defaultName,
+    principal, rate, term, termUnit,
+    freq: payFreq, rateType, interestMethod,
+    payment, total, interest,
+    type: loanType, endDate,
+    schedule: window._lastSchedule,
+    savedAt: new Date().toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'})
   });
   try { localStorage.setItem('fk-loans', JSON.stringify(savedLoans)); } catch(e){}
   renderSavedLoans();
-  toast('💾 Loan scenario saved!');
+  toast('💾 Saved: ' + (customName || defaultName));
 }
 
 function deleteSavedLoan(id) {
@@ -3048,34 +3080,93 @@ function loadSavedLoan(id) {
 }
 
 function renderSavedLoans() {
+  // Load from storage if array is empty
   if (!savedLoans.length) {
-    try { const s=localStorage.getItem('fk-loans'); if(s) savedLoans=JSON.parse(s); } catch(e){}
+    try { const s = localStorage.getItem('fk-loans'); if (s) { savedLoans = JSON.parse(s); _loanId = Math.max(...savedLoans.map(l=>l.id), 0) + 1; } } catch(e) {}
   }
-  const section = document.getElementById('saved-loans-section');
-  const list    = document.getElementById('saved-loans-list');
+  const section  = document.getElementById('saved-loans-section');
+  const list     = document.getElementById('saved-loans-list');
+  const countEl  = document.getElementById('saved-loans-count');
   if (!list) return;
-  if (!savedLoans.length) { if(section) section.style.display='none'; return; }
-  if (section) section.style.display='block';
-  list.innerHTML = savedLoans.map(l=>`
-    <div class="card" style="margin-bottom:8px">
-      <div style="display:flex;align-items:flex-start;gap:10px">
-        <div style="width:38px;height:38px;border-radius:12px;background:rgba(34,196,131,.15);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🏦</div>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:800;margin-bottom:2px">${l.label}</div>
-          <div style="font-size:11px;color:var(--mut2)">${l.rate}% ${l.rateType||'annual'} · ${l.term} ${l.termUnit} · ${l.freq} · ${l.interestMethod==='addon'?'Add-on':'Amortizing'}</div>
-          <div style="font-size:10px;color:var(--mut);margin-bottom:8px">Saved ${l.savedAt} · Ends ${l.endDate||'—'}</div>
-          <div style="display:flex;gap:12px">
-            <div><div style="font-size:9px;color:var(--mut);text-transform:uppercase;font-weight:700">Payment</div><div style="font-size:14px;font-weight:900;color:var(--acc);font-family:'JetBrains Mono',monospace">${l.payment}</div></div>
-            <div><div style="font-size:9px;color:var(--mut);text-transform:uppercase;font-weight:700">Total</div><div style="font-size:14px;font-weight:900;color:var(--acc3);font-family:'JetBrains Mono',monospace">${l.total}</div></div>
-            <div><div style="font-size:9px;color:var(--mut);text-transform:uppercase;font-weight:700">Interest</div><div style="font-size:14px;font-weight:900;color:var(--acc4);font-family:'JetBrains Mono',monospace">${l.interest}</div></div>
-          </div>
+  if (!savedLoans.length) { if (section) section.style.display = 'none'; return; }
+  if (section) section.style.display = 'block';
+  if (countEl) countEl.textContent = savedLoans.length + ' saved';
+
+  list.innerHTML = savedLoans.map(l => {
+    const method  = l.interestMethod === 'addon' ? '🤝 Add-on' : '🏦 Amortizing';
+    const rtype   = l.rateType === 'monthly' ? '/mo' : '/yr';
+    const freqLbl = l.freq === 'monthly' ? 'Monthly' : l.freq === 'semi' ? 'Semi-mo' : 'Weekly';
+    return `
+    <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:18px;margin-bottom:10px;overflow:hidden">
+      <!-- Header bar -->
+      <div style="background:var(--surf2);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bdr)">
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--txt)">${l.label}</div>
+          <div style="font-size:10px;color:var(--mut2);margin-top:2px">${method} · ${l.rate}% ${rtype} · ${freqLbl} · Ends ${l.endDate||'—'}</div>
         </div>
-        <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
-          <button class="sm-btn sm-btn-acc" onclick="loadSavedLoan(${l.id})" style="font-size:11px">📂 Load</button>
-          <button class="sm-btn sm-btn-ghost" onclick="deleteSavedLoan(${l.id})" style="font-size:11px">🗑️</button>
+        <div style="display:flex;gap:6px">
+          <button class="sm-btn sm-btn-acc" onclick="loadSavedLoan(${l.id})" style="font-size:11px;padding:5px 10px">📂</button>
+          <button class="sm-btn sm-btn-ghost" onclick="deleteSavedLoan(${l.id})" style="font-size:11px;padding:5px 10px">🗑️</button>
         </div>
       </div>
-    </div>`).join('');
+      <!-- Payment summary -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0">
+        <div style="padding:12px 14px;border-right:1px solid var(--bdr)">
+          <div style="font-size:9px;font-weight:800;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">${freqLbl} Payment</div>
+          <div style="font-size:18px;font-weight:900;color:var(--acc);font-family:'JetBrains Mono',monospace">${l.payment}</div>
+        </div>
+        <div style="padding:12px 14px;border-right:1px solid var(--bdr)">
+          <div style="font-size:9px;font-weight:800;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Total Interest</div>
+          <div style="font-size:18px;font-weight:900;color:var(--acc4);font-family:'JetBrains Mono',monospace">${l.interest}</div>
+        </div>
+        <div style="padding:12px 14px">
+          <div style="font-size:9px;font-weight:800;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Total Payment</div>
+          <div style="font-size:18px;font-weight:900;color:var(--acc3);font-family:'JetBrains Mono',monospace">${l.total}</div>
+        </div>
+      </div>
+      <!-- Expand amort table button -->
+      <div style="padding:8px 14px;border-top:1px solid var(--bdr)">
+        <button onclick="toggleSavedAmort(${l.id})" style="width:100%;padding:8px;background:transparent;border:none;color:var(--mut2);font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;text-align:left">
+          📋 View Payment Schedule ▾
+        </button>
+        <div id="saved-amort-${l.id}" style="display:none;margin-top:8px;overflow-x:auto">
+          ${l.schedule ? renderMiniAmort(l.schedule) : '<div style="font-size:11px;color:var(--mut2);padding:8px">Reload this scenario to generate schedule</div>'}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleSavedAmort(id) {
+  const el  = document.getElementById('saved-amort-' + id);
+  const btn = el?.previousElementSibling;
+  if (!el) return;
+  const open = el.style.display === 'none';
+  el.style.display = open ? 'block' : 'none';
+  if (btn) btn.textContent = open
+    ? '📋 Hide Payment Schedule ▴'
+    : '📋 View Payment Schedule ▾';
+}
+
+function renderMiniAmort(schedule) {
+  if (!schedule || !schedule.length) return '';
+  return `<table style="width:100%;border-collapse:collapse;font-size:11px">
+    <tr style="background:var(--surf2)">
+      <th style="padding:6px 8px;text-align:left;font-weight:800;color:var(--mut);font-size:9px;text-transform:uppercase">Period</th>
+      <th style="padding:6px 8px;text-align:right;font-weight:800;color:var(--mut);font-size:9px;text-transform:uppercase">Payment</th>
+      <th style="padding:6px 8px;text-align:right;font-weight:800;color:var(--mut);font-size:9px;text-transform:uppercase">Principal</th>
+      <th style="padding:6px 8px;text-align:right;font-weight:800;color:var(--mut);font-size:9px;text-transform:uppercase">Interest</th>
+      <th style="padding:6px 8px;text-align:right;font-weight:800;color:var(--mut);font-size:9px;text-transform:uppercase">Balance</th>
+    </tr>
+    ${schedule.map((r,i) => `
+      <tr style="border-bottom:1px solid var(--bdr);${i%2===0?'background:rgba(255,255,255,0.01)':''}">
+        <td style="padding:6px 8px;font-weight:700;white-space:nowrap">${r.label}</td>
+        <td style="padding:6px 8px;text-align:right;color:var(--acc);font-family:'JetBrains Mono',monospace">${fmt(r.payment)}</td>
+        <td style="padding:6px 8px;text-align:right;color:var(--acc2);font-family:'JetBrains Mono',monospace">${fmt(r.principal)}</td>
+        <td style="padding:6px 8px;text-align:right;color:var(--acc4);font-family:'JetBrains Mono',monospace">${fmt(r.interest)}</td>
+        <td style="padding:6px 8px;text-align:right;font-family:'JetBrains Mono',monospace">${fmt(r.balance)}</td>
+      </tr>`).join('')}
+  </table>`;
 }
 
 // ── Loan year dropdown init ────────────────
