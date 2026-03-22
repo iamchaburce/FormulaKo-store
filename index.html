@@ -939,6 +939,29 @@ h1, h2, h3, .section-title-syne { font-family: 'Syne', sans-serif !important; }
             <button class="ftab" onclick="selFreq('weekly',this)" id="freq-weekly">Weekly</button>
           </div>
         </div>
+
+        <div class="field-grp">
+          <div class="field-lbl">Start Month</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <select class="field-in" id="loan-start-month" onchange="computeLoan()">
+              <option value="1">January</option>
+              <option value="2">February</option>
+              <option value="3">March</option>
+              <option value="4">April</option>
+              <option value="5">May</option>
+              <option value="6">June</option>
+              <option value="7">July</option>
+              <option value="8">August</option>
+              <option value="9">September</option>
+              <option value="10">October</option>
+              <option value="11">November</option>
+              <option value="12">December</option>
+            </select>
+            <select class="field-in" id="loan-start-year" onchange="computeLoan()">
+            </select>
+          </div>
+          <div style="font-size:10px;color:var(--mut);margin-top:5px">Para ma-label ang bawat month sa amortization table</div>
+        </div>
       </div>
 
       <!-- Results Card -->
@@ -979,14 +1002,41 @@ h1, h2, h3, .section-title-syne { font-family: 'Syne', sans-serif !important; }
             <div class="sum-lbl">Interest of Total</div>
           </div>
           <div class="sum-box">
-            <div class="sum-icon">💰</div>
-            <div class="sum-val pos" id="lr-monthly-int">₱0</div>
-            <div class="sum-lbl">Monthly Interest</div>
-          </div>
-          <div class="sum-box">
             <div class="sum-icon">⏱️</div>
             <div class="sum-val info" id="lr-duration">0 months</div>
             <div class="sum-lbl">Loan Duration</div>
+          </div>
+          <div class="sum-box">
+            <div class="sum-icon">📆</div>
+            <div class="sum-val pos" id="lr-end-date">—</div>
+            <div class="sum-lbl">End Date</div>
+          </div>
+        </div>
+
+        <!-- Interest Rate Breakdown card -->
+        <div class="card" style="margin-bottom:14px">
+          <div style="font-size:12px;font-weight:800;color:var(--mut2);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">📊 Interest Rate Breakdown</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+            <div style="text-align:center;padding:10px 6px;background:var(--surf2);border-radius:12px">
+              <div style="font-size:18px;font-weight:900;color:var(--acc);font-family:'JetBrains Mono',monospace" id="lr-annual-rate">0%</div>
+              <div style="font-size:9px;font-weight:800;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;margin-top:3px">Annual Rate</div>
+            </div>
+            <div style="text-align:center;padding:10px 6px;background:var(--surf2);border-radius:12px">
+              <div style="font-size:18px;font-weight:900;color:var(--acc2);font-family:'JetBrains Mono',monospace" id="lr-monthly-rate">0%</div>
+              <div style="font-size:9px;font-weight:800;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;margin-top:3px">Monthly Rate</div>
+            </div>
+            <div style="text-align:center;padding:10px 6px;background:var(--surf2);border-radius:12px">
+              <div style="font-size:18px;font-weight:900;color:var(--acc3);font-family:'JetBrains Mono',monospace" id="lr-daily-rate">0%</div>
+              <div style="font-size:9px;font-weight:800;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;margin-top:3px">Daily Rate</div>
+            </div>
+          </div>
+          <div style="margin-top:10px;padding:8px 12px;background:var(--surf2);border-radius:10px;display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:11px;color:var(--mut2);font-weight:600">💸 Interest per month (Month 1)</span>
+            <span style="font-size:14px;font-weight:900;color:var(--acc4);font-family:'JetBrains Mono',monospace" id="lr-first-month-int">₱0</span>
+          </div>
+          <div style="margin-top:6px;padding:8px 12px;background:var(--surf2);border-radius:10px;display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:11px;color:var(--mut2);font-weight:600">📉 Interest per month (Last month)</span>
+            <span style="font-size:14px;font-weight:900;color:var(--acc);font-family:'JetBrains Mono',monospace" id="lr-last-month-int">₱0</span>
           </div>
         </div>
 
@@ -1289,6 +1339,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Render all
   renderAll();
   renderGreeting();
+  initLoanYearDropdown();
   updateUserButtons();
 
   // PWA
@@ -1322,6 +1373,7 @@ function renderAll() {
 // ══════════════════════════════════════════════
 function openScreen(name) {
   document.getElementById('screen-'+name).classList.add('open');
+  if (name === 'loans') initLoanYearDropdown();
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
   const navEl = document.getElementById('nav-'+name);
   if (navEl) navEl.classList.add('active');
@@ -2165,6 +2217,7 @@ async function syncFromCloud(silent=false) {
       }
       renderAll();
   renderGreeting();
+  initLoanYearDropdown();
   updateUserButtons();
       if (!silent) showSyncBar('✅ Synced! ' + new Date().toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'}));
     }
@@ -2659,31 +2712,57 @@ function toggleAmort(view, el) {
   renderAmortTable(window._lastSchedule || []);
 }
 
+
+// ── Initialize loan year dropdown ──────────
+function initLoanYearDropdown() {
+  const yearEl = document.getElementById('loan-start-year');
+  if (!yearEl) return;
+  const thisYear = new Date().getFullYear();
+  const thisMonth = new Date().getMonth() + 1;
+  yearEl.innerHTML = '';
+  for (let y = thisYear; y <= thisYear + 10; y++) {
+    const opt = document.createElement('option');
+    opt.value = y;
+    opt.textContent = y;
+    if (y === thisYear) opt.selected = true;
+    yearEl.appendChild(opt);
+  }
+  // Set current month as default
+  const monthEl = document.getElementById('loan-start-month');
+  if (monthEl) monthEl.value = thisMonth;
+}
+
 function computeLoan() {
-  const principal = parseFloat(document.getElementById('loan-amount').value) || 0;
+  const principal  = parseFloat(document.getElementById('loan-amount').value) || 0;
   const annualRate = parseFloat(document.getElementById('loan-rate').value) || 0;
-  const termVal   = parseFloat(document.getElementById('loan-term').value) || 0;
+  const termVal    = parseFloat(document.getElementById('loan-term').value) || 0;
   if (!principal || !annualRate || !termVal) {
     document.getElementById('loan-results').style.display = 'none';
     return;
   }
 
+  // Start month/year
+  const startMonth = parseInt(document.getElementById('loan-start-month').value) || new Date().getMonth() + 1;
+  const startYear  = parseInt(document.getElementById('loan-start-year').value)  || new Date().getFullYear();
+
   // Convert term to months
   const termMonths = termUnit === 'years' ? termVal * 12 : termVal;
 
-  // Frequency multiplier
+  // Frequency
   let freqPerYear, freqLabel, freqChip;
-  if (payFreq === 'monthly')     { freqPerYear = 12;  freqLabel = 'Monthly Payment';      freqChip = 'Per month (12x/year)'; }
-  else if (payFreq === 'semi')   { freqPerYear = 24;  freqLabel = 'Semi-monthly Payment'; freqChip = 'Twice a month (24x/year)'; }
-  else                           { freqPerYear = 52;  freqLabel = 'Weekly Payment';       freqChip = 'Every week (52x/year)'; }
+  if (payFreq === 'monthly')   { freqPerYear=12; freqLabel='Monthly Payment';      freqChip='Per month (12x/year)'; }
+  else if (payFreq === 'semi') { freqPerYear=24; freqLabel='Semi-monthly Payment'; freqChip='Twice a month (24x/year)'; }
+  else                         { freqPerYear=52; freqLabel='Weekly Payment';       freqChip='Every week (52x/year)'; }
 
-  // Total payment periods
+  // Total periods
   const totalPeriods = Math.round(termMonths / 12 * freqPerYear);
 
-  // Periodic interest rate
+  // Periodic rate
   const periodicRate = annualRate / 100 / freqPerYear;
+  const monthlyRate  = annualRate / 100 / 12;
+  const dailyRate    = annualRate / 100 / 365;
 
-  // Monthly payment using amortization formula: M = P[r(1+r)^n]/[(1+r)^n-1]
+  // Payment formula
   let periodicPayment;
   if (periodicRate === 0) {
     periodicPayment = principal / totalPeriods;
@@ -2692,43 +2771,52 @@ function computeLoan() {
                       (Math.pow(1+periodicRate, totalPeriods) - 1);
   }
 
-  const totalPayment  = periodicPayment * totalPeriods;
-  const totalInterest = totalPayment - principal;
-  const interestPct   = totalPayment > 0 ? Math.round(totalInterest / totalPayment * 100) : 0;
-  const principalPct  = 100 - interestPct;
-
-  // Monthly interest (for display)
-  const monthlyInterest = principal * (annualRate / 100 / 12);
+  const totalPayment    = periodicPayment * totalPeriods;
+  const totalInterest   = totalPayment - principal;
+  const interestPct     = totalPayment > 0 ? Math.round(totalInterest / totalPayment * 100) : 0;
+  const principalPct    = 100 - interestPct;
 
   // Duration label
-  const years  = Math.floor(termMonths / 12);
-  const months = termMonths % 12;
-  const durLabel = [years>0?years+'y':'', months>0?months+'mo':''].filter(Boolean).join(' ') || termMonths+'mo';
+  const yrs = Math.floor(termMonths / 12);
+  const mos = termMonths % 12;
+  const durLabel = [yrs>0?yrs+'y':'', mos>0?mos+'mo':''].filter(Boolean).join(' ') || termMonths+'mo';
 
-  // Update UI
-  document.getElementById('loan-results').style.display = 'block';
-  document.getElementById('loan-payment-label').textContent = freqLabel;
-  document.getElementById('loan-payment').textContent       = fmt(Math.round(periodicPayment));
-  document.getElementById('loan-payment-chip').textContent  = freqChip;
-  document.getElementById('lr-principal').textContent       = fmt(principal);
-  document.getElementById('lr-interest').textContent        = fmt(Math.round(totalInterest));
-  document.getElementById('lr-total').textContent           = fmt(Math.round(totalPayment));
-  document.getElementById('lr-payments').textContent        = totalPeriods;
-  document.getElementById('lr-interest-pct').textContent    = interestPct + '%';
-  document.getElementById('lr-monthly-int').textContent     = fmt(Math.round(monthlyInterest));
-  document.getElementById('lr-duration').textContent        = durLabel;
-  document.getElementById('ld-principal-pct').textContent   = principalPct + '%';
-  document.getElementById('ld-interest-pct').textContent    = interestPct + '%';
+  // End date calculation
+  const endDate = new Date(startYear, startMonth - 1 + termMonths, 1);
+  const endDateLabel = endDate.toLocaleDateString('en-PH', {month:'short', year:'numeric'});
 
-  // Draw donut
+  // First month interest = principal × monthly rate
+  const firstMonthInt = principal * monthlyRate;
+  // Build schedule to get last month interest
+  const schedule = buildAmortSchedule(principal, periodicRate, periodicPayment, totalPeriods, payFreq, startMonth, startYear);
+  const lastMonthInt = schedule.length > 0 ? schedule[schedule.length-1].interest : 0;
+
+  // ── Update all UI ──
+  document.getElementById('loan-results').style.display      = 'block';
+  document.getElementById('loan-payment-label').textContent  = freqLabel;
+  document.getElementById('loan-payment').textContent        = fmt(Math.round(periodicPayment));
+  document.getElementById('loan-payment-chip').textContent   = freqChip;
+  document.getElementById('lr-principal').textContent        = fmt(principal);
+  document.getElementById('lr-interest').textContent         = fmt(Math.round(totalInterest));
+  document.getElementById('lr-total').textContent            = fmt(Math.round(totalPayment));
+  document.getElementById('lr-payments').textContent         = totalPeriods;
+  document.getElementById('lr-interest-pct').textContent     = interestPct + '%';
+  document.getElementById('lr-duration').textContent         = durLabel;
+  document.getElementById('lr-end-date').textContent         = endDateLabel;
+  document.getElementById('ld-principal-pct').textContent    = principalPct + '%';
+  document.getElementById('ld-interest-pct').textContent     = interestPct + '%';
+
+  // Interest rate breakdown
+  document.getElementById('lr-annual-rate').textContent      = annualRate.toFixed(2) + '%';
+  document.getElementById('lr-monthly-rate').textContent     = (monthlyRate * 100).toFixed(4) + '%';
+  document.getElementById('lr-daily-rate').textContent       = (dailyRate * 100).toFixed(5) + '%';
+  document.getElementById('lr-first-month-int').textContent  = fmt(Math.round(firstMonthInt));
+  document.getElementById('lr-last-month-int').textContent   = fmt(Math.round(lastMonthInt));
+
+  // Donut + table
   drawLoanDonut(principal, totalInterest);
-
-  // Build amortization schedule
-  const schedule = buildAmortSchedule(principal, periodicRate, periodicPayment, totalPeriods, payFreq);
   window._lastSchedule = schedule;
   renderAmortTable(schedule);
-
-  // Render saved loans
   renderSavedLoans();
 }
 
@@ -2750,18 +2838,35 @@ function drawLoanDonut(principal, interest) {
     <text x="${cx}" y="${cy+10}" text-anchor="middle" fill="var(--mut)" font-size="8" font-family="Nunito,sans-serif">total</text>`;
 }
 
-function buildAmortSchedule(principal, periodicRate, payment, periods, freq) {
+function buildAmortSchedule(principal, periodicRate, payment, periods, freq, startMonth, startYear) {
   const schedule = [];
   let balance = principal;
-  const periodLabel = freq==='monthly'?'Month':freq==='semi'?'Period':'Week';
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  let curMonth = (startMonth || new Date().getMonth() + 1) - 1; // 0-indexed
+  let curYear  = startYear  || new Date().getFullYear();
 
-  for (let i=1; i<=periods; i++) {
+  for (let i = 1; i <= periods; i++) {
     const interestPaid  = balance * periodicRate;
     const principalPaid = payment - interestPaid;
     balance = Math.max(0, balance - principalPaid);
+
+    // Build period label with month/year for monthly, just period number for semi/weekly
+    let label;
+    if (freq === 'monthly') {
+      label = MONTHS[curMonth % 12] + ' ' + (curYear + Math.floor(curMonth / 12));
+      curMonth++;
+    } else if (freq === 'semi') {
+      const mo = MONTHS[curMonth % 12];
+      const yr = curYear + Math.floor(curMonth / 12);
+      label = mo + ' ' + yr + (i % 2 === 1 ? ' (1st)' : ' (2nd)');
+      if (i % 2 === 0) curMonth++;
+    } else {
+      label = 'Wk ' + i;
+    }
+
     schedule.push({
       period:    i,
-      label:     periodLabel + ' ' + i,
+      label,
       payment:   Math.round(payment),
       principal: Math.round(principalPaid),
       interest:  Math.round(interestPaid),
