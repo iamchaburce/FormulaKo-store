@@ -3650,34 +3650,34 @@ function renderLoanTracker() {
         const carryover  = loan.carryoverBalance || 0;
         const carryInt   = Math.round(carryover * 0.05);
         const totalDue   = nextPayment.payment + carryover + carryInt;
-        return \`<div style="padding:10px 16px;border-bottom:1px solid var(--bdr);background:rgba(245,208,112,0.05)">
-          <div style="font-size:11px;font-weight:800;color:var(--acc3);margin-bottom:6px">📅 Next Payment — \${nextPayment.label}</div>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:\${carryover>0?'8px':'0'}">
+        return `<div style="padding:10px 16px;border-bottom:1px solid var(--bdr);background:rgba(245,208,112,0.05)">
+          <div style="font-size:11px;font-weight:800;color:var(--acc3);margin-bottom:6px">📅 Next Payment — ${nextPayment.label}</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:${carryover>0?'8px':'0'}">
             <div style="text-align:center;padding:6px;background:var(--surf2);border-radius:8px">
-              <div style="font-size:12px;font-weight:900;color:var(--acc);font-family:'JetBrains Mono',monospace">\${fmt(nextPayment.payment)}</div>
+              <div style="font-size:12px;font-weight:900;color:var(--acc);font-family:'JetBrains Mono',monospace">${fmt(nextPayment.payment)}</div>
               <div style="font-size:9px;color:var(--mut);text-transform:uppercase">Regular</div>
             </div>
             <div style="text-align:center;padding:6px;background:var(--surf2);border-radius:8px">
-              <div style="font-size:12px;font-weight:900;color:var(--acc2);font-family:'JetBrains Mono',monospace">\${fmt(nextPayment.principal)}</div>
+              <div style="font-size:12px;font-weight:900;color:var(--acc2);font-family:'JetBrains Mono',monospace">${fmt(nextPayment.principal)}</div>
               <div style="font-size:9px;color:var(--mut);text-transform:uppercase">Principal</div>
             </div>
             <div style="text-align:center;padding:6px;background:var(--surf2);border-radius:8px">
-              <div style="font-size:12px;font-weight:900;color:var(--acc4);font-family:'JetBrains Mono',monospace">\${fmt(nextPayment.interest)}</div>
+              <div style="font-size:12px;font-weight:900;color:var(--acc4);font-family:'JetBrains Mono',monospace">${fmt(nextPayment.interest)}</div>
               <div style="font-size:9px;color:var(--mut);text-transform:uppercase">Interest</div>
             </div>
           </div>
-          \${carryover > 0 ? \`<div style="margin-top:6px;padding:8px 10px;background:rgba(224,123,138,.08);border-radius:10px;border-left:3px solid var(--acc4)">
+          ${carryover > 0 ? `<div style="margin-top:6px;padding:8px 10px;background:rgba(224,123,138,.08);border-radius:10px;border-left:3px solid var(--acc4)">
             <div style="font-size:11px;font-weight:800;color:var(--acc4);margin-bottom:4px">⚠️ Carryover Balance</div>
             <div style="display:flex;justify-content:space-between;font-size:11px">
-              <span style="color:var(--mut2)">Unpaid from prev: <strong style="color:var(--acc4);font-family:'JetBrains Mono',monospace">\${fmt(carryover)}</strong></span>
-              <span style="color:var(--mut2)">5% interest: <strong style="color:var(--acc4);font-family:'JetBrains Mono',monospace">\${fmt(carryInt)}</strong></span>
+              <span style="color:var(--mut2)">Unpaid from prev: <strong style="color:var(--acc4);font-family:'JetBrains Mono',monospace">${fmt(carryover)}</strong></span>
+              <span style="color:var(--mut2)">5% interest: <strong style="color:var(--acc4);font-family:'JetBrains Mono',monospace">${fmt(carryInt)}</strong></span>
             </div>
             <div style="margin-top:6px;display:flex;justify-content:space-between;padding-top:6px;border-top:1px solid var(--bdr)">
               <span style="font-size:12px;font-weight:800;color:var(--txt)">Total Due This Month</span>
-              <span style="font-size:14px;font-weight:900;color:var(--acc3);font-family:'JetBrains Mono',monospace">\${fmt(totalDue)}</span>
+              <span style="font-size:14px;font-weight:900;color:var(--acc3);font-family:'JetBrains Mono',monospace">${fmt(totalDue)}</span>
             </div>
-          </div>\` : ''}
-        </div>\`;
+          </div>` : ''}
+        </div>`;
       })() : ''}
 
       <!-- Action buttons -->
@@ -3702,22 +3702,22 @@ function renderLoanTracker() {
               const extraInfo = h.lateFee>0 ? ' +₱'+h.lateFee.toLocaleString()+' fee' :
                                 h.unpaid>0  ? ' ₱'+h.unpaid.toLocaleString()+' unpaid' : '';
               const hIdx = loan.paymentHistory.length - 1 - i;
-              return \`<div style="padding:8px 10px;background:var(--surf2);border-radius:10px;margin-bottom:4px;font-size:12px">
+              return `<div style="padding:8px 10px;background:var(--surf2);border-radius:10px;margin-bottom:4px;font-size:12px">
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2px;gap:8px">
                   <div style="flex:1;min-width:0">
-                    <span style="font-weight:800;color:\${typeColor}">\${typeIcon} \${h.label}</span>
-                    <span style="font-family:'JetBrains Mono',monospace;font-weight:800;color:var(--txt);margin-left:8px">\${h.amount>0?fmt(h.amount):'—'}</span>
+                    <span style="font-weight:800;color:${typeColor}">${typeIcon} ${h.label}</span>
+                    <span style="font-family:'JetBrains Mono',monospace;font-weight:800;color:var(--txt);margin-left:8px">${h.amount>0?fmt(h.amount):'—'}</span>
                   </div>
                   <div style="display:flex;gap:4px;flex-shrink:0">
-                    <button onclick="editPaymentHistory(\${loan.id},\${hIdx})" style="padding:3px 8px;border-radius:8px;border:none;background:var(--surf);color:var(--acc2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif">✏️</button>
-                    <button onclick="deletePaymentHistory(\${loan.id},\${hIdx})" style="padding:3px 8px;border-radius:8px;border:none;background:var(--surf);color:var(--acc4);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif">🗑️</button>
+                    <button onclick="editPaymentHistory(${loan.id},${hIdx})" style="padding:3px 8px;border-radius:8px;border:none;background:var(--surf);color:var(--acc2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif">✏️</button>
+                    <button onclick="deletePaymentHistory(${loan.id},${hIdx})" style="padding:3px 8px;border-radius:8px;border:none;background:var(--surf);color:var(--acc4);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif">🗑️</button>
                   </div>
                 </div>
                 <div style="display:flex;justify-content:space-between">
-                  <span style="color:var(--mut2)">\${h.date}\${h.notes?' · '+h.notes:''}</span>
-                  <span style="color:var(--acc4);font-size:11px">\${extraInfo}</span>
+                  <span style="color:var(--mut2)">${h.date}${h.notes?' · '+h.notes:''}</span>
+                  <span style="color:var(--acc4);font-size:11px">${extraInfo}</span>
                 </div>
-              </div>\`;
+              </div>`;
             }).join('')
           : '<div style="font-size:11px;color:var(--mut2);text-align:center;padding:8px">No payments yet</div>'
         }
