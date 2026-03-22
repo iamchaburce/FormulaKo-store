@@ -2,7 +2,7 @@
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>FormulaKo BudgetBuddy</title>
 <meta name="theme-color" content="#0e1420" id="pwa-theme-color">
 <meta name="mobile-web-app-capable" content="yes">
@@ -82,7 +82,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-
 .notif-dot{position:absolute;top:-3px;right:-3px;width:16px;height:16px;border-radius:50%;background:var(--acc4);color:#fff;font-size:9px;font-weight:900;display:none;align-items:center;justify-content:center}
 
 /* ── SCROLL CONTENT ─────────────────────── */
-.content{padding:16px 16px 110px;overflow-y:auto;overflow-x:hidden}
+.content{padding:16px 16px calc(110px + env(safe-area-inset-bottom,0px));overflow-y:auto;overflow-x:hidden}
 
 /* ── CARDS ──────────────────────────────── */
 .card{background:var(--surf);border:1px solid var(--bdr);border-radius:20px;padding:16px;margin-bottom:10px}
@@ -143,7 +143,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-
 .a-amt{font-size:14px;font-weight:900}
 
 /* ── BOTTOM NAV ─────────────────────────── */
-.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:var(--bg);border-top:1px solid var(--bdr);display:flex;padding:8px 0 24px;z-index:100}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:var(--bg);border-top:1px solid var(--bdr);display:flex;padding:8px 0 env(safe-area-inset-bottom,20px);z-index:100}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 0;transition:all .2s}
 .nav-item:active{transform:scale(.88)}
 .nav-icon-wrap{width:44px;height:30px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;transition:all .2s}
@@ -1407,9 +1407,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Render all
   renderAll();
-  renderGreeting();
+  updateUserButtons(); // updates names + calls renderGreeting
   initLoanYearDropdown();
-  updateUserButtons();
 
   // PWA
   initPWA();
@@ -2197,16 +2196,30 @@ function onboardNext(step) {
 
 
 function updateUserButtons() {
-  const u1 = user1Name || '';
+  const u1 = currentUser || user1Name || '';
   const u2 = user2Name || '';
+
+  // Expense "added by" buttons
   const eu1 = document.getElementById('eu-cha');
   const eu2 = document.getElementById('eu-chad');
-  if (eu1) { eu1.textContent = '👤 ' + (u1 || 'User 1'); eu1.onclick = () => selExpUser(u1 || 'User 1'); }
-  if (eu2) { eu2.textContent = '👤 ' + (u2 || 'User 2'); eu2.onclick = () => selExpUser(u2 || 'User 2'); }
+  if (eu1) { eu1.textContent = '👤 ' + (u1 || 'Me'); eu1.onclick = () => selExpUser(u1 || 'Me'); }
+  if (eu2) { eu2.textContent = '👤 ' + (u2 || 'Partner'); eu2.onclick = () => selExpUser(u2 || 'Partner'); }
+
+  // Combined card names
   const cn1 = document.getElementById('cc-name1');
   const cn2 = document.getElementById('cc-name2');
-  if (cn1) cn1.textContent = '👤 ' + (u1 || 'User 1');
-  if (cn2) cn2.textContent = '👤 ' + (u2 || 'User 2');
+  if (cn1) cn1.textContent = '👤 ' + (u1 || 'Me');
+  if (cn2) cn2.textContent = '👤 ' + (u2 || 'Partner');
+
+  // Combined card title & User 2 visibility
+  const titleEl = document.getElementById('cc-main-title');
+  const p2El    = document.getElementById('cc-person2');
+  if (titleEl) titleEl.textContent = u2
+    ? '👫 ' + (u1||'Me') + ' & ' + u2 + ' — This Month'
+    : '💰 ' + (u1||'My') + ' — This Month';
+  if (p2El) p2El.style.display = u2 ? '' : 'none';
+
+  // Re-render greeting with updated name
   renderGreeting();
 }
 
@@ -2288,9 +2301,8 @@ async function syncFromCloud(silent=false) {
         if (mi.length) budgetData.income = mi.map((x,i)=>({id:parseInt(x.id)||i+1,type:x.type||'other',desc:x.description||'',amount:parseFloat(x.amount)||0}));
       }
       renderAll();
-  renderGreeting();
+  updateUserButtons(); // updates names + calls renderGreeting
   initLoanYearDropdown();
-  updateUserButtons();
       if (!silent) showSyncBar('✅ Synced! ' + new Date().toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'}));
     }
   } catch(e) { if (!silent) showSyncBar('⚠️ Sync failed','err'); }
