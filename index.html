@@ -1202,6 +1202,152 @@ h1, h2, h3, .section-title-syne { font-family: 'Syne', sans-serif !important; }
     </div>
   </div>
 
+
+  <!-- ══ PAYMENT RECORD MODAL ══ -->
+  <div class="overlay" id="modal-payment-record">
+    <div class="sheet" onclick="event.stopPropagation()">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title" id="pmr-title">Record Payment</div>
+      <input type="hidden" id="pmr-loan-id">
+
+      <!-- Payment Type -->
+      <div class="field-lbl" style="margin-bottom:8px">Payment Type</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">
+        <div id="pmr-type-normal" onclick="selPaymentType('normal')"
+          style="padding:10px;border-radius:14px;border:2px solid var(--acc);background:rgba(34,196,131,.08);cursor:pointer;text-align:center">
+          <div style="font-size:18px">✅</div>
+          <div style="font-size:12px;font-weight:800;margin-top:4px">Full Payment</div>
+          <div style="font-size:10px;color:var(--mut2)">On time</div>
+        </div>
+        <div id="pmr-type-late" onclick="selPaymentType('late')"
+          style="padding:10px;border-radius:14px;border:2px solid var(--bdr);background:var(--surf2);cursor:pointer;text-align:center">
+          <div style="font-size:18px">⏰</div>
+          <div style="font-size:12px;font-weight:800;margin-top:4px">Late Payment</div>
+          <div style="font-size:10px;color:var(--mut2)">With penalty</div>
+        </div>
+        <div id="pmr-type-partial" onclick="selPaymentType('partial')"
+          style="padding:10px;border-radius:14px;border:2px solid var(--bdr);background:var(--surf2);cursor:pointer;text-align:center">
+          <div style="font-size:18px">💸</div>
+          <div style="font-size:12px;font-weight:800;margin-top:4px">Partial</div>
+          <div style="font-size:10px;color:var(--mut2)">Partial payment</div>
+        </div>
+        <div id="pmr-type-skip" onclick="selPaymentType('skip')"
+          style="padding:10px;border-radius:14px;border:2px solid var(--bdr);background:var(--surf2);cursor:pointer;text-align:center">
+          <div style="font-size:18px">⏭️</div>
+          <div style="font-size:12px;font-weight:800;margin-top:4px">Skip Month</div>
+          <div style="font-size:10px;color:var(--mut2)">5% on unpaid</div>
+        </div>
+      </div>
+
+      <!-- Due amount info -->
+      <div id="pmr-due-info" style="padding:10px 14px;background:var(--surf2);border-radius:12px;margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+          <span style="font-size:12px;color:var(--mut2)">Regular payment</span>
+          <span style="font-size:13px;font-weight:800;color:var(--acc);font-family:'JetBrains Mono',monospace" id="pmr-regular">₱0</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px" id="pmr-carryover-row" style="display:none">
+          <span style="font-size:12px;color:var(--mut2)">Carryover balance</span>
+          <span style="font-size:13px;font-weight:800;color:var(--acc4);font-family:'JetBrains Mono',monospace" id="pmr-carryover">₱0</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px" id="pmr-carryover-int-row">
+          <span style="font-size:12px;color:var(--mut2)">Interest on carryover (5%)</span>
+          <span style="font-size:13px;font-weight:800;color:var(--acc4);font-family:'JetBrains Mono',monospace" id="pmr-carryover-int">₱0</span>
+        </div>
+        <div style="height:1px;background:var(--bdr);margin:8px 0"></div>
+        <div style="display:flex;justify-content:space-between">
+          <span style="font-size:12px;font-weight:800;color:var(--txt)">Total Due</span>
+          <span style="font-size:15px;font-weight:900;color:var(--acc3);font-family:'JetBrains Mono',monospace" id="pmr-total-due">₱0</span>
+        </div>
+      </div>
+
+      <!-- Late fee section -->
+      <div id="pmr-late-section" style="display:none;margin-bottom:14px">
+        <div class="field-lbl" style="margin-bottom:8px">Late Payment Penalty</div>
+        <div style="display:flex;gap:6px;margin-bottom:8px">
+          <button class="ftab on" id="pmr-penalty-fixed" onclick="selPenaltyType('fixed',this)">Fixed Amount</button>
+          <button class="ftab" id="pmr-penalty-pct" onclick="selPenaltyType('pct',this)">% of Unpaid</button>
+          <button class="ftab" id="pmr-penalty-lower" onclick="selPenaltyType('lower',this)">Lower of Both</button>
+        </div>
+        <div style="display:flex;gap:8px">
+          <div class="field-grp" style="flex:1;margin-bottom:0" id="pmr-fixed-grp">
+            <div class="field-lbl">Fixed Fee (₱)</div>
+            <input class="field-in" id="pmr-fixed-fee" type="number" placeholder="500" value="500" oninput="updatePaymentTotal()">
+          </div>
+          <div class="field-grp" style="flex:1;margin-bottom:0" id="pmr-pct-grp">
+            <div class="field-lbl">Penalty %</div>
+            <input class="field-in" id="pmr-penalty-pct-val" type="number" placeholder="10" value="10" oninput="updatePaymentTotal()">
+          </div>
+        </div>
+        <div style="margin-top:8px;padding:8px 12px;background:rgba(224,123,138,.08);border-radius:10px;display:flex;justify-content:space-between">
+          <span style="font-size:12px;color:var(--mut2)">Late fee amount</span>
+          <span style="font-size:13px;font-weight:800;color:var(--acc4);font-family:'JetBrains Mono',monospace" id="pmr-late-fee-amt">₱0</span>
+        </div>
+      </div>
+
+      <!-- Partial payment section -->
+      <div id="pmr-partial-section" style="display:none;margin-bottom:14px">
+        <div class="field-grp" style="margin-bottom:6px">
+          <div class="field-lbl">Amount Paid (₱)</div>
+          <input class="field-in" id="pmr-partial-amt" type="number" placeholder="0" oninput="updatePaymentTotal()">
+        </div>
+        <div style="padding:8px 12px;background:rgba(224,123,138,.08);border-radius:10px;display:flex;justify-content:space-between">
+          <span style="font-size:12px;color:var(--mut2)">Remaining unpaid</span>
+          <span style="font-size:13px;font-weight:800;color:var(--acc4);font-family:'JetBrains Mono',monospace" id="pmr-partial-remaining">₱0</span>
+        </div>
+        <div style="font-size:10px;color:var(--mut);margin-top:6px">⚠️ Unpaid balance carries over with 5% interest next month</div>
+      </div>
+
+      <!-- Skip section -->
+      <div id="pmr-skip-section" style="display:none;margin-bottom:14px">
+        <div style="padding:12px 14px;background:rgba(245,208,112,.08);border:1px solid rgba(245,208,112,.2);border-radius:12px">
+          <div style="font-size:12px;font-weight:800;color:var(--acc3);margin-bottom:6px">⏭️ Skip Month — Cash Advance Treatment</div>
+          <div style="font-size:11px;color:var(--mut2);line-height:1.6">
+            Full payment amount will be marked as unpaid.<br>
+            5% interest will be added to the unpaid balance.<br>
+            If skipped again next month, another 5% compounds.
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:10px;padding-top:8px;border-top:1px solid var(--bdr)">
+            <span style="font-size:12px;color:var(--mut2)">Unpaid this month</span>
+            <span style="font-size:13px;font-weight:800;color:var(--acc3);font-family:'JetBrains Mono',monospace" id="pmr-skip-amt">₱0</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:4px">
+            <span style="font-size:12px;color:var(--mut2)">5% interest charge</span>
+            <span style="font-size:13px;font-weight:800;color:var(--acc4);font-family:'JetBrains Mono',monospace" id="pmr-skip-int">₱0</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:4px">
+            <span style="font-size:12px;font-weight:800;color:var(--txt)">Total carryover</span>
+            <span style="font-size:13px;font-weight:900;color:var(--acc4);font-family:'JetBrains Mono',monospace" id="pmr-skip-total">₱0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment date -->
+      <div class="field-grp">
+        <div class="field-lbl">Payment Date</div>
+        <input class="field-in" id="pmr-date" type="date">
+      </div>
+
+      <!-- Notes -->
+      <div class="field-grp">
+        <div class="field-lbl">Notes (optional)</div>
+        <input class="field-in" id="pmr-notes" type="text" placeholder="e.g. Paid via GCash">
+      </div>
+
+      <!-- Grand total -->
+      <div style="padding:14px;background:var(--surf2);border-radius:14px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:11px;color:var(--mut2);text-transform:uppercase;letter-spacing:.5px;font-weight:700">Total Amount Paid</div>
+          <div style="font-size:24px;font-weight:900;color:var(--acc);font-family:'JetBrains Mono',monospace" id="pmr-grand-total">₱0</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:11px;color:var(--mut2)" id="pmr-period-label">Period</div>
+        </div>
+      </div>
+
+      <button class="submit-btn" onclick="recordPayment()">💳 Record Payment</button>
+    </div>
+  </div>
+
   <!-- Sync Bar -->
   <div class="sync-bar" id="sync-bar"><span id="sync-msg">⟳ Syncing...</span></div>
 
@@ -3436,39 +3582,66 @@ function renderLoanTracker() {
         <div style="height:6px;background:var(--surf2);border-radius:4px;overflow:hidden;margin-bottom:8px">
           <div style="height:100%;width:${pct}%;background:var(--acc);border-radius:4px;transition:width .5s"></div>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
           <div style="text-align:center;padding:8px;background:var(--surf2);border-radius:10px">
-            <div style="font-size:15px;font-weight:900;color:var(--acc);font-family:'JetBrains Mono',monospace">${loan.payment}</div>
-            <div style="font-size:9px;color:var(--mut);text-transform:uppercase;font-weight:700;margin-top:2px">Per Payment</div>
+            <div style="font-size:13px;font-weight:900;color:var(--acc);font-family:'JetBrains Mono',monospace">${loan.payment}</div>
+            <div style="font-size:9px;color:var(--mut);text-transform:uppercase;font-weight:700;margin-top:2px">Payment</div>
           </div>
           <div style="text-align:center;padding:8px;background:var(--surf2);border-radius:10px">
-            <div style="font-size:15px;font-weight:900;color:var(--acc2);font-family:'JetBrains Mono',monospace">${remaining}</div>
-            <div style="font-size:9px;color:var(--mut);text-transform:uppercase;font-weight:700;margin-top:2px">Remaining</div>
+            <div style="font-size:13px;font-weight:900;color:var(--acc2);font-family:'JetBrains Mono',monospace">${remaining}</div>
+            <div style="font-size:9px;color:var(--mut);text-transform:uppercase;font-weight:700;margin-top:2px">Left</div>
           </div>
           <div style="text-align:center;padding:8px;background:var(--surf2);border-radius:10px">
-            <div style="font-size:15px;font-weight:900;color:var(--acc4);font-family:'JetBrains Mono',monospace">${loan.interest}</div>
-            <div style="font-size:9px;color:var(--mut);text-transform:uppercase;font-weight:700;margin-top:2px">Total Interest</div>
+            <div style="font-size:13px;font-weight:900;color:var(--acc4);font-family:'JetBrains Mono',monospace">${loan.totalLateFees>0?fmt(loan.totalLateFees||0):'—'}</div>
+            <div style="font-size:9px;color:var(--mut);text-transform:uppercase;font-weight:700;margin-top:2px">Late Fees</div>
+          </div>
+          <div style="text-align:center;padding:8px;background:${(loan.carryoverBalance||0)>0?'rgba(224,123,138,.1)':'var(--surf2)'};border-radius:10px;border:${(loan.carryoverBalance||0)>0?'1px solid rgba(224,123,138,.3)':'none'}">
+            <div style="font-size:13px;font-weight:900;color:var(--acc4);font-family:'JetBrains Mono',monospace">${(loan.carryoverBalance||0)>0?fmt(loan.carryoverBalance):'—'}</div>
+            <div style="font-size:9px;color:var(--mut);text-transform:uppercase;font-weight:700;margin-top:2px">Carryover</div>
           </div>
         </div>
       </div>
 
       <!-- Next payment info -->
-      ${nextPayment && !isDone ? `
-      <div style="padding:10px 16px;border-bottom:1px solid var(--bdr);background:rgba(245,208,112,0.05)">
-        <div style="font-size:11px;font-weight:800;color:var(--acc3);margin-bottom:4px">📅 Next Payment — ${nextPayment.label}</div>
-        <div style="display:flex;gap:16px;font-size:12px">
-          <span style="color:var(--mut2)">Payment: <strong style="color:var(--txt);font-family:'JetBrains Mono',monospace">${fmt(nextPayment.payment)}</strong></span>
-          <span style="color:var(--mut2)">Principal: <strong style="color:var(--acc2);font-family:'JetBrains Mono',monospace">${fmt(nextPayment.principal)}</strong></span>
-          <span style="color:var(--mut2)">Interest: <strong style="color:var(--acc4);font-family:'JetBrains Mono',monospace">${fmt(nextPayment.interest)}</strong></span>
-        </div>
-        <div style="font-size:11px;color:var(--mut2);margin-top:3px">Balance after: <strong style="color:var(--txt);font-family:'JetBrains Mono',monospace">${fmt(nextPayment.balance)}</strong></div>
-      </div>` : ''}
+      ${nextPayment && !isDone ? (() => {
+        const carryover  = loan.carryoverBalance || 0;
+        const carryInt   = Math.round(carryover * 0.05);
+        const totalDue   = nextPayment.payment + carryover + carryInt;
+        return \`<div style="padding:10px 16px;border-bottom:1px solid var(--bdr);background:rgba(245,208,112,0.05)">
+          <div style="font-size:11px;font-weight:800;color:var(--acc3);margin-bottom:6px">📅 Next Payment — \${nextPayment.label}</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:\${carryover>0?'8px':'0'}">
+            <div style="text-align:center;padding:6px;background:var(--surf2);border-radius:8px">
+              <div style="font-size:12px;font-weight:900;color:var(--acc);font-family:'JetBrains Mono',monospace">\${fmt(nextPayment.payment)}</div>
+              <div style="font-size:9px;color:var(--mut);text-transform:uppercase">Regular</div>
+            </div>
+            <div style="text-align:center;padding:6px;background:var(--surf2);border-radius:8px">
+              <div style="font-size:12px;font-weight:900;color:var(--acc2);font-family:'JetBrains Mono',monospace">\${fmt(nextPayment.principal)}</div>
+              <div style="font-size:9px;color:var(--mut);text-transform:uppercase">Principal</div>
+            </div>
+            <div style="text-align:center;padding:6px;background:var(--surf2);border-radius:8px">
+              <div style="font-size:12px;font-weight:900;color:var(--acc4);font-family:'JetBrains Mono',monospace">\${fmt(nextPayment.interest)}</div>
+              <div style="font-size:9px;color:var(--mut);text-transform:uppercase">Interest</div>
+            </div>
+          </div>
+          \${carryover > 0 ? \`<div style="margin-top:6px;padding:8px 10px;background:rgba(224,123,138,.08);border-radius:10px;border-left:3px solid var(--acc4)">
+            <div style="font-size:11px;font-weight:800;color:var(--acc4);margin-bottom:4px">⚠️ Carryover Balance</div>
+            <div style="display:flex;justify-content:space-between;font-size:11px">
+              <span style="color:var(--mut2)">Unpaid from prev: <strong style="color:var(--acc4);font-family:'JetBrains Mono',monospace">\${fmt(carryover)}</strong></span>
+              <span style="color:var(--mut2)">5% interest: <strong style="color:var(--acc4);font-family:'JetBrains Mono',monospace">\${fmt(carryInt)}</strong></span>
+            </div>
+            <div style="margin-top:6px;display:flex;justify-content:space-between;padding-top:6px;border-top:1px solid var(--bdr)">
+              <span style="font-size:12px;font-weight:800;color:var(--txt)">Total Due This Month</span>
+              <span style="font-size:14px;font-weight:900;color:var(--acc3);font-family:'JetBrains Mono',monospace">\${fmt(totalDue)}</span>
+            </div>
+          </div>\` : ''}
+        </div>\`;
+      })() : ''}
 
       <!-- Action buttons -->
       <div style="padding:10px 16px;display:flex;gap:8px;align-items:center">
         ${!isDone ? `
-        <button onclick="markLoanPaid(${loan.id})" style="flex:1;padding:10px;background:${paidThisMonth?'var(--surf2)':'var(--acc)'};color:${paidThisMonth?'var(--mut2)':'var(--bg)'};border:none;border-radius:12px;font-size:13px;font-weight:800;cursor:pointer;font-family:'DM Sans',sans-serif;${paidThisMonth?'opacity:0.7;cursor:not-allowed':''}" ${paidThisMonth?'disabled':''}>
-          ${paidThisMonth ? '✅ Already paid this month' : '✅ Mark as Paid'}
+        <button onclick="${paidThisMonth ? '' : 'openPaymentModal(' + loan.id + ')'}" style="flex:1;padding:10px;background:${paidThisMonth?'var(--surf2)':'var(--acc)'};color:${paidThisMonth?'var(--mut2)':'var(--bg)'};border:none;border-radius:12px;font-size:13px;font-weight:800;cursor:pointer;font-family:'DM Sans',sans-serif;${paidThisMonth?'opacity:0.6':''}">
+          ${paidThisMonth ? '✅ Paid this month' : '💳 Record Payment'}
         </button>
         <button onclick="undoLoanPaid(${loan.id})" style="padding:10px 14px;background:var(--surf2);border:1px solid var(--bdr);border-radius:12px;font-size:12px;font-weight:700;color:var(--mut2);cursor:pointer;font-family:'DM Sans',sans-serif" title="Undo last payment">↩</button>
         ` : `<div style="flex:1;text-align:center;font-size:13px;font-weight:700;color:var(--acc)">🎉 Loan fully paid!</div>`}
@@ -3479,13 +3652,24 @@ function renderLoanTracker() {
       <!-- Payment history (collapsible) -->
       <div id="loan-history-${loan.id}" style="display:none;padding:0 16px 12px">
         <div style="font-size:11px;font-weight:800;color:var(--mut2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Payment History</div>
-        ${paidCount > 0 ? schedule.slice(0, paidCount).reverse().map((s,i) => `
-          <div style="display:flex;justify-content:space-between;padding:7px 10px;background:var(--surf2);border-radius:10px;margin-bottom:4px;font-size:12px">
-            <span style="font-weight:700;color:var(--acc)">✓ ${s.label}</span>
-            <span style="font-family:'JetBrains Mono',monospace;color:var(--txt)">${fmt(s.payment)}</span>
-            <span style="color:var(--mut2)">Bal: ${fmt(s.balance)}</span>
-          </div>`).join('') :
-          '<div style="font-size:11px;color:var(--mut2);text-align:center;padding:8px">No payments yet</div>'
+        ${(loan.paymentHistory && loan.paymentHistory.length > 0)
+          ? [...loan.paymentHistory].reverse().map(h => {
+              const typeIcon  = h.type==='normal'?'✅':h.type==='late'?'⏰':h.type==='partial'?'💸':'⏭️';
+              const typeColor = h.type==='normal'?'var(--acc)':h.type==='late'?'var(--acc3)':h.type==='partial'?'var(--acc2)':'var(--acc4)';
+              const extraInfo = h.lateFee>0 ? ' +₱'+h.lateFee.toLocaleString()+' fee' :
+                                h.unpaid>0  ? ' ₱'+h.unpaid.toLocaleString()+' unpaid' : '';
+              return \`<div style="padding:8px 10px;background:var(--surf2);border-radius:10px;margin-bottom:4px;font-size:12px">
+                <div style="display:flex;justify-content:space-between;margin-bottom:2px">
+                  <span style="font-weight:800;color:\${typeColor}">\${typeIcon} \${h.label}</span>
+                  <span style="font-family:'JetBrains Mono',monospace;font-weight:800;color:var(--txt)">\${h.amount>0?fmt(h.amount):'—'}</span>
+                </div>
+                <div style="display:flex;justify-content:space-between">
+                  <span style="color:var(--mut2)">\${h.date}\${h.notes?' · '+h.notes:''}</span>
+                  <span style="color:var(--acc4);font-size:11px">\${extraInfo}</span>
+                </div>
+              </div>\`;
+            }).join('')
+          : '<div style="font-size:11px;color:var(--mut2);text-align:center;padding:8px">No payments yet</div>'
         }
       </div>
 
@@ -3541,6 +3725,252 @@ function deleteLoanFromTracker(id) {
   try { localStorage.setItem('fk-loans', JSON.stringify(savedLoans)); } catch(e) {}
   renderLoanTracker();
   toast('🗑️ Loan removed');
+}
+
+
+
+// ══════════════════════════════════════════════
+//  PAYMENT RECORD SYSTEM
+// ══════════════════════════════════════════════
+let _currentPaymentType  = 'normal';
+let _currentPenaltyType  = 'fixed';
+let _currentLoanId       = null;
+
+function openPaymentModal(loanId) {
+  _currentLoanId      = loanId;
+  _currentPaymentType = 'normal';
+  _currentPenaltyType = 'fixed';
+
+  const loan = savedLoans.find(l => l.id === loanId);
+  if (!loan) return;
+
+  const paidCount    = loan.paidCount || 0;
+  const schedule     = loan.schedule  || [];
+  const nextSchedule = schedule[paidCount];
+  const carryover    = loan.carryoverBalance || 0;
+  const carryInt     = Math.round(carryover * 0.05);
+  const regularAmt   = nextSchedule ? nextSchedule.payment : parseFloat(loan.payment?.replace(/[₱,]/g,'')) || 0;
+  const totalDue     = regularAmt + carryover + carryInt;
+
+  // Set modal title
+  document.getElementById('pmr-title').textContent =
+    'Record Payment — ' + (nextSchedule?.label || 'Period ' + (paidCount+1));
+  document.getElementById('pmr-loan-id').value = loanId;
+  document.getElementById('pmr-date').value    = new Date().toISOString().split('T')[0];
+  document.getElementById('pmr-notes').value   = '';
+
+  // Set amounts
+  document.getElementById('pmr-regular').textContent = fmt(regularAmt);
+  document.getElementById('pmr-period-label').textContent = nextSchedule?.label || '';
+
+  // Carryover
+  const carryRow    = document.getElementById('pmr-carryover-row');
+  const carryIntRow = document.getElementById('pmr-carryover-int-row');
+  if (carryover > 0) {
+    carryRow.style.display    = 'flex';
+    carryIntRow.style.display = 'flex';
+    document.getElementById('pmr-carryover').textContent     = fmt(carryover);
+    document.getElementById('pmr-carryover-int').textContent = fmt(carryInt);
+  } else {
+    carryRow.style.display    = 'none';
+    carryIntRow.style.display = 'none';
+  }
+  document.getElementById('pmr-total-due').textContent = fmt(totalDue);
+
+  // Skip section amounts
+  const skipInt = Math.round(regularAmt * 0.05);
+  document.getElementById('pmr-skip-amt').textContent   = fmt(regularAmt);
+  document.getElementById('pmr-skip-int').textContent   = fmt(skipInt);
+  document.getElementById('pmr-skip-total').textContent = fmt(regularAmt + skipInt);
+
+  // Partial default
+  document.getElementById('pmr-partial-amt').value = regularAmt;
+
+  // Reset type selection
+  selPaymentType('normal');
+  document.getElementById('modal-payment-record').classList.add('open');
+}
+
+function selPaymentType(type) {
+  _currentPaymentType = type;
+  const types = ['normal','late','partial','skip'];
+  types.forEach(t => {
+    const el = document.getElementById('pmr-type-' + t);
+    if (!el) return;
+    const isSelected = t === type;
+    el.style.border     = isSelected ? '2px solid var(--acc)'       : '2px solid var(--bdr)';
+    el.style.background = isSelected ? 'rgba(34,196,131,.08)'       : 'var(--surf2)';
+  });
+
+  // Show/hide sections
+  document.getElementById('pmr-late-section').style.display    = type==='late'    ? 'block' : 'none';
+  document.getElementById('pmr-partial-section').style.display = type==='partial' ? 'block' : 'none';
+  document.getElementById('pmr-skip-section').style.display    = type==='skip'    ? 'block' : 'none';
+
+  updatePaymentTotal();
+}
+
+function selPenaltyType(type, el) {
+  _currentPenaltyType = type;
+  ['fixed','pct','lower'].forEach(t => {
+    const b = document.getElementById('pmr-penalty-' + t);
+    if (b) b.classList.toggle('on', t === type);
+  });
+  const showFixed = type === 'fixed' || type === 'lower';
+  const showPct   = type === 'pct'   || type === 'lower';
+  document.getElementById('pmr-fixed-grp').style.opacity = showFixed ? '1' : '0.4';
+  document.getElementById('pmr-pct-grp').style.opacity   = showPct   ? '1' : '0.4';
+  updatePaymentTotal();
+}
+
+function updatePaymentTotal() {
+  const loan      = savedLoans.find(l => l.id === _currentLoanId);
+  if (!loan) return;
+  const paidCount = loan.paidCount  || 0;
+  const schedule  = loan.schedule   || [];
+  const next      = schedule[paidCount];
+  const carryover = loan.carryoverBalance || 0;
+  const carryInt  = Math.round(carryover * 0.05);
+  const regular   = next ? next.payment : parseFloat(loan.payment?.replace(/[₱,]/g,'')) || 0;
+  const totalDue  = regular + carryover + carryInt;
+
+  let grandTotal = 0;
+  let lateFee    = 0;
+
+  if (_currentPaymentType === 'normal') {
+    grandTotal = totalDue;
+
+  } else if (_currentPaymentType === 'late') {
+    const fixedFee   = parseFloat(document.getElementById('pmr-fixed-fee').value) || 0;
+    const pctVal     = parseFloat(document.getElementById('pmr-penalty-pct-val').value) || 0;
+    const pctFee     = Math.round(totalDue * pctVal / 100);
+    if (_currentPenaltyType === 'fixed')  lateFee = fixedFee;
+    else if (_currentPenaltyType === 'pct') lateFee = pctFee;
+    else lateFee = Math.min(fixedFee, pctFee); // lower of both
+    document.getElementById('pmr-late-fee-amt').textContent = fmt(lateFee);
+    grandTotal = totalDue + lateFee;
+
+  } else if (_currentPaymentType === 'partial') {
+    const partialAmt = parseFloat(document.getElementById('pmr-partial-amt').value) || 0;
+    const remaining  = Math.max(0, totalDue - partialAmt);
+    document.getElementById('pmr-partial-remaining').textContent = fmt(remaining);
+    grandTotal = partialAmt;
+
+  } else if (_currentPaymentType === 'skip') {
+    grandTotal = 0; // no payment made
+  }
+
+  document.getElementById('pmr-grand-total').textContent = fmt(grandTotal);
+}
+
+function recordPayment() {
+  const loan = savedLoans.find(l => l.id === _currentLoanId);
+  if (!loan) return;
+
+  const paidCount = loan.paidCount  || 0;
+  const schedule  = loan.schedule   || [];
+  const next      = schedule[paidCount];
+  const carryover = loan.carryoverBalance || 0;
+  const carryInt  = Math.round(carryover * 0.05);
+  const regular   = next ? next.payment : parseFloat(loan.payment?.replace(/[₱,]/g,'')) || 0;
+  const totalDue  = regular + carryover + carryInt;
+  const date      = document.getElementById('pmr-date').value;
+  const notes     = document.getElementById('pmr-notes').value.trim();
+  const now       = new Date();
+  const thisMonth = now.toLocaleDateString('en-PH', {month:'short', year:'numeric'});
+
+  // Initialize history array
+  if (!loan.paymentHistory) loan.paymentHistory = [];
+
+  if (_currentPaymentType === 'normal') {
+    // Full payment
+    loan.paidCount       = paidCount + 1;
+    loan.lastPaidMonth   = thisMonth;
+    loan.carryoverBalance = 0;
+    loan.paymentHistory.push({
+      period: paidCount + 1,
+      label:  next?.label || 'Period ' + (paidCount+1),
+      type:   'normal',
+      amount: totalDue,
+      date, notes,
+      lateFee: 0,
+      carryover: 0,
+    });
+    toast('✅ Full payment recorded!');
+
+  } else if (_currentPaymentType === 'late') {
+    const fixedFee = parseFloat(document.getElementById('pmr-fixed-fee').value) || 0;
+    const pctVal   = parseFloat(document.getElementById('pmr-penalty-pct-val').value) || 0;
+    const pctFee   = Math.round(totalDue * pctVal / 100);
+    let lateFee    = 0;
+    if (_currentPenaltyType === 'fixed')  lateFee = fixedFee;
+    else if (_currentPenaltyType === 'pct') lateFee = pctFee;
+    else lateFee = Math.min(fixedFee, pctFee);
+
+    loan.paidCount       = paidCount + 1;
+    loan.lastPaidMonth   = thisMonth;
+    loan.carryoverBalance = 0;
+    loan.totalLateFees    = (loan.totalLateFees || 0) + lateFee;
+    loan.paymentHistory.push({
+      period: paidCount + 1,
+      label:  next?.label || 'Period ' + (paidCount+1),
+      type:   'late',
+      amount: totalDue + lateFee,
+      lateFee,
+      carryover: 0,
+      date, notes,
+    });
+    toast('⏰ Late payment recorded — ₱' + lateFee.toLocaleString() + ' late fee added');
+
+  } else if (_currentPaymentType === 'partial') {
+    const partialAmt = parseFloat(document.getElementById('pmr-partial-amt').value) || 0;
+    const unpaid     = Math.max(0, totalDue - partialAmt);
+    const newCarry   = Math.round(unpaid * 1.05); // add 5% interest on unpaid
+
+    loan.lastPaidMonth    = thisMonth;
+    loan.carryoverBalance = newCarry;
+    // Don't advance paidCount — period not complete
+    loan.paymentHistory.push({
+      period:  paidCount + 1,
+      label:   (next?.label || 'Period ' + (paidCount+1)) + ' (Partial)',
+      type:    'partial',
+      amount:  partialAmt,
+      unpaid,
+      carryoverAdded: newCarry,
+      lateFee: 0,
+      date, notes,
+    });
+    toast('💸 Partial payment recorded — ₱' + unpaid.toLocaleString() + ' carries over with 5% interest');
+
+  } else if (_currentPaymentType === 'skip') {
+    const skipInt  = Math.round(regular * 0.05);
+    const newCarry = (carryover + carryInt) + regular + skipInt;
+
+    loan.carryoverBalance = newCarry;
+    loan.totalSkipped     = (loan.totalSkipped || 0) + 1;
+    loan.paymentHistory.push({
+      period:  paidCount + 1,
+      label:   (next?.label || 'Period ' + (paidCount+1)) + ' (Skipped)',
+      type:    'skip',
+      amount:  0,
+      unpaid:  regular,
+      interest: skipInt,
+      carryoverAdded: newCarry,
+      lateFee: 0,
+      date: date || new Date().toISOString().split('T')[0],
+      notes: notes || 'Month skipped',
+    });
+    toast('⏭️ Month skipped — ₱' + newCarry.toLocaleString() + ' carries over (incl. 5% interest)');
+  }
+
+  // Save
+  if (loan.paidCount >= schedule.length && schedule.length > 0 && _currentPaymentType !== 'skip') {
+    toast('🎉 ' + loan.label + ' — Fully Paid! Congratulations!');
+  }
+
+  try { localStorage.setItem('fk-loans', JSON.stringify(savedLoans)); } catch(e) {}
+  document.getElementById('modal-payment-record').classList.remove('open');
+  renderLoanTracker();
 }
 
 
