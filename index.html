@@ -287,7 +287,7 @@ select.field-in{appearance:none}
 .user-btn:active{transform:scale(.95)}
 
 /* ── THEME PICKER ───────────────────────── */
-.theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.theme-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
 .theme-card{width:calc(50% - 5px);border-radius:18px;border:2px solid transparent;padding:14px;cursor:pointer;position:relative;transition:all .2s}
 .theme-card:active{transform:scale(.96)}
 .theme-card.selected{border-color:var(--acc)}
@@ -297,7 +297,7 @@ select.field-in{appearance:none}
 .theme-dot{width:14px;height:14px;border-radius:50%}
 .theme-name{font-size:13px;font-weight:900;margin-bottom:2px}
 .theme-desc{font-size:10px;opacity:.7}
-.theme-card.navy-wide{width:100%}
+.theme-card.navy-wide{}
 
 /* ── DUE ALERTS SHEET ───────────────────── */
 .due-item{background:var(--surf2);border-radius:16px;padding:14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;border-left:4px solid var(--acc3)}
@@ -934,18 +934,30 @@ h1, h2, h3, .section-title-syne { font-family: 'Syne', sans-serif !important; }
         </div>
 
         <div class="field-grp">
-          <div class="field-lbl">Interest Rate (%)</div>
+          <div class="field-lbl">Interest Rate</div>
           <div style="display:flex;gap:6px;margin-bottom:8px">
-            <button class="ftab on" id="rate-annual"  onclick="selRateType('annual',this)">Annual</button>
-            <button class="ftab"    id="rate-monthly" onclick="selRateType('monthly',this)">Monthly</button>
-            <button class="ftab"    id="rate-addon"   onclick="selRateType('addon',this)">Add-on</button>
+            <button class="ftab on" id="rate-type-annual"  onclick="selRateType('annual',this)">Annual (%)</button>
+            <button class="ftab"    id="rate-type-monthly" onclick="selRateType('monthly',this)">Monthly (%)</button>
           </div>
           <div style="display:flex;gap:8px;align-items:center">
-            <input class="field-in" id="loan-rate" type="number" placeholder="e.g. 12" step="0.01" oninput="computeLoan()" style="flex:1">
-            <div id="loan-rate-hint" style="font-size:10px;color:var(--mut2);white-space:nowrap;flex-shrink:0;max-width:120px;text-align:right;line-height:1.4"></div>
+            <input class="field-in" id="loan-rate" type="number" placeholder="e.g. 3.5" step="0.01" oninput="computeLoan()" style="flex:1">
+            <div id="loan-rate-hint" style="font-size:10px;color:var(--acc2);white-space:nowrap;flex-shrink:0;font-weight:700"></div>
           </div>
-          <div id="rate-equiv-row" style="display:none;margin-top:8px;padding:8px 12px;background:var(--surf2);border-radius:10px;font-size:11px;color:var(--mut2)">
-            ≈ Equivalent Annual Rate: <strong id="rate-equiv-val" style="color:var(--acc)">0%</strong>
+        </div>
+
+        <div class="field-grp">
+          <div class="field-lbl">Interest Method</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div id="method-amort" onclick="selInterestMethod('amort',this)" style="padding:12px;border-radius:14px;border:2px solid var(--acc);background:rgba(34,196,131,.08);cursor:pointer">
+              <div style="font-size:13px;font-weight:800;color:var(--txt);margin-bottom:3px">🏦 Amortizing</div>
+              <div style="font-size:10px;color:var(--mut2)">Banks · SSS · Pag-IBIG</div>
+              <div style="font-size:10px;color:var(--mut2)">Interest decreases monthly</div>
+            </div>
+            <div id="method-addon" onclick="selInterestMethod('addon',this)" style="padding:12px;border-radius:14px;border:2px solid var(--bdr);background:var(--surf2);cursor:pointer">
+              <div style="font-size:13px;font-weight:800;color:var(--txt);margin-bottom:3px">🤝 Add-on</div>
+              <div style="font-size:10px;color:var(--mut2)">5-6 · Coop · Informal</div>
+              <div style="font-size:10px;color:var(--mut2)">Fixed interest monthly</div>
+            </div>
           </div>
         </div>
 
@@ -1277,10 +1289,14 @@ const HTYPES = {
   rent:     {icon:'🏡',color:'#2ebd8f'}, others:{icon:'📦',color:'#8898aa'},
 };
 const THEMES = [
-  {key:'dark',  name:'Forest Black', emoji:'🌲', desc:'Dark · FormulaKo default',  bg:'#0A0C0A', dots:['#22C483','#F5D070','#e07b8a'], acc:'#22C483', txt:'#FAF8F0'},
-  {key:'light', name:'Warm Cream',   emoji:'☀️', desc:'Light · Warm & minimal',    bg:'#FAF8F0', dots:['#22C483','#C8860A','#d95f6e'], acc:'#22C483', txt:'#1a1a0a'},
-  {key:'sage',  name:'Soft Sage',    emoji:'🌿', desc:'Light · Muted greens',      bg:'#f4f7f4', dots:['#22C483','#3a8a6a','#c05a6a'], acc:'#22C483', txt:'#1a2a1a', wide:true},
-  {key:'ivory', name:'Ivory Gold',   emoji:'🏵️', desc:'Light · Warm neutrals',     bg:'#fdf6e8', dots:['#22C483','#b87020','#c05060'], acc:'#22C483', txt:'#1a1400', wide:true},
+  // Dark themes
+  {key:'dark',     name:'Forest',      emoji:'🌲', desc:'Dark · Deep forest green',  bg:'#0A0C0A', dots:['#22C483','#F5D070','#e07b8a'], acc:'#22C483', txt:'#FAF8F0'},
+  {key:'obsidian', name:'Obsidian',    emoji:'🖤', desc:'Dark · Pure charcoal',       bg:'#141414', dots:['#22C483','#5ecfaa','#F5D070'], acc:'#22C483', txt:'#f0f0f0'},
+  {key:'midnight', name:'Midnight',    emoji:'🌙', desc:'Dark · Deep navy blue',      bg:'#0d1117', dots:['#22C483','#58a6ff','#F5D070'], acc:'#22C483', txt:'#e6edf3'},
+  // Light themes
+  {key:'light',    name:'Warm Cream',  emoji:'☀️', desc:'Light · Soft warm ivory',   bg:'#faf8f2', dots:['#1aad72','#b87020','#d04060'], acc:'#1aad72', txt:'#1a1a0a'},
+  {key:'stone',    name:'Stone',       emoji:'🪨', desc:'Light · Clean neutral grey', bg:'#f5f5f5', dots:['#22C483','#2d8a6a','#c04060'], acc:'#22C483', txt:'#1a1a1a'},
+  {key:'paper',    name:'Paper',       emoji:'📄', desc:'Light · Warm parchment',     bg:'#f8f4ec', dots:['#1aad72','#9a6010','#b84050'], acc:'#1aad72', txt:'#201800'},
 ];
 const BCAT = {
   food:    {icon:'🍚',label:'Food & Groceries', color:'#5ecfaa'},
@@ -2744,24 +2760,23 @@ function selFreq(freq, el) {
 }
 
 function selRateType(type, el) {
-  rateType = type; // 'annual' or 'monthly' only
+  rateType = type;
   document.querySelectorAll('#rate-type-annual, #rate-type-monthly').forEach(b => b.classList.remove('on'));
   el.classList.add('on');
-  // Update hint
-  const rate = parseFloat(document.getElementById('loan-rate').value) || 0;
-  const hint = document.getElementById('loan-rate-hint');
-  if (hint && rate > 0) {
-    hint.textContent = type === 'monthly'
-      ? '= ' + (rate * 12).toFixed(2) + '% annual'
-      : '= ' + (rate / 12).toFixed(4) + '% /month';
-  }
   computeLoan();
 }
 
 function selInterestMethod(method, el) {
   interestMethod = method;
-  document.getElementById('method-amort').className = 'type-opt' + (method==='amort' ? ' on-a' : '');
-  document.getElementById('method-addon').className = 'type-opt' + (method==='addon' ? ' on-b' : '');
+  const amortEl = document.getElementById('method-amort');
+  const addonEl = document.getElementById('method-addon');
+  if (!amortEl || !addonEl) return;
+  // Amort selected
+  amortEl.style.border = method==='amort' ? '2px solid var(--acc)'  : '2px solid var(--bdr)';
+  amortEl.style.background = method==='amort' ? 'rgba(34,196,131,.08)' : 'var(--surf2)';
+  // Addon selected
+  addonEl.style.border = method==='addon' ? '2px solid var(--acc3)' : '2px solid var(--bdr)';
+  addonEl.style.background = method==='addon' ? 'rgba(245,208,112,.08)' : 'var(--surf2)';
   computeLoan();
 }
 
