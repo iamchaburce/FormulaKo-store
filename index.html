@@ -366,6 +366,206 @@ h1, h2, h3, .section-title-syne { font-family: 'Syne', sans-serif !important; }
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 .fade-in{animation:fadeUp .4s ease both}
+
+/* ══ DESKTOP / RESPONSIVE LAYOUT ══════════ */
+@media (min-width: 768px) {
+
+  body {
+    background: var(--bg);
+    align-items: flex-start;
+  }
+
+  /* Desktop wrapper — sidebar + main */
+  .app {
+    max-width: 100%;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    grid-template-rows: auto 1fr;
+    min-height: 100vh;
+    position: relative;
+  }
+
+  /* Header spans full width */
+  .hdr {
+    grid-column: 1 / -1;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 14px 32px;
+  }
+
+  /* Sidebar nav — left column */
+  .nav {
+    position: sticky;
+    top: 57px;
+    left: 0;
+    width: 240px;
+    height: calc(100vh - 57px);
+    flex-direction: column;
+    padding: 24px 16px;
+    justify-content: flex-start;
+    gap: 4px;
+    border-top: none;
+    border-right: 1px solid var(--bdr);
+    transform: none;
+    left: unset;
+    background: var(--surf);
+    overflow-y: auto;
+  }
+
+  .nav-item {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    width: 100%;
+    transition: all .2s;
+  }
+
+  .nav-item:hover { background: var(--surf2); }
+  .nav-item.active { background: rgba(34,196,131,.1); }
+
+  .nav-icon-wrap {
+    width: 34px; height: 34px;
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+
+  .nav-lbl {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--mut2);
+  }
+
+  .nav-item.active .nav-lbl { color: var(--acc); }
+
+  /* Sidebar label — FormulaKo text */
+  .nav::before {
+    content: 'MENU';
+    display: block;
+    font-size: 9px;
+    font-weight: 800;
+    color: var(--mut);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    padding: 0 14px 12px;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  /* Main content — right column */
+  #main-content {
+    grid-column: 2;
+    padding: 28px 40px 80px;
+    max-width: 800px;
+    width: 100%;
+  }
+
+  /* FAB — fixed bottom right of main area */
+  .fab {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+  }
+
+  /* Module grid — 4 columns on desktop */
+  .mod-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  /* Screens — show as overlay panel from right on desktop */
+  .screen {
+    position: fixed;
+    top: 57px;
+    left: 240px;
+    right: 0;
+    bottom: 0;
+    width: auto;
+    height: auto;
+    border-left: 1px solid var(--bdr);
+    animation: slideInDesktop .25s ease;
+  }
+
+  @keyframes slideInDesktop {
+    from { opacity: 0; transform: translateX(20px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  .screen-body {
+    padding: 24px 40px 80px;
+    max-width: 760px;
+  }
+
+  /* Modals — centered on desktop */
+  .overlay {
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sheet {
+    border-radius: 24px !important;
+    max-width: 480px;
+    max-height: 85vh;
+    animation: scaleIn .25s cubic-bezier(.34,1.2,.64,1);
+    border: 1px solid var(--bdr) !important;
+    border-top: 1px solid var(--bdr) !important;
+  }
+
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(.95); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  /* Setup modal stays centered */
+  .setup-modal { padding: 40px 20px; }
+  .setup-box { border: 1px solid var(--bdr); }
+
+  /* Net card wider */
+  .net-card { padding: 28px; }
+  .net-amt { font-size: 44px; }
+
+  /* Combined card row */
+  .cc-row { gap: 12px; }
+
+  /* Due banner full width */
+  .due-banner { max-width: 100%; }
+
+  /* Sync bar full width consideration */
+  .sync-bar { left: 240px; width: calc(100% - 240px); transform: none; max-width: none; }
+
+  /* iOS tip / PWA banner */
+  .pwa-banner, .ios-tip {
+    left: auto;
+    right: 32px;
+    transform: none;
+    width: 340px;
+    bottom: 100px;
+  }
+}
+
+/* Medium screens — tablet */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .app { grid-template-columns: 200px 1fr; }
+  .nav { width: 200px; }
+  .screen { left: 200px; }
+  .sync-bar { left: 200px; width: calc(100% - 200px); }
+  #main-content { padding: 24px 28px 80px; }
+  .mod-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Large screens */
+@media (min-width: 1400px) {
+  #main-content { max-width: 960px; }
+  .screen-body { max-width: 900px; }
+}
+
 </style>
 </head>
 <body>
@@ -425,7 +625,7 @@ h1, h2, h3, .section-title-syne { font-family: 'Syne', sans-serif !important; }
 
     <!-- Combined Card -->
     <div class="combined-card" id="combined-card">
-      <div class="cc-title">👫 Cha & Chad — This Month</div>
+      <div class="cc-title" id="cc-main-title">👫 This Month</div>
       <div class="cc-row">
         <div class="cc-person"><div class="cc-name pos">👤 User 1</div><div class="cc-val neg" id="cc-cha">₱0</div></div>
         <div class="cc-person"><div class="cc-name info">👤 User 2</div><div class="cc-val neg" id="cc-chad">₱0</div></div>
@@ -1102,13 +1302,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // Set date
   document.getElementById('greet-date').textContent =
     new Date().toLocaleDateString('en-PH',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  renderGreeting();
 
   // Load saved settings
   currentUser = localStorage.getItem('fk-user') || '';
   loadLocal(); // restore persisted data
   // Load saved user names
-  user1Name = localStorage.getItem('fk-user1') || 'User 1';
-  user2Name = localStorage.getItem('fk-user2') || 'User 2';
+  user1Name = localStorage.getItem('fk-user1') || '';
+  user2Name = localStorage.getItem('fk-user2') || '';
   currentUser = localStorage.getItem('fk-user') || '';
   scriptUrl   = localStorage.getItem('fk-script-url') || '';
 
@@ -1241,6 +1442,7 @@ function renderDashboard() {
   // Combined card
   const chaExp  = expenses.filter(e=>e.date&&e.date.startsWith(m)&&e.addedBy===currentUser) .reduce((s,e)=>s+e.amount,0);
   const chadExp = expenses.filter(e=>e.date&&e.date.startsWith(m)&&e.addedBy===u2).reduce((s,e)=>s+e.amount,0);
+  document.getElementById('cc-main-title').textContent = '👫 ' + (user1Name||'User 1') + ' & ' + (user2Name||'User 2') + ' — This Month';
   document.getElementById('cc-name1').textContent = '👤 ' + (user1Name || 'User 1');
   document.getElementById('cc-name2').textContent = '👤 ' + (user2Name || 'User 2');
   document.getElementById('cc-cha').textContent    = fmt(chaExp);
@@ -2047,12 +2249,212 @@ tr:last-child td{border-bottom:none}
 .footer{margin-top:32px;padding-top:16px;border-top:2px solid #f0f0f0;text-align:center;color:#8898aa;font-size:11px}
 .no-print{text-align:center;margin-top:24px}
 @media print{.no-print{display:none}}
+
+/* ══ DESKTOP / RESPONSIVE LAYOUT ══════════ */
+@media (min-width: 768px) {
+
+  body {
+    background: var(--bg);
+    align-items: flex-start;
+  }
+
+  /* Desktop wrapper — sidebar + main */
+  .app {
+    max-width: 100%;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    grid-template-rows: auto 1fr;
+    min-height: 100vh;
+    position: relative;
+  }
+
+  /* Header spans full width */
+  .hdr {
+    grid-column: 1 / -1;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 14px 32px;
+  }
+
+  /* Sidebar nav — left column */
+  .nav {
+    position: sticky;
+    top: 57px;
+    left: 0;
+    width: 240px;
+    height: calc(100vh - 57px);
+    flex-direction: column;
+    padding: 24px 16px;
+    justify-content: flex-start;
+    gap: 4px;
+    border-top: none;
+    border-right: 1px solid var(--bdr);
+    transform: none;
+    left: unset;
+    background: var(--surf);
+    overflow-y: auto;
+  }
+
+  .nav-item {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    width: 100%;
+    transition: all .2s;
+  }
+
+  .nav-item:hover { background: var(--surf2); }
+  .nav-item.active { background: rgba(34,196,131,.1); }
+
+  .nav-icon-wrap {
+    width: 34px; height: 34px;
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+
+  .nav-lbl {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--mut2);
+  }
+
+  .nav-item.active .nav-lbl { color: var(--acc); }
+
+  /* Sidebar label — FormulaKo text */
+  .nav::before {
+    content: 'MENU';
+    display: block;
+    font-size: 9px;
+    font-weight: 800;
+    color: var(--mut);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    padding: 0 14px 12px;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  /* Main content — right column */
+  #main-content {
+    grid-column: 2;
+    padding: 28px 40px 80px;
+    max-width: 800px;
+    width: 100%;
+  }
+
+  /* FAB — fixed bottom right of main area */
+  .fab {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+  }
+
+  /* Module grid — 4 columns on desktop */
+  .mod-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  /* Screens — show as overlay panel from right on desktop */
+  .screen {
+    position: fixed;
+    top: 57px;
+    left: 240px;
+    right: 0;
+    bottom: 0;
+    width: auto;
+    height: auto;
+    border-left: 1px solid var(--bdr);
+    animation: slideInDesktop .25s ease;
+  }
+
+  @keyframes slideInDesktop {
+    from { opacity: 0; transform: translateX(20px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  .screen-body {
+    padding: 24px 40px 80px;
+    max-width: 760px;
+  }
+
+  /* Modals — centered on desktop */
+  .overlay {
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sheet {
+    border-radius: 24px !important;
+    max-width: 480px;
+    max-height: 85vh;
+    animation: scaleIn .25s cubic-bezier(.34,1.2,.64,1);
+    border: 1px solid var(--bdr) !important;
+    border-top: 1px solid var(--bdr) !important;
+  }
+
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(.95); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  /* Setup modal stays centered */
+  .setup-modal { padding: 40px 20px; }
+  .setup-box { border: 1px solid var(--bdr); }
+
+  /* Net card wider */
+  .net-card { padding: 28px; }
+  .net-amt { font-size: 44px; }
+
+  /* Combined card row */
+  .cc-row { gap: 12px; }
+
+  /* Due banner full width */
+  .due-banner { max-width: 100%; }
+
+  /* Sync bar full width consideration */
+  .sync-bar { left: 240px; width: calc(100% - 240px); transform: none; max-width: none; }
+
+  /* iOS tip / PWA banner */
+  .pwa-banner, .ios-tip {
+    left: auto;
+    right: 32px;
+    transform: none;
+    width: 340px;
+    bottom: 100px;
+  }
+}
+
+/* Medium screens — tablet */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .app { grid-template-columns: 200px 1fr; }
+  .nav { width: 200px; }
+  .screen { left: 200px; }
+  .sync-bar { left: 200px; width: calc(100% - 200px); }
+  #main-content { padding: 24px 28px 80px; }
+  .mod-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Large screens */
+@media (min-width: 1400px) {
+  #main-content { max-width: 960px; }
+  .screen-body { max-width: 900px; }
+}
+
 </style></head><body>
 <div class="hdr">
   <div><div class="app-name">Budget<span>Buddy</span></div><div style="color:#5a6a82;font-size:12px;margin-top:4px">Personal Finance Tracker</div></div>
   <div class="meta"><div style="font-size:16px;font-weight:700;color:#0e1420;margin-bottom:4px">📊 ${month} Report</div>
     <div>Generated: ${new Date().toLocaleDateString('en-PH',{year:'numeric',month:'long',day:'numeric'})}</div>
-    <div style="margin-top:4px">👩 Cha &amp; 👨 Chad</div></div>
+    <div style="margin-top:4px">FormulaKo BudgetBuddy</div></div>
 </div>
 <div class="section">
   <div class="sec-title">💰 Financial Summary</div>
@@ -2087,7 +2489,7 @@ tr:last-child td{border-bottom:none}
   ${hulogRows||'<tr><td colspan="5" style="text-align:center;color:#8898aa">No active payments 🎉</td></tr>'}</table>
   ${activeHulogs.length?`<div style="background:#f5f7fa;border-radius:8px;padding:10px;margin-top:10px;font-size:11px;color:#5a6a82">Total monthly commitment: <strong style="color:#e8b86d">${fmt(monthlyHulog)}/month</strong></div>`:''}
 </div>
-<div class="footer"><strong>BudgetBuddy</strong> — Personal Finance for Cha &amp; Chad 💚<br>Auto-generated on ${new Date().toLocaleDateString('en-PH',{year:'numeric',month:'long',day:'numeric'})}</div>
+<div class="footer"><strong>BudgetBuddy</strong> — Personal Finance Tracker 💚<br>Auto-generated on ${new Date().toLocaleDateString('en-PH',{year:'numeric',month:'long',day:'numeric'})}</div>
 <div class="no-print">
   <button onclick="window.print()" style="padding:12px 28px;background:#2ebd8f;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:900;cursor:pointer;margin-right:8px">🖨️ Print / Save as PDF</button>
   <button onclick="window.close()" style="padding:12px 28px;background:#f5f7fa;color:#1a2233;border:1px solid #e8edf5;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer">✕ Close</button>
@@ -2105,7 +2507,7 @@ tr:last-child td{border-bottom:none}
 //  PWA
 // ══════════════════════════════════════════════
 function initPWA() {
-  const manifest = {name:'FormulaKo BudgetBuddy',short_name:'FormulaKo',description:'Personal Finance Tracker for Cha & Chad',start_url:'.',display:'standalone',background_color:'#0e1420',theme_color:'#0e1420',orientation:'portrait',icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='120' fill='%230e1420'/%3E%3Ctext x='256' y='340' text-anchor='middle' font-size='280' font-family='Arial' fill='%2322C483'%3E%E2%82%B1%3C/text%3E%3C/svg%3E",sizes:'512x512',type:'image/svg+xml',purpose:'any maskable'}]};
+  const manifest = {name:'FormulaKo BudgetBuddy',short_name:'FormulaKo',description:'Personal Finance Tracker',start_url:'.',display:'standalone',background_color:'#0e1420',theme_color:'#0e1420',orientation:'portrait',icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='120' fill='%230e1420'/%3E%3Ctext x='256' y='340' text-anchor='middle' font-size='280' font-family='Arial' fill='%2322C483'%3E%E2%82%B1%3C/text%3E%3C/svg%3E",sizes:'512x512',type:'image/svg+xml',purpose:'any maskable'}]};
   const blob = new Blob([JSON.stringify(manifest)],{type:'application/json'});
   document.getElementById('pwa-manifest').href = URL.createObjectURL(blob);
 
@@ -2504,6 +2906,97 @@ window.addEventListener('DOMContentLoaded', () => {
     if (s) savedLoans = JSON.parse(s);
   } catch(e) {}
 });
+
+
+
+// ══════════════════════════════════════════════
+//   PERSONALIZED GREETING + QUOTES
+// ══════════════════════════════════════════════
+
+const QUOTES = [
+  // Finance
+  { text: "A budget is telling your money where to go instead of wondering where it went.", author: "Dave Ramsey", icon: "💸" },
+  { text: "Do not save what is left after spending, but spend what is left after saving.", author: "Warren Buffett", icon: "🏦" },
+  { text: "Financial freedom is available to those who learn about it and work for it.", author: "Robert Kiyosaki", icon: "🎯" },
+  { text: "The secret to getting ahead is getting started.", author: "Mark Twain", icon: "🚀" },
+  { text: "It's not your salary that makes you rich, it's your spending habits.", author: "Charles A. Jaffe", icon: "💡" },
+  { text: "An investment in knowledge pays the best interest.", author: "Benjamin Franklin", icon: "📚" },
+  { text: "Wealth consists not in having great possessions, but in having few wants.", author: "Epictetus", icon: "✨" },
+  { text: "Money is a tool. Used properly it makes something beautiful.", author: "Brad Goreski", icon: "🔧" },
+  { text: "Beware of little expenses. A small leak will sink a great ship.", author: "Benjamin Franklin", icon: "⚠️" },
+  { text: "The goal isn't more money. The goal is living life on your own terms.", author: "Chris Brogan", icon: "🌟" },
+  // Motivational
+  { text: "Small daily improvements over time lead to stunning results.", author: "Robin Sharma", icon: "📈" },
+  { text: "You don't have to be great to start, but you have to start to be great.", author: "Zig Ziglar", icon: "💪" },
+  { text: "Every peso you save is a step closer to your dreams.", author: "FormulaKo", icon: "💚" },
+  { text: "Track it. Own it. Grow it. That's the formula.", author: "FormulaKo", icon: "📊" },
+  { text: "Progress, not perfection. Every entry counts.", author: "FormulaKo", icon: "✅" },
+  { text: "The best time to start tracking your finances was yesterday. The next best time is now.", author: "FormulaKo", icon: "⏰" },
+  { text: "Know your numbers, know your power.", author: "FormulaKo", icon: "🔢" },
+  // Inspirational
+  { text: "Success is the sum of small efforts, repeated day in and day out.", author: "Robert Collier", icon: "🌱" },
+  { text: "Dream big. Start small. Act now.", author: "Robin Sharma", icon: "🌙" },
+  { text: "Your future self will thank you for the choices you make today.", author: "Unknown", icon: "🙏" },
+];
+
+let currentQuoteIdx = Math.floor(Math.random() * QUOTES.length);
+
+function getGreetingTime() {
+  const h = new Date().getHours();
+  if (h < 12) return 'Good morning';
+  if (h < 17) return 'Good afternoon';
+  if (h < 21) return 'Good evening';
+  return 'Good night';
+}
+
+function renderGreeting() {
+  const name    = currentUser || user1Name || '';
+  const timeStr = getGreetingTime();
+  const greetEl = document.getElementById('greet-main');
+  if (!greetEl) return;
+
+  if (name) {
+    greetEl.innerHTML = timeStr + ', <span style="color:var(--acc)">' + name + '</span>! 👋';
+  } else {
+    greetEl.innerHTML = timeStr + '! Let\'s track your <span style="color:var(--acc)">money</span> 💚';
+  }
+  renderQuote();
+}
+
+function renderQuote() {
+  const q = QUOTES[currentQuoteIdx];
+  const qText   = document.getElementById('quote-text');
+  const qAuthor = document.getElementById('quote-author');
+  const qIcon   = document.getElementById('quote-icon');
+  if (!qText) return;
+  qText.textContent   = '\u201C' + q.text + '\u201D';
+  qAuthor.textContent = '— ' + q.author;
+  qIcon.textContent   = q.icon;
+}
+
+function nextQuote() {
+  currentQuoteIdx = (currentQuoteIdx + 1) % QUOTES.length;
+  // Fade animation
+  const box = document.getElementById('quote-box');
+  if (box) {
+    box.style.opacity = '0';
+    box.style.transform = 'translateY(4px)';
+    box.style.transition = 'all .2s ease';
+    setTimeout(() => {
+      renderQuote();
+      box.style.opacity = '1';
+      box.style.transform = 'translateY(0)';
+    }, 200);
+  } else {
+    renderQuote();
+  }
+}
+
+// Auto-rotate every 30 seconds
+setInterval(() => {
+  currentQuoteIdx = (currentQuoteIdx + 1) % QUOTES.length;
+  renderQuote();
+}, 30000);
 
 
 function toast(msg) {
