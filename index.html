@@ -13,35 +13,36 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* ── THEMES ─────────────────────────────── */
+/* ── DEFAULT: Forest Black (dark) ── */
 :root {
   --bg:#0A0C0A; --surf:#0f1a0f; --surf2:#172017;
   --bdr:rgba(255,255,255,0.09); --acc:#22C483; --acc2:#5ecfaa;
   --acc3:#F5D070; --acc4:#e07b8a; --txt:#FAF8F0;
   --mut:#3d5c3d; --mut2:#7aaa7a;
 }
+
+/* ── WARM CREAM (soft light) ── */
 [data-theme="light"]{
-  --bg:#FAF8F0; --surf:#ffffff; --surf2:#ede9df;
-  --bdr:rgba(10,12,10,0.08); --acc:#22C483; --acc2:#0A9C5A;
-  --acc3:#D4A017; --acc4:#d95f6e; --txt:#0A0C0A;
-  --mut:#7a9e7a; --mut2:#4d6b4d;
+  --bg:#FAF8F0; --surf:#ffffff; --surf2:#f2efe6;
+  --bdr:rgba(10,12,10,0.07); --acc:#22C483; --acc2:#0A9C5A;
+  --acc3:#C8860A; --acc4:#d95f6e; --txt:#1a1a0a;
+  --mut:#9a9a80; --mut2:#5a5a40;
 }
-[data-theme="purple"]{
-  --bg:#051a0a; --surf:#0a2410; --surf2:#102e16;
-  --bdr:rgba(255,255,255,0.08); --acc:#22C483; --acc2:#F5D070;
-  --acc3:#5ecfaa; --acc4:#f07070; --txt:#FAF8F0;
-  --mut:#2a5c2a; --mut2:#5a9a5a;
+
+/* ── SOFT SAGE (muted green light) ── */
+[data-theme="sage"]{
+  --bg:#f4f7f4; --surf:#ffffff; --surf2:#e8f0e8;
+  --bdr:rgba(0,0,0,0.06); --acc:#22C483; --acc2:#3a8a6a;
+  --acc3:#C8860A; --acc4:#c05a6a; --txt:#1a2a1a;
+  --mut:#8aaa8a; --mut2:#4a6a4a;
 }
-[data-theme="sunset"]{
-  --bg:#1a1400; --surf:#221c00; --surf2:#2e2600;
-  --bdr:rgba(255,255,255,0.08); --acc:#F5D070; --acc2:#22C483;
-  --acc3:#e8a24a; --acc4:#e86464; --txt:#FAF8F0;
-  --mut:#6a5800; --mut2:#c4a000;
-}
-[data-theme="navy"]{
-  --bg:#06100a; --surf:#0c1e12; --surf2:#12281a;
-  --bdr:rgba(255,255,255,0.07); --acc:#22C483; --acc2:#F5D070;
-  --acc3:#5ecfaa; --acc4:#e87a7a; --txt:#FAF8F0;
-  --mut:#1a4028; --mut2:#4a8a5a;
+
+/* ── IVORY GOLD (warm neutral light) ── */
+[data-theme="ivory"]{
+  --bg:#fdf6e8; --surf:#fffdf5; --surf2:#f5edd8;
+  --bdr:rgba(30,20,0,0.08); --acc:#22C483; --acc2:#0A9C5A;
+  --acc3:#b87020; --acc4:#c05060; --txt:#1a1400;
+  --mut:#a09060; --mut2:#6a5a30;
 }
 
 /* ── BASE ───────────────────────────────── */
@@ -123,7 +124,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-
 .a-amt{font-size:14px;font-weight:900}
 
 /* ── BOTTOM NAV ─────────────────────────── */
-.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:var(--bg);border-top:1px solid var(--bdr);display:flex;padding:8px 0 24px;z-index:100}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:#0A0C0A;border-top:1px solid rgba(255,255,255,0.08);display:flex;padding:8px 0 24px;z-index:100}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 0;transition:all .2s}
 .nav-item:active{transform:scale(.88)}
 .nav-icon-wrap{width:44px;height:30px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;transition:all .2s}
@@ -286,7 +287,7 @@ select.field-in{appearance:none}
 .user-btn:active{transform:scale(.95)}
 
 /* ── THEME PICKER ───────────────────────── */
-.theme-grid{display:flex;flex-wrap:wrap;gap:10px}
+.theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .theme-card{width:calc(50% - 5px);border-radius:18px;border:2px solid transparent;padding:14px;cursor:pointer;position:relative;transition:all .2s}
 .theme-card:active{transform:scale(.96)}
 .theme-card.selected{border-color:var(--acc)}
@@ -403,9 +404,10 @@ h1, h2, h3, .section-title-syne { font-family: 'Syne', sans-serif !important; }
     justify-content: flex-start;
     gap: 2px;
     border-top: none;
-    border-right: 1px solid var(--bdr);
+    border-right: 1px solid var(--nav-bdr, var(--bdr));
     transform: none;
-    background: var(--surf);
+    background: #0A0C0A;
+    border-right: 1px solid rgba(255,255,255,0.08);
     overflow-y: auto;
     z-index: 90;
   }
@@ -505,6 +507,25 @@ h1, h2, h3, .section-title-syne { font-family: 'Syne', sans-serif !important; }
   .logo-txt { font-size: 20px; }
 }
 
+
+/* Light themes — header adjustments (sidebar stays dark) */
+[data-theme="light"] .hdr,
+[data-theme="sage"]  .hdr,
+[data-theme="ivory"] .hdr {
+  border-bottom: 1px solid var(--bdr);
+  box-shadow: 0 1px 12px rgba(0,0,0,.06);
+}
+/* Sidebar ALWAYS dark - FormulaKo brand */
+.nav {
+  background: #0A0C0A !important;
+  border-right: 1px solid rgba(255,255,255,0.08) !important;
+}
+/* Header logo text for light themes */
+[data-theme="light"] .logo-txt,
+[data-theme="sage"]  .logo-txt,
+[data-theme="ivory"] .logo-txt {
+  color: #FAF8F0;
+}
 </style>
 </head>
 <body>
@@ -913,10 +934,18 @@ h1, h2, h3, .section-title-syne { font-family: 'Syne', sans-serif !important; }
         </div>
 
         <div class="field-grp">
-          <div class="field-lbl">Annual Interest Rate (%)</div>
+          <div class="field-lbl">Interest Rate (%)</div>
+          <div style="display:flex;gap:6px;margin-bottom:8px">
+            <button class="ftab on" id="rate-annual"  onclick="selRateType('annual',this)">Annual</button>
+            <button class="ftab"    id="rate-monthly" onclick="selRateType('monthly',this)">Monthly</button>
+            <button class="ftab"    id="rate-addon"   onclick="selRateType('addon',this)">Add-on</button>
+          </div>
           <div style="display:flex;gap:8px;align-items:center">
-            <input class="field-in" id="loan-rate" type="number" placeholder="e.g. 12" step="0.1" oninput="computeLoan()" style="flex:1">
-            <div id="loan-rate-hint" style="font-size:11px;color:var(--mut2);white-space:nowrap;flex-shrink:0"></div>
+            <input class="field-in" id="loan-rate" type="number" placeholder="e.g. 12" step="0.01" oninput="computeLoan()" style="flex:1">
+            <div id="loan-rate-hint" style="font-size:10px;color:var(--mut2);white-space:nowrap;flex-shrink:0;max-width:120px;text-align:right;line-height:1.4"></div>
+          </div>
+          <div id="rate-equiv-row" style="display:none;margin-top:8px;padding:8px 12px;background:var(--surf2);border-radius:10px;font-size:11px;color:var(--mut2)">
+            ≈ Equivalent Annual Rate: <strong id="rate-equiv-val" style="color:var(--acc)">0%</strong>
           </div>
         </div>
 
@@ -1031,11 +1060,15 @@ h1, h2, h3, .section-title-syne { font-family: 'Syne', sans-serif !important; }
             </div>
           </div>
           <div style="margin-top:10px;padding:8px 12px;background:var(--surf2);border-radius:10px;display:flex;justify-content:space-between;align-items:center">
-            <span style="font-size:11px;color:var(--mut2);font-weight:600">💸 Interest per month (Month 1)</span>
+            <span style="font-size:11px;color:var(--mut2);font-weight:600">💰 Monthly Interest (Fixed)</span>
+            <span style="font-size:14px;font-weight:900;color:var(--acc3);font-family:'JetBrains Mono',monospace" id="lr-monthly-fixed-int">₱0</span>
+          </div>
+          <div style="margin-top:6px;padding:8px 12px;background:var(--surf2);border-radius:10px;display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:11px;color:var(--mut2);font-weight:600">💸 Interest Month 1 (Amortizing)</span>
             <span style="font-size:14px;font-weight:900;color:var(--acc4);font-family:'JetBrains Mono',monospace" id="lr-first-month-int">₱0</span>
           </div>
           <div style="margin-top:6px;padding:8px 12px;background:var(--surf2);border-radius:10px;display:flex;justify-content:space-between;align-items:center">
-            <span style="font-size:11px;color:var(--mut2);font-weight:600">📉 Interest per month (Last month)</span>
+            <span style="font-size:11px;color:var(--mut2);font-weight:600">📉 Interest Last Month (Amortizing)</span>
             <span style="font-size:14px;font-weight:900;color:var(--acc);font-family:'JetBrains Mono',monospace" id="lr-last-month-int">₱0</span>
           </div>
         </div>
@@ -1244,11 +1277,10 @@ const HTYPES = {
   rent:     {icon:'🏡',color:'#2ebd8f'}, others:{icon:'📦',color:'#8898aa'},
 };
 const THEMES = [
-  {key:'dark',   name:'Forest Black', emoji:'🌲',desc:'FormulaKo default',  bg:'#0e1420',dots:['#5ecfaa','#6ba3d6','#e07b8a'],acc:'#5ecfaa',txt:'#e8edf5'},
-  {key:'light',  name:'Warm Cream',   emoji:'🤍',desc:'Clean & minimal',  bg:'#f5f7fa',dots:['#2ebd8f','#4a90d9','#d95f6e'],acc:'#2ebd8f',txt:'#1a2233'},
-  {key:'purple', name:'Forest Night', emoji:'🌿',desc:'Deep & focused',   bg:'#16101e',dots:['#b57bee','#e87eb8','#f07070'],acc:'#b57bee',txt:'#ede8f5'},
-  {key:'sunset', name:'Gold Rush',    emoji:'🟡',desc:'Formula Gold',     bg:'#1a1208',dots:['#e8a24a','#e86c4a','#e8c84a'],acc:'#e8a24a',txt:'#f5ede0'},
-  {key:'navy',   name:'Midnight',     emoji:'🌑',desc:'Dark & minimal',bg:'#08102a',dots:['#6a9ee8','#5acce8','#e8c86a'],acc:'#6a9ee8',txt:'#dde8f8',wide:true},
+  {key:'dark',  name:'Forest Black', emoji:'🌲', desc:'Dark · FormulaKo default',  bg:'#0A0C0A', dots:['#22C483','#F5D070','#e07b8a'], acc:'#22C483', txt:'#FAF8F0'},
+  {key:'light', name:'Warm Cream',   emoji:'☀️', desc:'Light · Warm & minimal',    bg:'#FAF8F0', dots:['#22C483','#C8860A','#d95f6e'], acc:'#22C483', txt:'#1a1a0a'},
+  {key:'sage',  name:'Soft Sage',    emoji:'🌿', desc:'Light · Muted greens',      bg:'#f4f7f4', dots:['#22C483','#3a8a6a','#c05a6a'], acc:'#22C483', txt:'#1a2a1a', wide:true},
+  {key:'ivory', name:'Ivory Gold',   emoji:'🏵️', desc:'Light · Warm neutrals',     bg:'#fdf6e8', dots:['#22C483','#b87020','#c05060'], acc:'#22C483', txt:'#1a1400', wide:true},
 ];
 const BCAT = {
   food:    {icon:'🍚',label:'Food & Groceries', color:'#5ecfaa'},
@@ -1301,26 +1333,29 @@ document.addEventListener('DOMContentLoaded', () => {
   const _s1 = localStorage.getItem('fk-user1') || '';
   const _s2 = localStorage.getItem('fk-user2') || '';
   const _sc = localStorage.getItem('fk-user')  || '';
-  const _ok = s => s.length > 0 && s.length < 30 && !s.includes('{') && !s.includes('(');
+  const _ok = s => s && s.length > 0 && s.length < 30 && !s.includes('{') && !s.includes('(') && !s.includes(';');
   user1Name   = _ok(_s1) ? _s1 : '';
   user2Name   = _ok(_s2) ? _s2 : '';
-  currentUser = _ok(_sc) ? _sc : '';
+  // Use fk-user1 as fallback if fk-user is empty
+  currentUser = _ok(_sc) ? _sc : (_ok(_s1) ? _s1 : '');
+  // Sync back if needed
+  if (currentUser && !_ok(_sc)) localStorage.setItem('fk-user', currentUser);
 
   document.getElementById('greet-date').textContent =
     new Date().toLocaleDateString('en-PH',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+
+  // Load ALL data first
+  loadLocal();
+  scriptUrl = localStorage.getItem('fk-script-url') || '';
+
+  // Names already loaded above from localStorage — now render with correct names
   renderGreeting();
 
-  // Load saved settings
-  currentUser = localStorage.getItem('fk-user') || '';
-  loadLocal(); // restore persisted data
-  // Load saved user names
-  // Names already loaded at DOMContentLoaded — show onboarding if needed
-  if (!currentUser) {
+  // Show onboarding if no name saved
+  if (!currentUser && !user1Name) {
     setTimeout(() => document.getElementById('setup-modal').classList.add('open'), 600);
   }
-  scriptUrl   = localStorage.getItem('fk-script-url') || '';
-
-  // Onboarding handled above after name validation
+  // Onboarding handled above
 
   // Build dynamic grids
   buildCatGrid();
@@ -1450,13 +1485,16 @@ function renderDashboard() {
   const chaExp  = expenses.filter(e=>e.date&&e.date.startsWith(m)&&e.addedBy===currentUser) .reduce((s,e)=>s+e.amount,0);
   const chadExp = expenses.filter(e=>e.date&&e.date.startsWith(m)&&e.addedBy===u2).reduce((s,e)=>s+e.amount,0);
     // Combined card — show/hide User 2 based on whether partner exists
-  const _u1 = currentUser || user1Name || 'User 1';
+  const _u1 = currentUser || user1Name || '';
   const _u2 = user2Name || '';
   const _titleEl = document.getElementById('cc-main-title');
   const _p2El    = document.getElementById('cc-person2');
   const _n1El    = document.getElementById('cc-name1');
   const _n2El    = document.getElementById('cc-name2');
-  if (_titleEl) _titleEl.textContent = _u2 ? '👫 ' + _u1 + ' & ' + _u2 + ' — This Month' : '💰 ' + _u1 + ' — This Month';
+  const displayU1 = _u1 || 'Me';
+  if (_titleEl) _titleEl.textContent = _u2
+    ? '👫 ' + displayU1 + ' & ' + _u2 + ' — This Month'
+    : '💰 ' + displayU1 + ' — This Month';
   if (_p2El)    _p2El.style.display  = _u2 ? '' : 'none';
   if (_n1El)    _n1El.textContent    = '👤 ' + _u1;
   if (_n2El)    _n2El.textContent    = '👤 ' + _u2;
@@ -2656,164 +2694,179 @@ function quickAdd(type) {
 }
 
 
+// ── Loan Calculator state ────────────────────
+let loanType       = 'personal';
+let termUnit       = 'months';
+let payFreq        = 'monthly';
+let amortView      = 'all';
+let rateType       = 'annual';
+let interestMethod = 'amort';
+let savedLoans     = [];
+let _loanId        = 1;
+
 // ══════════════════════════════════════════════
 //  LOAN CALCULATOR
 // ══════════════════════════════════════════════
-let loanType    = 'personal';
-let termUnit    = 'months';
-let payFreq     = 'monthly';
-let amortView   = 'all';
-let savedLoans  = [];
-let _loanId     = 1;
-
-// Typical PH interest rates by loan type
 const LOAN_TYPE_RATES = {
-  personal: {rate: 24,  label: 'Typical PH: 24–36% p.a.'},
-  home:     {rate: 6.5, label: 'Typical PH: 5–8% p.a.'},
-  car:      {rate: 10,  label: 'Typical PH: 8–12% p.a.'},
-  salary:   {rate: 18,  label: 'SSS/GSIS: ~10–24% p.a.'},
-  business: {rate: 15,  label: 'Typical PH: 12–24% p.a.'},
+  personal: {rate:24,  label:'Typical: 24–36% p.a.'},
+  home:     {rate:6.5, label:'Typical: 5–8% p.a.'},
+  car:      {rate:10,  label:'Typical: 8–12% p.a.'},
+  salary:   {rate:18,  label:'SSS/GSIS: ~10–24% p.a.'},
+  business: {rate:15,  label:'Typical: 12–24% p.a.'},
 };
 
 function selLoanType(type, el) {
   loanType = type;
   document.querySelectorAll('#loan-type-btns .ftab').forEach(t=>t.classList.remove('on'));
   el.classList.add('on');
-  // Suggest typical rate
   const info = LOAN_TYPE_RATES[type];
   if (info) {
     document.getElementById('loan-rate').value = info.rate;
-    document.getElementById('loan-rate-hint').textContent = info.label;
+    const hint = document.getElementById('loan-rate-hint');
+    if (hint) hint.textContent = info.label;
   }
   computeLoan();
 }
 
 function selTermUnit(unit, el) {
   termUnit = unit;
-  document.querySelectorAll('#loan-type-btns').forEach(()=>{});
   document.getElementById('term-months').classList.toggle('on', unit==='months');
-  document.getElementById('term-years').classList.toggle('on', unit==='years');
+  document.getElementById('term-years').classList.toggle('on',  unit==='years');
   computeLoan();
 }
 
 function selFreq(freq, el) {
   payFreq = freq;
-  ['monthly','semi','weekly'].forEach(f => {
-    document.getElementById('freq-'+f).classList.toggle('on', f===freq);
-  });
+  ['monthly','semi','weekly'].forEach(f =>
+    document.getElementById('freq-'+f).classList.toggle('on', f===freq)
+  );
+  computeLoan();
+}
+
+function selRateType(type, el) {
+  rateType = type;
+  document.getElementById('rate-type-annual').classList.toggle('on',  type==='annual');
+  document.getElementById('rate-type-monthly').classList.toggle('on', type==='monthly');
+  computeLoan();
+}
+
+function selInterestMethod(method, el) {
+  interestMethod = method;
+  document.getElementById('method-amort').className = 'type-opt' + (method==='amort' ? ' on-a' : '');
+  document.getElementById('method-addon').className = 'type-opt' + (method==='addon' ? ' on-b' : '');
   computeLoan();
 }
 
 function toggleAmort(view, el) {
   amortView = view;
-  ['all','first','last'].forEach(v => {
-    document.getElementById('amort-show-'+v).classList.toggle('on', v===view);
-  });
+  ['all','first','last'].forEach(v =>
+    document.getElementById('amort-show-'+v).classList.toggle('on', v===view)
+  );
   renderAmortTable(window._lastSchedule || []);
 }
 
-
-// ── Initialize loan year dropdown ──────────
-function initLoanYearDropdown() {
-  const yearEl = document.getElementById('loan-start-year');
-  if (!yearEl) return;
-  const thisYear = new Date().getFullYear();
-  const thisMonth = new Date().getMonth() + 1;
-  yearEl.innerHTML = '';
-  for (let y = thisYear; y <= thisYear + 10; y++) {
-    const opt = document.createElement('option');
-    opt.value = y;
-    opt.textContent = y;
-    if (y === thisYear) opt.selected = true;
-    yearEl.appendChild(opt);
-  }
-  // Set current month as default
-  const monthEl = document.getElementById('loan-start-month');
-  if (monthEl) monthEl.value = thisMonth;
-}
-
 function computeLoan() {
-  const principal  = parseFloat(document.getElementById('loan-amount').value) || 0;
-  const annualRate = parseFloat(document.getElementById('loan-rate').value) || 0;
-  const termVal    = parseFloat(document.getElementById('loan-term').value) || 0;
-  if (!principal || !annualRate || !termVal) {
+  const principal = parseFloat(document.getElementById('loan-amount').value) || 0;
+  const inputRate = parseFloat(document.getElementById('loan-rate').value)  || 0;
+  const termVal   = parseFloat(document.getElementById('loan-term').value)  || 0;
+
+  if (!principal || !inputRate || !termVal) {
     document.getElementById('loan-results').style.display = 'none';
     return;
   }
 
-  // Start month/year
-  const startMonth = parseInt(document.getElementById('loan-start-month').value) || new Date().getMonth() + 1;
-  const startYear  = parseInt(document.getElementById('loan-start-year').value)  || new Date().getFullYear();
+  // Convert rate to annual
+  const annualRate  = rateType === 'monthly' ? inputRate * 12 : inputRate;
+  const monthlyRate = annualRate / 100 / 12;
+  const dailyRate   = annualRate / 100 / 365;
 
-  // Convert term to months
+  // Rate hint
+  const hint = document.getElementById('loan-rate-hint');
+  if (hint) hint.textContent = rateType === 'monthly'
+    ? '= ' + annualRate.toFixed(2) + '% annual'
+    : '= ' + (monthlyRate * 100).toFixed(4) + '% /month';
+
+  // Start date
+  const startMonthEl = document.getElementById('loan-start-month');
+  const startYearEl  = document.getElementById('loan-start-year');
+  const startMonth   = startMonthEl ? parseInt(startMonthEl.value) : new Date().getMonth() + 1;
+  const startYear    = startYearEl  ? parseInt(startYearEl.value)  : new Date().getFullYear();
+
+  // Term in months
   const termMonths = termUnit === 'years' ? termVal * 12 : termVal;
 
   // Frequency
   let freqPerYear, freqLabel, freqChip;
-  if (payFreq === 'monthly')   { freqPerYear=12; freqLabel='Monthly Payment';      freqChip='Per month (12x/year)'; }
-  else if (payFreq === 'semi') { freqPerYear=24; freqLabel='Semi-monthly Payment'; freqChip='Twice a month (24x/year)'; }
-  else                         { freqPerYear=52; freqLabel='Weekly Payment';       freqChip='Every week (52x/year)'; }
+  if      (payFreq==='monthly') { freqPerYear=12; freqLabel='Monthly Payment';      freqChip='Per month'; }
+  else if (payFreq==='semi')    { freqPerYear=24; freqLabel='Semi-monthly Payment'; freqChip='Twice a month'; }
+  else                          { freqPerYear=52; freqLabel='Weekly Payment';       freqChip='Every week'; }
 
-  // Total periods
   const totalPeriods = Math.round(termMonths / 12 * freqPerYear);
-
-  // Periodic rate
   const periodicRate = annualRate / 100 / freqPerYear;
-  const monthlyRate  = annualRate / 100 / 12;
-  const dailyRate    = annualRate / 100 / 365;
 
-  // Payment formula
-  let periodicPayment;
-  if (periodicRate === 0) {
-    periodicPayment = principal / totalPeriods;
+  // Payment computation
+  let periodicPayment, totalPayment, totalInterest;
+  if (interestMethod === 'addon') {
+    // Simple/Add-on interest (5-6, coop, informal PH lenders)
+    totalInterest   = principal * monthlyRate * termMonths;
+    totalPayment    = principal + totalInterest;
+    periodicPayment = totalPayment / totalPeriods;
   } else {
-    periodicPayment = principal * (periodicRate * Math.pow(1+periodicRate, totalPeriods)) /
-                      (Math.pow(1+periodicRate, totalPeriods) - 1);
+    // Amortizing (banks, SSS, Pag-IBIG)
+    if (periodicRate === 0) {
+      periodicPayment = principal / totalPeriods;
+    } else {
+      periodicPayment = principal *
+        (periodicRate * Math.pow(1 + periodicRate, totalPeriods)) /
+        (Math.pow(1 + periodicRate, totalPeriods) - 1);
+    }
+    totalPayment  = periodicPayment * totalPeriods;
+    totalInterest = totalPayment - principal;
   }
 
-  const totalPayment    = periodicPayment * totalPeriods;
-  const totalInterest   = totalPayment - principal;
-  const interestPct     = totalPayment > 0 ? Math.round(totalInterest / totalPayment * 100) : 0;
-  const principalPct    = 100 - interestPct;
+  const interestPct  = totalPayment > 0 ? Math.round(totalInterest / totalPayment * 100) : 0;
+  const principalPct = 100 - interestPct;
 
   // Duration label
   const yrs = Math.floor(termMonths / 12);
   const mos = termMonths % 12;
   const durLabel = [yrs>0?yrs+'y':'', mos>0?mos+'mo':''].filter(Boolean).join(' ') || termMonths+'mo';
 
-  // End date calculation
-  const endDate = new Date(startYear, startMonth - 1 + termMonths, 1);
-  const endDateLabel = endDate.toLocaleDateString('en-PH', {month:'short', year:'numeric'});
+  // End date
+  const endDate  = new Date(startYear, startMonth - 1 + termMonths, 1);
+  const endLabel = endDate.toLocaleDateString('en-PH', {month:'short', year:'numeric'});
 
-  // First month interest = principal × monthly rate
-  const firstMonthInt = principal * monthlyRate;
-  // Build schedule to get last month interest
+  // First & last month interest
+  const firstInt = interestMethod === 'addon'
+    ? totalInterest / totalPeriods
+    : principal * periodicRate;
   const schedule = buildAmortSchedule(principal, periodicRate, periodicPayment, totalPeriods, payFreq, startMonth, startYear);
-  const lastMonthInt = schedule.length > 0 ? schedule[schedule.length-1].interest : 0;
+  const lastInt  = schedule.length > 0 ? schedule[schedule.length-1].interest : 0;
 
-  // ── Update all UI ──
-  document.getElementById('loan-results').style.display      = 'block';
-  document.getElementById('loan-payment-label').textContent  = freqLabel;
-  document.getElementById('loan-payment').textContent        = fmt(Math.round(periodicPayment));
-  document.getElementById('loan-payment-chip').textContent   = freqChip;
-  document.getElementById('lr-principal').textContent        = fmt(principal);
-  document.getElementById('lr-interest').textContent         = fmt(Math.round(totalInterest));
-  document.getElementById('lr-total').textContent            = fmt(Math.round(totalPayment));
-  document.getElementById('lr-payments').textContent         = totalPeriods;
-  document.getElementById('lr-interest-pct').textContent     = interestPct + '%';
-  document.getElementById('lr-duration').textContent         = durLabel;
-  document.getElementById('lr-end-date').textContent         = endDateLabel;
-  document.getElementById('ld-principal-pct').textContent    = principalPct + '%';
-  document.getElementById('ld-interest-pct').textContent     = interestPct + '%';
+  // ── Update UI ──
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  document.getElementById('loan-results').style.display = 'block';
+  set('loan-payment-label',  freqLabel);
+  set('loan-payment',        fmt(Math.round(periodicPayment)));
+  set('loan-payment-chip',   freqChip + (interestMethod==='addon' ? ' · Add-on' : ' · Amortizing'));
+  set('lr-principal',        fmt(principal));
+  set('lr-interest',         fmt(Math.round(totalInterest)));
+  set('lr-total',            fmt(Math.round(totalPayment)));
+  set('lr-payments',         totalPeriods);
+  set('lr-interest-pct',     interestPct + '%');
+  set('lr-duration',         durLabel);
+  set('lr-end-date',         endLabel);
+  set('ld-principal-pct',    principalPct + '%');
+  set('ld-interest-pct',     interestPct + '%');
+  set('lr-annual-rate',      annualRate.toFixed(2) + '%');
+  set('lr-monthly-rate',     (monthlyRate * 100).toFixed(4) + '%');
+  set('lr-daily-rate',       (dailyRate * 100).toFixed(5) + '%');
+  // Monthly fixed interest = principal × monthly rate (simple/add-on style)
+  const monthlyFixedInt = principal * monthlyRate;
+  set('lr-monthly-fixed-int', fmt(Math.round(monthlyFixedInt)));
+  set('lr-first-month-int',   fmt(Math.round(firstInt)));
+  set('lr-last-month-int',   fmt(Math.round(lastInt)));
 
-  // Interest rate breakdown
-  document.getElementById('lr-annual-rate').textContent      = annualRate.toFixed(2) + '%';
-  document.getElementById('lr-monthly-rate').textContent     = (monthlyRate * 100).toFixed(4) + '%';
-  document.getElementById('lr-daily-rate').textContent       = (dailyRate * 100).toFixed(5) + '%';
-  document.getElementById('lr-first-month-int').textContent  = fmt(Math.round(firstMonthInt));
-  document.getElementById('lr-last-month-int').textContent   = fmt(Math.round(lastMonthInt));
-
-  // Donut + table
   drawLoanDonut(principal, totalInterest);
   window._lastSchedule = schedule;
   renderAmortTable(schedule);
@@ -2821,52 +2874,57 @@ function computeLoan() {
 }
 
 function drawLoanDonut(principal, interest) {
-  const svg    = document.getElementById('loan-donut');
-  const total  = principal + interest;
+  const svg   = document.getElementById('loan-donut');
+  if (!svg) return;
+  const total = principal + interest;
   const cx=55, cy=55, r=44, sw=14, circ=2*Math.PI*r;
-  const principalDash = (principal/total) * circ;
-  const interestDash  = (interest/total)  * circ;
+  const pd = (principal/total)*circ;
+  const id = (interest/total)*circ;
   svg.innerHTML = `
     <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--surf2)" stroke-width="${sw}"/>
     <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--acc)" stroke-width="${sw}"
-      stroke-dasharray="${principalDash.toFixed(1)} ${(circ-principalDash).toFixed(1)}"
+      stroke-dasharray="${pd.toFixed(1)} ${(circ-pd).toFixed(1)}"
       stroke-linecap="round" transform="rotate(-90 ${cx} ${cy})"/>
     <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--acc4)" stroke-width="${sw}"
-      stroke-dasharray="${interestDash.toFixed(1)} ${(circ-interestDash).toFixed(1)}"
-      stroke-linecap="round" transform="rotate(${(-90 + (principal/total)*360).toFixed(1)} ${cx} ${cy})"/>
-    <text x="${cx}" y="${cy-4}" text-anchor="middle" fill="var(--txt)" font-size="10" font-weight="900" font-family="Nunito,sans-serif">${fmt(Math.round((principal+interest)/1000)*1000).replace('₱','₱')}</text>
-    <text x="${cx}" y="${cy+10}" text-anchor="middle" fill="var(--mut)" font-size="8" font-family="Nunito,sans-serif">total</text>`;
+      stroke-dasharray="${id.toFixed(1)} ${(circ-id).toFixed(1)}"
+      stroke-linecap="round" transform="rotate(${(-90+(principal/total)*360).toFixed(1)} ${cx} ${cy})"/>
+    <text x="${cx}" y="${cy-4}" text-anchor="middle" fill="var(--txt)" font-size="10" font-weight="900" font-family="'DM Sans',sans-serif">${fmt(Math.round(principal+interest))}</text>
+    <text x="${cx}" y="${cy+10}" text-anchor="middle" fill="var(--mut)" font-size="8" font-family="'DM Sans',sans-serif">total</text>`;
 }
 
 function buildAmortSchedule(principal, periodicRate, payment, periods, freq, startMonth, startYear) {
   const schedule = [];
-  let balance = principal;
-  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  let curMonth = (startMonth || new Date().getMonth() + 1) - 1; // 0-indexed
-  let curYear  = startYear  || new Date().getFullYear();
+  let balance    = principal;
+  const MONTHS   = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  let curMonth   = (startMonth || new Date().getMonth()+1) - 1;
+  let curYear    = startYear  || new Date().getFullYear();
+  const addonInt = interestMethod==='addon' ? (payment*periods - principal)/periods : 0;
 
-  for (let i = 1; i <= periods; i++) {
-    const interestPaid  = balance * periodicRate;
-    const principalPaid = payment - interestPaid;
+  for (let i=1; i<=periods; i++) {
+    let interestPaid, principalPaid;
+    if (interestMethod === 'addon') {
+      interestPaid  = addonInt;
+      principalPaid = payment - interestPaid;
+    } else {
+      interestPaid  = balance * periodicRate;
+      principalPaid = payment - interestPaid;
+    }
     balance = Math.max(0, balance - principalPaid);
 
-    // Build period label with month/year for monthly, just period number for semi/weekly
     let label;
     if (freq === 'monthly') {
-      label = MONTHS[curMonth % 12] + ' ' + (curYear + Math.floor(curMonth / 12));
+      label = MONTHS[curMonth%12] + ' ' + (curYear + Math.floor(curMonth/12));
       curMonth++;
     } else if (freq === 'semi') {
-      const mo = MONTHS[curMonth % 12];
-      const yr = curYear + Math.floor(curMonth / 12);
-      label = mo + ' ' + yr + (i % 2 === 1 ? ' (1st)' : ' (2nd)');
-      if (i % 2 === 0) curMonth++;
+      const mo = MONTHS[curMonth%12], yr = curYear + Math.floor(curMonth/12);
+      label = mo+' '+yr+(i%2===1?' (1st)':' (2nd)');
+      if (i%2===0) curMonth++;
     } else {
-      label = 'Wk ' + i;
+      label = 'Wk '+i;
     }
 
     schedule.push({
-      period:    i,
-      label,
+      period: i, label,
       payment:   Math.round(payment),
       principal: Math.round(principalPaid),
       interest:  Math.round(interestPaid),
@@ -2877,41 +2935,39 @@ function buildAmortSchedule(principal, periodicRate, payment, periods, freq, sta
 }
 
 function renderAmortTable(schedule) {
-  if (!schedule.length) return;
+  const el = document.getElementById('amort-table');
+  if (!el || !schedule.length) return;
   let rows;
-  if (amortView === 'first')     rows = schedule.slice(0, 6);
-  else if (amortView === 'last') rows = schedule.slice(-6);
-  else                           rows = schedule;
+  if      (amortView==='first') rows = schedule.slice(0,6);
+  else if (amortView==='last')  rows = schedule.slice(-6);
+  else                          rows = schedule;
 
-  const totalRows = schedule.length;
-  const tableEl   = document.getElementById('amort-table');
-
-  tableEl.innerHTML = `
-    <div style="font-size:11px;color:var(--mut2);margin-bottom:8px">${totalRows} payment periods total</div>
+  el.innerHTML = `
+    <div style="font-size:11px;color:var(--mut2);margin-bottom:8px">${schedule.length} payment periods total</div>
     <div style="overflow-x:auto">
     <table style="width:100%;border-collapse:collapse;font-size:12px">
       <thead>
         <tr style="background:var(--surf2)">
-          <th style="padding:8px 6px;text-align:left;font-weight:900;color:var(--mut);font-size:10px;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap">Period</th>
-          <th style="padding:8px 6px;text-align:right;font-weight:900;color:var(--mut);font-size:10px;text-transform:uppercase;letter-spacing:.5px">Payment</th>
-          <th style="padding:8px 6px;text-align:right;font-weight:900;color:var(--mut);font-size:10px;text-transform:uppercase;letter-spacing:.5px">Principal</th>
-          <th style="padding:8px 6px;text-align:right;font-weight:900;color:var(--mut);font-size:10px;text-transform:uppercase;letter-spacing:.5px">Interest</th>
-          <th style="padding:8px 6px;text-align:right;font-weight:900;color:var(--mut);font-size:10px;text-transform:uppercase;letter-spacing:.5px">Balance</th>
+          <th style="padding:8px 6px;text-align:left;font-weight:800;color:var(--mut);font-size:10px;text-transform:uppercase;white-space:nowrap">Period</th>
+          <th style="padding:8px 6px;text-align:right;font-weight:800;color:var(--mut);font-size:10px;text-transform:uppercase">Payment</th>
+          <th style="padding:8px 6px;text-align:right;font-weight:800;color:var(--mut);font-size:10px;text-transform:uppercase">Principal</th>
+          <th style="padding:8px 6px;text-align:right;font-weight:800;color:var(--mut);font-size:10px;text-transform:uppercase">Interest</th>
+          <th style="padding:8px 6px;text-align:right;font-weight:800;color:var(--mut);font-size:10px;text-transform:uppercase">Balance</th>
         </tr>
       </thead>
       <tbody>
         ${rows.map((r,i) => `
           <tr style="border-bottom:1px solid var(--bdr);${i%2===0?'background:rgba(255,255,255,0.02)':''}">
-            <td style="padding:8px 6px;font-weight:700;color:var(--txt)">${r.label}</td>
-            <td style="padding:8px 6px;text-align:right;font-weight:900;color:var(--acc)">${fmt(r.payment)}</td>
-            <td style="padding:8px 6px;text-align:right;color:var(--acc2)">${fmt(r.principal)}</td>
-            <td style="padding:8px 6px;text-align:right;color:var(--acc4)">${fmt(r.interest)}</td>
-            <td style="padding:8px 6px;text-align:right;font-weight:700;color:var(--txt)">${fmt(r.balance)}</td>
+            <td style="padding:8px 6px;font-weight:700;white-space:nowrap">${r.label}</td>
+            <td style="padding:8px 6px;text-align:right;font-weight:800;color:var(--acc);font-family:'JetBrains Mono',monospace">${fmt(r.payment)}</td>
+            <td style="padding:8px 6px;text-align:right;color:var(--acc2);font-family:'JetBrains Mono',monospace">${fmt(r.principal)}</td>
+            <td style="padding:8px 6px;text-align:right;color:var(--acc4);font-family:'JetBrains Mono',monospace">${fmt(r.interest)}</td>
+            <td style="padding:8px 6px;text-align:right;font-weight:700;font-family:'JetBrains Mono',monospace">${fmt(r.balance)}</td>
           </tr>`).join('')}
       </tbody>
     </table>
     </div>
-    ${amortView !== 'all' && totalRows > 6 ? `<div style="text-align:center;margin-top:10px;font-size:11px;color:var(--mut2)">Showing ${rows.length} of ${totalRows} periods — tap "All" to see full schedule</div>` : ''}
+    ${amortView!=='all' && schedule.length>6 ? `<div style="text-align:center;margin-top:10px;font-size:11px;color:var(--mut2)">Showing ${rows.length} of ${schedule.length} — tap "All" to see full schedule</div>` : ''}
   `;
 }
 
@@ -2919,19 +2975,18 @@ function saveLoanResult() {
   const principal = parseFloat(document.getElementById('loan-amount').value) || 0;
   const rate      = parseFloat(document.getElementById('loan-rate').value) || 0;
   const term      = parseFloat(document.getElementById('loan-term').value) || 0;
-  if (!principal || !rate || !term) return toast('⚠️ Fill in loan details first');
-
-  const payment = document.getElementById('loan-payment').textContent;
-  const total   = document.getElementById('lr-total').textContent;
-  const interest= document.getElementById('lr-interest').textContent;
-  const label   = loanType.charAt(0).toUpperCase()+loanType.slice(1) + ' Loan — ' + fmt(principal);
-
+  if (!principal||!rate||!term) return toast('⚠️ Fill in loan details first');
+  const payment = document.getElementById('loan-payment')?.textContent || '₱0';
+  const total   = document.getElementById('lr-total')?.textContent || '₱0';
+  const interest= document.getElementById('lr-interest')?.textContent || '₱0';
+  const endDate = document.getElementById('lr-end-date')?.textContent || '—';
+  const label   = loanType.charAt(0).toUpperCase()+loanType.slice(1)+' Loan — '+fmt(principal);
   savedLoans.unshift({
-    id: _loanId++, label, principal, rate, term, termUnit,
-    freq: payFreq, payment, total, interest, type: loanType,
-    savedAt: new Date().toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'})
+    id:_loanId++, label, principal, rate, term, termUnit,
+    freq:payFreq, rateType, interestMethod,
+    payment, total, interest, type:loanType, endDate,
+    savedAt:new Date().toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'})
   });
-
   try { localStorage.setItem('fk-loans', JSON.stringify(savedLoans)); } catch(e){}
   renderSavedLoans();
   toast('💾 Loan scenario saved!');
@@ -2950,35 +3005,44 @@ function loadSavedLoan(id) {
   document.getElementById('loan-amount').value = l.principal;
   document.getElementById('loan-rate').value   = l.rate;
   document.getElementById('loan-term').value   = l.term;
-  termUnit = l.termUnit || 'months';
-  payFreq  = l.freq || 'monthly';
+  termUnit       = l.termUnit || 'months';
+  payFreq        = l.freq     || 'monthly';
+  rateType       = l.rateType || 'annual';
+  interestMethod = l.interestMethod || 'amort';
   document.getElementById('term-months').classList.toggle('on', termUnit==='months');
   document.getElementById('term-years').classList.toggle('on',  termUnit==='years');
-  ['monthly','semi','weekly'].forEach(f => document.getElementById('freq-'+f).classList.toggle('on', f===payFreq));
+  ['monthly','semi','weekly'].forEach(f =>
+    document.getElementById('freq-'+f).classList.toggle('on', f===payFreq)
+  );
+  document.getElementById('rate-type-annual').classList.toggle('on',  rateType==='annual');
+  document.getElementById('rate-type-monthly').classList.toggle('on', rateType==='monthly');
+  document.getElementById('method-amort').className = 'type-opt'+(interestMethod==='amort'?' on-a':'');
+  document.getElementById('method-addon').className = 'type-opt'+(interestMethod==='addon'?' on-b':'');
   computeLoan();
   toast('📂 Loan loaded!');
 }
 
 function renderSavedLoans() {
-  // Load from storage if empty
   if (!savedLoans.length) {
     try { const s=localStorage.getItem('fk-loans'); if(s) savedLoans=JSON.parse(s); } catch(e){}
   }
   const section = document.getElementById('saved-loans-section');
   const list    = document.getElementById('saved-loans-list');
-  if (!savedLoans.length) { section.style.display='none'; return; }
-  section.style.display = 'block';
-  list.innerHTML = savedLoans.map(l => `
+  if (!list) return;
+  if (!savedLoans.length) { if(section) section.style.display='none'; return; }
+  if (section) section.style.display='block';
+  list.innerHTML = savedLoans.map(l=>`
     <div class="card" style="margin-bottom:8px">
       <div style="display:flex;align-items:flex-start;gap:10px">
-        <div style="width:38px;height:38px;border-radius:12px;background:rgba(107,163,214,.15);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🏦</div>
+        <div style="width:38px;height:38px;border-radius:12px;background:rgba(34,196,131,.15);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🏦</div>
         <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:900;color:var(--txt);margin-bottom:2px">${l.label}</div>
-          <div style="font-size:11px;color:var(--mut2)">${l.rate}% · ${l.term} ${l.termUnit} · ${l.freq} · Saved ${l.savedAt}</div>
-          <div style="display:flex;gap:12px;margin-top:8px">
-            <div><div style="font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;font-weight:700">Payment</div><div style="font-size:14px;font-weight:900;color:var(--acc)">${l.payment}</div></div>
-            <div><div style="font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;font-weight:700">Total</div><div style="font-size:14px;font-weight:900;color:var(--acc3)">${l.total}</div></div>
-            <div><div style="font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;font-weight:700">Interest</div><div style="font-size:14px;font-weight:900;color:var(--acc4)">${l.interest}</div></div>
+          <div style="font-size:13px;font-weight:800;margin-bottom:2px">${l.label}</div>
+          <div style="font-size:11px;color:var(--mut2)">${l.rate}% ${l.rateType||'annual'} · ${l.term} ${l.termUnit} · ${l.freq} · ${l.interestMethod==='addon'?'Add-on':'Amortizing'}</div>
+          <div style="font-size:10px;color:var(--mut);margin-bottom:8px">Saved ${l.savedAt} · Ends ${l.endDate||'—'}</div>
+          <div style="display:flex;gap:12px">
+            <div><div style="font-size:9px;color:var(--mut);text-transform:uppercase;font-weight:700">Payment</div><div style="font-size:14px;font-weight:900;color:var(--acc);font-family:'JetBrains Mono',monospace">${l.payment}</div></div>
+            <div><div style="font-size:9px;color:var(--mut);text-transform:uppercase;font-weight:700">Total</div><div style="font-size:14px;font-weight:900;color:var(--acc3);font-family:'JetBrains Mono',monospace">${l.total}</div></div>
+            <div><div style="font-size:9px;color:var(--mut);text-transform:uppercase;font-weight:700">Interest</div><div style="font-size:14px;font-weight:900;color:var(--acc4);font-family:'JetBrains Mono',monospace">${l.interest}</div></div>
           </div>
         </div>
         <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
@@ -2989,6 +3053,20 @@ function renderSavedLoans() {
     </div>`).join('');
 }
 
+// ── Loan year dropdown init ────────────────
+function initLoanYearDropdown() {
+  const yearEl = document.getElementById('loan-start-year');
+  if (!yearEl || yearEl.options.length > 0) return;
+  const now = new Date();
+  for (let y=now.getFullYear(); y<=now.getFullYear()+10; y++) {
+    const opt = document.createElement('option');
+    opt.value=y; opt.textContent=y;
+    if (y===now.getFullYear()) opt.selected=true;
+    yearEl.appendChild(opt);
+  }
+  const monthEl = document.getElementById('loan-start-month');
+  if (monthEl) monthEl.value = now.getMonth()+1;
+}
 // Load saved loans on init
 window.addEventListener('DOMContentLoaded', () => {
   try {
@@ -3097,15 +3175,20 @@ function clearUserFilter() {
 }
 
 function filterByUser(userNum) {
-  const name = userNum === 1 ? (currentUser || user1Name || 'User 1') : (user2Name || 'User 2');
-  // Open expenses screen and filter by user
+  const u1   = currentUser || user1Name || 'User 1';
+  const u2   = user2Name   || 'User 2';
+  const name = userNum === 1 ? u1 : u2;
   openScreen('expenses');
   setTimeout(() => {
-    // Set a special user filter
     expUserFilter = name;
+    // Reset category filter to all
+    expFilter = 'all';
+    document.querySelectorAll('#exp-filters .ftab').forEach(t => t.classList.remove('on'));
+    const allTab = document.querySelector('#exp-filters .ftab');
+    if (allTab) allTab.classList.add('on');
     renderExpenses();
-    toast('📊 Showing ' + name + '\'s expenses');
-  }, 100);
+    toast('📊 ' + name + '\'s expenses');
+  }, 150);
 }
 
 function toast(msg) {
