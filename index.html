@@ -779,6 +779,16 @@ h1, h2, h3, .section-title-syne { font-family: 'Syne', sans-serif !important; }
         <button class="ftab" onclick="filterHulog('done',this)">Completed ✅</button>
       </div>
       <div id="hulog-list"></div>
+
+      <!-- ── LOAN PAYMENT TRACKER ── -->
+      <div id="loan-payment-tracker" style="display:none;margin-top:8px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div class="sec-title" style="margin:0">🏦 Loan Payment Tracker</div>
+          <button onclick="openScreen('loans')" style="font-size:11px;padding:5px 12px;background:var(--acc);color:var(--bg);border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer">+ New Loan</button>
+        </div>
+        <div id="loan-tracker-list"></div>
+      </div>
+
     </div>
   </div>
 
@@ -1441,6 +1451,7 @@ function renderAll() {
   renderHulogs();
   renderBudget();
   renderDueBanner();
+  renderLoanTracker();
 }
 
 // ══════════════════════════════════════════════
@@ -1449,6 +1460,7 @@ function renderAll() {
 function openScreen(name) {
   document.getElementById('screen-'+name).classList.add('open');
   if (name === 'loans') initLoanYearDropdown();
+  if (name === 'hulog') renderLoanTracker();
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
   const navEl = document.getElementById('nav-'+name);
   if (navEl) navEl.classList.add('active');
@@ -1516,6 +1528,11 @@ function renderDashboard() {
   document.getElementById('mod-expenses-prog').style.width = Math.min(100,totalExp/30000*100) + '%';
   document.getElementById('mod-hulog').textContent       = activeHulogs.length + ' active';
   document.getElementById('mod-hulog-sub').textContent   = fmt(monthlyHulog) + '/mo';
+  // Add loan count to payments module
+  const loanCount = savedLoans.filter(l => l.schedule && l.schedule.length > 0 && (l.paidCount||0) < l.schedule.length).length;
+  if (loanCount > 0) {
+    document.getElementById('mod-hulog-sub').textContent = fmt(monthlyHulog) + '/mo · ' + loanCount + ' loan' + (loanCount>1?'s':'');
+  }
   document.getElementById('mod-hulog-prog').style.width  = '60%';
   document.getElementById('mod-budget').textContent      = budgPct + '% used';
   document.getElementById('mod-budget-sub').textContent  = fmt(budgTotal-budgSpent) + ' left';
@@ -3345,6 +3362,187 @@ function filterByUser(userNum) {
     toast('📊 ' + name + '\'s expenses');
   }, 150);
 }
+
+
+// ══════════════════════════════════════════════
+//  LOAN PAYMENT TRACKER (in Payments screen)
+// ══════════════════════════════════════════════
+
+function renderLoanTracker() {
+  // Load from storage if needed
+  if (!savedLoans.length) {
+    try {
+      const s = localStorage.getItem('fk-loans');
+      if (s) {
+        savedLoans = JSON.parse(s);
+        _loanId = Math.max(...savedLoans.map(l => l.id), 0) + 1;
+      }
+    } catch(e) {}
+  }
+
+  const section = document.getElementById('loan-payment-tracker');
+  const list    = document.getElementById('loan-tracker-list');
+  if (!list) return;
+
+  if (!savedLoans.length) {
+    if (section) section.style.display = 'none';
+    return;
+  }
+  if (section) section.style.display = 'block';
+
+  const now   = new Date();
+  const today = now.toISOString().split('T')[0];
+
+  list.innerHTML = savedLoans.map(loan => {
+    const schedule    = loan.schedule || [];
+    const paidCount   = loan.paidCount || 0;
+    const totalPeriods = schedule.length;
+    const pct         = totalPeriods > 0 ? Math.round(paidCount / totalPeriods * 100) : 0;
+    const remaining   = totalPeriods - paidCount;
+    const isDone      = paidCount >= totalPeriods && totalPeriods > 0;
+
+    // Next payment info from schedule
+    const nextPayment  = schedule[paidCount] || null;
+    const lastPayment  = paidCount > 0 ? schedule[paidCount - 1] : null;
+
+    // Check if paid this month
+    const thisMonth   = now.toLocaleDateString('en-PH', {month:'short', year:'numeric'});
+    const paidThisMonth = loan.lastPaidMonth === thisMonth;
+
+    const methodLabel = (loan.interestMethod === 'addon') ? '🤝 Add-on' : '🏦 Amortizing';
+    const statusColor = isDone ? 'var(--acc)' : paidThisMonth ? 'var(--acc2)' : 'var(--acc3)';
+    const statusLabel = isDone ? '✅ Fully Paid' : paidThisMonth ? '✅ Paid this month' : '⏳ Payment due';
+
+    return `
+    <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:18px;margin-bottom:12px;overflow:hidden">
+
+      <!-- Header -->
+      <div style="padding:14px 16px;border-bottom:1px solid var(--bdr)">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:14px;font-weight:800;color:var(--txt);margin-bottom:2px">${loan.label}</div>
+            <div style="font-size:11px;color:var(--mut2)">${methodLabel} · ${loan.rate}% ${loan.rateType==='monthly'?'/mo':'/yr'} · Ends ${loan.endDate||'—'}</div>
+          </div>
+          <div style="font-size:11px;font-weight:800;padding:4px 10px;border-radius:99px;background:${statusColor}22;color:${statusColor};white-space:nowrap;flex-shrink:0">${statusLabel}</div>
+        </div>
+      </div>
+
+      <!-- Progress -->
+      <div style="padding:12px 16px;border-bottom:1px solid var(--bdr)">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+          <span style="font-size:11px;color:var(--mut2);font-weight:600">${paidCount} of ${totalPeriods} payments made</span>
+          <span style="font-size:11px;font-weight:800;color:var(--acc)">${pct}%</span>
+        </div>
+        <div style="height:6px;background:var(--surf2);border-radius:4px;overflow:hidden;margin-bottom:8px">
+          <div style="height:100%;width:${pct}%;background:var(--acc);border-radius:4px;transition:width .5s"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+          <div style="text-align:center;padding:8px;background:var(--surf2);border-radius:10px">
+            <div style="font-size:15px;font-weight:900;color:var(--acc);font-family:'JetBrains Mono',monospace">${loan.payment}</div>
+            <div style="font-size:9px;color:var(--mut);text-transform:uppercase;font-weight:700;margin-top:2px">Per Payment</div>
+          </div>
+          <div style="text-align:center;padding:8px;background:var(--surf2);border-radius:10px">
+            <div style="font-size:15px;font-weight:900;color:var(--acc2);font-family:'JetBrains Mono',monospace">${remaining}</div>
+            <div style="font-size:9px;color:var(--mut);text-transform:uppercase;font-weight:700;margin-top:2px">Remaining</div>
+          </div>
+          <div style="text-align:center;padding:8px;background:var(--surf2);border-radius:10px">
+            <div style="font-size:15px;font-weight:900;color:var(--acc4);font-family:'JetBrains Mono',monospace">${loan.interest}</div>
+            <div style="font-size:9px;color:var(--mut);text-transform:uppercase;font-weight:700;margin-top:2px">Total Interest</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Next payment info -->
+      ${nextPayment && !isDone ? `
+      <div style="padding:10px 16px;border-bottom:1px solid var(--bdr);background:rgba(245,208,112,0.05)">
+        <div style="font-size:11px;font-weight:800;color:var(--acc3);margin-bottom:4px">📅 Next Payment — ${nextPayment.label}</div>
+        <div style="display:flex;gap:16px;font-size:12px">
+          <span style="color:var(--mut2)">Payment: <strong style="color:var(--txt);font-family:'JetBrains Mono',monospace">${fmt(nextPayment.payment)}</strong></span>
+          <span style="color:var(--mut2)">Principal: <strong style="color:var(--acc2);font-family:'JetBrains Mono',monospace">${fmt(nextPayment.principal)}</strong></span>
+          <span style="color:var(--mut2)">Interest: <strong style="color:var(--acc4);font-family:'JetBrains Mono',monospace">${fmt(nextPayment.interest)}</strong></span>
+        </div>
+        <div style="font-size:11px;color:var(--mut2);margin-top:3px">Balance after: <strong style="color:var(--txt);font-family:'JetBrains Mono',monospace">${fmt(nextPayment.balance)}</strong></div>
+      </div>` : ''}
+
+      <!-- Action buttons -->
+      <div style="padding:10px 16px;display:flex;gap:8px;align-items:center">
+        ${!isDone ? `
+        <button onclick="markLoanPaid(${loan.id})" style="flex:1;padding:10px;background:${paidThisMonth?'var(--surf2)':'var(--acc)'};color:${paidThisMonth?'var(--mut2)':'var(--bg)'};border:none;border-radius:12px;font-size:13px;font-weight:800;cursor:pointer;font-family:'DM Sans',sans-serif;${paidThisMonth?'opacity:0.7;cursor:not-allowed':''}" ${paidThisMonth?'disabled':''}>
+          ${paidThisMonth ? '✅ Already paid this month' : '✅ Mark as Paid'}
+        </button>
+        <button onclick="undoLoanPaid(${loan.id})" style="padding:10px 14px;background:var(--surf2);border:1px solid var(--bdr);border-radius:12px;font-size:12px;font-weight:700;color:var(--mut2);cursor:pointer;font-family:'DM Sans',sans-serif" title="Undo last payment">↩</button>
+        ` : `<div style="flex:1;text-align:center;font-size:13px;font-weight:700;color:var(--acc)">🎉 Loan fully paid!</div>`}
+        <button onclick="toggleLoanHistory(${loan.id})" style="padding:10px 14px;background:var(--surf2);border:1px solid var(--bdr);border-radius:12px;font-size:12px;font-weight:700;color:var(--mut2);cursor:pointer;font-family:'DM Sans',sans-serif">📋</button>
+        <button onclick="deleteLoanFromTracker(${loan.id})" style="padding:10px 14px;background:var(--surf2);border:1px solid var(--bdr);border-radius:12px;font-size:12px;color:var(--acc4);cursor:pointer;font-family:'DM Sans',sans-serif">🗑️</button>
+      </div>
+
+      <!-- Payment history (collapsible) -->
+      <div id="loan-history-${loan.id}" style="display:none;padding:0 16px 12px">
+        <div style="font-size:11px;font-weight:800;color:var(--mut2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Payment History</div>
+        ${paidCount > 0 ? schedule.slice(0, paidCount).reverse().map((s,i) => `
+          <div style="display:flex;justify-content:space-between;padding:7px 10px;background:var(--surf2);border-radius:10px;margin-bottom:4px;font-size:12px">
+            <span style="font-weight:700;color:var(--acc)">✓ ${s.label}</span>
+            <span style="font-family:'JetBrains Mono',monospace;color:var(--txt)">${fmt(s.payment)}</span>
+            <span style="color:var(--mut2)">Bal: ${fmt(s.balance)}</span>
+          </div>`).join('') :
+          '<div style="font-size:11px;color:var(--mut2);text-align:center;padding:8px">No payments yet</div>'
+        }
+      </div>
+
+    </div>`;
+  }).join('');
+}
+
+function markLoanPaid(id) {
+  const loan = savedLoans.find(l => l.id === id);
+  if (!loan || !loan.schedule) return toast('⚠️ No schedule found');
+  const paidCount = loan.paidCount || 0;
+  if (paidCount >= loan.schedule.length) return toast('✅ Loan already fully paid!');
+
+  // Check if already paid this month
+  const now = new Date();
+  const thisMonth = now.toLocaleDateString('en-PH', {month:'short', year:'numeric'});
+  if (loan.lastPaidMonth === thisMonth) return toast('⚠️ Already marked paid this month');
+
+  loan.paidCount    = paidCount + 1;
+  loan.lastPaidMonth = thisMonth;
+  loan.lastPaidDate  = now.toISOString().split('T')[0];
+
+  if (loan.paidCount >= loan.schedule.length) {
+    toast('🎉 Congratulations! ' + loan.label + ' is fully paid!');
+  } else {
+    const next = loan.schedule[loan.paidCount];
+    toast('✅ Payment ' + loan.paidCount + '/' + loan.schedule.length + ' recorded! Next: ' + (next?.label || ''));
+  }
+
+  try { localStorage.setItem('fk-loans', JSON.stringify(savedLoans)); } catch(e) {}
+  renderLoanTracker();
+  renderHulogs(); // update summary stats
+}
+
+function undoLoanPaid(id) {
+  const loan = savedLoans.find(l => l.id === id);
+  if (!loan || !loan.paidCount) return toast('⚠️ No payment to undo');
+  loan.paidCount--;
+  loan.lastPaidMonth = loan.paidCount > 0 ? loan.lastPaidMonth : null;
+  toast('↩ Payment undone — back to ' + loan.paidCount + ' payments');
+  try { localStorage.setItem('fk-loans', JSON.stringify(savedLoans)); } catch(e) {}
+  renderLoanTracker();
+}
+
+function toggleLoanHistory(id) {
+  const el = document.getElementById('loan-history-' + id);
+  if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function deleteLoanFromTracker(id) {
+  if (!confirm('Remove this loan from tracker?')) return;
+  savedLoans = savedLoans.filter(l => l.id !== id);
+  try { localStorage.setItem('fk-loans', JSON.stringify(savedLoans)); } catch(e) {}
+  renderLoanTracker();
+  toast('🗑️ Loan removed');
+}
+
 
 function toast(msg) {
   const existing = document.querySelector('.toast');
