@@ -67,10 +67,10 @@
 /* ── BASE ───────────────────────────────── */
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;display:flex;justify-content:center}
-.app{width:100%;max-width:420px;min-height:100vh;position:relative;overflow-x:hidden}
+.app{width:100%;max-width:420px;min-height:100vh;position:relative;overflow-x:hidden;padding-top:57px}
 
 /* ── HEADER ─────────────────────────────── */
-.hdr{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--bdr);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;backdrop-filter:blur(20px)}
+.hdr{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;z-index:100;background:var(--bg);border-bottom:1px solid var(--bdr);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;backdrop-filter:blur(20px)}
 .logo{display:flex;align-items:center;gap:10px}
 .logo-icon{width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .logo-txt{font-size:17px;font-weight:800;font-family:'Syne',sans-serif;letter-spacing:-0.3px;line-height:1;color:var(--txt)}
@@ -82,7 +82,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-
 .notif-dot{position:absolute;top:-3px;right:-3px;width:16px;height:16px;border-radius:50%;background:var(--acc4);color:#fff;font-size:9px;font-weight:900;display:none;align-items:center;justify-content:center}
 
 /* ── SCROLL CONTENT ─────────────────────── */
-.content{padding:16px 16px 110px;overflow-y:auto}
+.content{padding:16px 16px 110px;overflow-y:auto;overflow-x:hidden}
 
 /* ── CARDS ──────────────────────────────── */
 .card{background:var(--surf);border:1px solid var(--bdr);border-radius:20px;padding:16px;margin-bottom:10px}
@@ -143,7 +143,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-
 .a-amt{font-size:14px;font-weight:900}
 
 /* ── BOTTOM NAV ─────────────────────────── */
-.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:#0A0C0A;border-top:1px solid rgba(255,255,255,0.08);display:flex;padding:8px 0 24px;z-index:100}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:var(--bg);border-top:1px solid var(--bdr);display:flex;padding:8px 0 24px;z-index:100}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 0;transition:all .2s}
 .nav-item:active{transform:scale(.88)}
 .nav-icon-wrap{width:44px;height:30px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;transition:all .2s}
@@ -401,12 +401,14 @@ h1, h2, h3, .section-title-syne { font-family: 'Syne', sans-serif !important; }
     min-height: 100vh;
     display: block;
     position: relative;
+    padding-top: 0 !important;
   }
 
   /* Header full width sticky */
   .hdr {
     position: fixed;
     top: 0; left: 0; right: 0;
+    transform: none !important;
     z-index: 100;
     padding: 12px 32px;
     width: 100%;
@@ -426,8 +428,7 @@ h1, h2, h3, .section-title-syne { font-family: 'Syne', sans-serif !important; }
     border-top: none;
     border-right: 1px solid var(--nav-bdr, var(--bdr));
     transform: none;
-    background: #0A0C0A;
-    border-right: 1px solid rgba(255,255,255,0.08);
+    background: var(--surf);
     overflow-y: auto;
     z-index: 90;
   }
@@ -535,11 +536,7 @@ h1, h2, h3, .section-title-syne { font-family: 'Syne', sans-serif !important; }
   border-bottom: 1px solid var(--bdr);
   box-shadow: 0 1px 12px rgba(0,0,0,.06);
 }
-/* Sidebar ALWAYS dark - FormulaKo brand */
-.nav {
-  background: #0A0C0A !important;
-  border-right: 1px solid rgba(255,255,255,0.08) !important;
-}
+/* Sidebar follows theme */
 /* Header logo text for light themes */
 [data-theme="light"] .logo-txt,
 [data-theme="sage"]  .logo-txt,
@@ -2451,13 +2448,12 @@ tr:last-child td{border-bottom:none}
     font-family: 'DM Sans', sans-serif;
   }
 
-  /* Main content — column 2, row 2 */
+  /* Main content */
   #main-content {
-    grid-column: 2;
-    grid-row: 2;
-    padding: 28px 40px 80px;
-    max-width: 800px;
-    width: 100%;
+    margin-left: 220px;
+    margin-top: 57px;
+    padding: 32px 48px 80px;
+    max-width: 860px;
   }
 
   /* FAB — fixed bottom right of main area */
