@@ -1348,6 +1348,49 @@ h1, h2, h3, .section-title-syne { font-family: 'Syne', sans-serif !important; }
     </div>
   </div>
 
+
+  <!-- ══ EDIT PAYMENT HISTORY MODAL ══ -->
+  <div class="overlay" id="modal-edit-payment">
+    <div class="sheet" onclick="event.stopPropagation()">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">✏️ Edit Payment Record</div>
+      <input type="hidden" id="eph-loan-id">
+      <input type="hidden" id="eph-history-idx">
+
+      <div class="field-grp">
+        <div class="field-lbl">Payment Type</div>
+        <select class="field-in" id="eph-type">
+          <option value="normal">✅ Full Payment</option>
+          <option value="late">⏰ Late Payment</option>
+          <option value="partial">💸 Partial Payment</option>
+          <option value="skip">⏭️ Skip Month</option>
+        </select>
+      </div>
+
+      <div class="field-grp">
+        <div class="field-lbl">Amount Paid (₱)</div>
+        <input class="field-in" id="eph-amount" type="number" placeholder="0">
+      </div>
+
+      <div class="field-grp" id="eph-latefee-grp">
+        <div class="field-lbl">Late Fee (₱)</div>
+        <input class="field-in" id="eph-latefee" type="number" placeholder="0" value="0">
+      </div>
+
+      <div class="field-grp">
+        <div class="field-lbl">Payment Date</div>
+        <input class="field-in" id="eph-date" type="date">
+      </div>
+
+      <div class="field-grp">
+        <div class="field-lbl">Notes</div>
+        <input class="field-in" id="eph-notes" type="text" placeholder="e.g. Paid via GCash">
+      </div>
+
+      <button class="submit-btn" onclick="saveEditPaymentHistory()">💾 Save Changes</button>
+    </div>
+  </div>
+
   <!-- Sync Bar -->
   <div class="sync-bar" id="sync-bar"><span id="sync-msg">⟳ Syncing...</span></div>
 
@@ -3658,10 +3701,17 @@ function renderLoanTracker() {
               const typeColor = h.type==='normal'?'var(--acc)':h.type==='late'?'var(--acc3)':h.type==='partial'?'var(--acc2)':'var(--acc4)';
               const extraInfo = h.lateFee>0 ? ' +₱'+h.lateFee.toLocaleString()+' fee' :
                                 h.unpaid>0  ? ' ₱'+h.unpaid.toLocaleString()+' unpaid' : '';
+              const hIdx = loan.paymentHistory.length - 1 - i;
               return \`<div style="padding:8px 10px;background:var(--surf2);border-radius:10px;margin-bottom:4px;font-size:12px">
-                <div style="display:flex;justify-content:space-between;margin-bottom:2px">
-                  <span style="font-weight:800;color:\${typeColor}">\${typeIcon} \${h.label}</span>
-                  <span style="font-family:'JetBrains Mono',monospace;font-weight:800;color:var(--txt)">\${h.amount>0?fmt(h.amount):'—'}</span>
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2px;gap:8px">
+                  <div style="flex:1;min-width:0">
+                    <span style="font-weight:800;color:\${typeColor}">\${typeIcon} \${h.label}</span>
+                    <span style="font-family:'JetBrains Mono',monospace;font-weight:800;color:var(--txt);margin-left:8px">\${h.amount>0?fmt(h.amount):'—'}</span>
+                  </div>
+                  <div style="display:flex;gap:4px;flex-shrink:0">
+                    <button onclick="editPaymentHistory(\${loan.id},\${hIdx})" style="padding:3px 8px;border-radius:8px;border:none;background:var(--surf);color:var(--acc2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif">✏️</button>
+                    <button onclick="deletePaymentHistory(\${loan.id},\${hIdx})" style="padding:3px 8px;border-radius:8px;border:none;background:var(--surf);color:var(--acc4);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif">🗑️</button>
+                  </div>
                 </div>
                 <div style="display:flex;justify-content:space-between">
                   <span style="color:var(--mut2)">\${h.date}\${h.notes?' · '+h.notes:''}</span>
@@ -3971,6 +4021,105 @@ function recordPayment() {
   try { localStorage.setItem('fk-loans', JSON.stringify(savedLoans)); } catch(e) {}
   document.getElementById('modal-payment-record').classList.remove('open');
   renderLoanTracker();
+}
+
+
+
+// ── Edit/Delete Payment History ──────────────
+function editPaymentHistory(loanId, histIdx) {
+  const loan = savedLoans.find(l => l.id === loanId);
+  if (!loan || !loan.paymentHistory) return;
+  const h = loan.paymentHistory[histIdx];
+  if (!h) return;
+
+  document.getElementById('eph-loan-id').value    = loanId;
+  document.getElementById('eph-history-idx').value = histIdx;
+  document.getElementById('eph-type').value        = h.type || 'normal';
+  document.getElementById('eph-amount').value      = h.amount || 0;
+  document.getElementById('eph-latefee').value     = h.lateFee || 0;
+  document.getElementById('eph-date').value        = h.date || '';
+  document.getElementById('eph-notes').value       = h.notes || '';
+
+  // Show/hide late fee field
+  const showLateFee = h.type === 'late';
+  document.getElementById('eph-latefee-grp').style.display = showLateFee ? 'block' : 'none';
+
+  document.getElementById('eph-type').onchange = function() {
+    document.getElementById('eph-latefee-grp').style.display =
+      this.value === 'late' ? 'block' : 'none';
+  };
+
+  document.getElementById('modal-edit-payment').classList.add('open');
+}
+
+function saveEditPaymentHistory() {
+  const loanId  = parseInt(document.getElementById('eph-loan-id').value);
+  const histIdx = parseInt(document.getElementById('eph-history-idx').value);
+  const loan    = savedLoans.find(l => l.id === loanId);
+  if (!loan || !loan.paymentHistory) return;
+
+  const h        = loan.paymentHistory[histIdx];
+  const oldType  = h.type;
+  const newType  = document.getElementById('eph-type').value;
+  const newAmt   = parseFloat(document.getElementById('eph-amount').value) || 0;
+  const newFee   = parseFloat(document.getElementById('eph-latefee').value) || 0;
+  const newDate  = document.getElementById('eph-date').value;
+  const newNotes = document.getElementById('eph-notes').value.trim();
+
+  // Update history entry
+  h.type    = newType;
+  h.amount  = newAmt;
+  h.lateFee = newFee;
+  h.date    = newDate;
+  h.notes   = newNotes;
+
+  // Recalculate total late fees
+  loan.totalLateFees = (loan.paymentHistory || [])
+    .reduce((sum, x) => sum + (x.lateFee || 0), 0);
+
+  try { localStorage.setItem('fk-loans', JSON.stringify(savedLoans)); } catch(e) {}
+  document.getElementById('modal-edit-payment').classList.remove('open');
+  renderLoanTracker();
+  toast('✅ Payment record updated!');
+}
+
+function deletePaymentHistory(loanId, histIdx) {
+  if (!confirm('Delete this payment record? This will also adjust the payment count.')) return;
+  const loan = savedLoans.find(l => l.id === loanId);
+  if (!loan || !loan.paymentHistory) return;
+
+  const h       = loan.paymentHistory[histIdx];
+  const wasType = h?.type;
+
+  // Remove from history
+  loan.paymentHistory.splice(histIdx, 1);
+
+  // Adjust paidCount if it was a completed payment
+  if (wasType === 'normal' || wasType === 'late') {
+    loan.paidCount = Math.max(0, (loan.paidCount || 0) - 1);
+  }
+
+  // Recalculate total late fees
+  loan.totalLateFees = (loan.paymentHistory || [])
+    .reduce((sum, x) => sum + (x.lateFee || 0), 0);
+
+  // If deleted a skip/partial, reset carryover
+  if (wasType === 'skip' || wasType === 'partial') {
+    // Recalculate carryover from remaining history
+    let carryover = 0;
+    loan.paymentHistory.forEach(ph => {
+      if (ph.type === 'skip' || ph.type === 'partial') {
+        carryover = ph.carryoverAdded || 0;
+      } else if (ph.type === 'normal' || ph.type === 'late') {
+        carryover = 0;
+      }
+    });
+    loan.carryoverBalance = carryover;
+  }
+
+  try { localStorage.setItem('fk-loans', JSON.stringify(savedLoans)); } catch(e) {}
+  renderLoanTracker();
+  toast('🗑️ Payment record deleted');
 }
 
 
