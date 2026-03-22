@@ -958,7 +958,11 @@ h1, h2, h3, .section-title-syne { font-family: 'Syne', sans-serif !important; }
           </div>
           <div style="display:flex;gap:8px;align-items:center">
             <input class="field-in" id="loan-rate" type="number" placeholder="e.g. 3.5" step="0.01" oninput="computeLoan()" style="flex:1">
-            <div id="loan-rate-hint" style="font-size:10px;color:var(--acc2);white-space:nowrap;flex-shrink:0;font-weight:700"></div>
+            <div id="loan-rate-hint" style="font-size:11px;white-space:nowrap;flex-shrink:0;font-weight:700"></div>
+          </div>
+          <div style="font-size:10px;color:var(--mut);margin-top:6px;line-height:1.6">
+            💡 <b style="color:var(--mut2)">5-6 / Coop lenders</b> — select Monthly (%) + Add-on<br>
+            💡 <b style="color:var(--mut2)">Banks / SSS / Pag-IBIG</b> — select Annual (%) + Amortizing
           </div>
         </div>
 
@@ -1024,6 +1028,9 @@ h1, h2, h3, .section-title-syne { font-family: 'Syne', sans-serif !important; }
 
       <!-- Results Card -->
       <div id="loan-results" style="display:none">
+
+        <!-- Active settings summary -->
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px" id="loan-settings-summary"></div>
 
         <!-- Main result -->
         <div class="net-card" style="margin-bottom:14px">
@@ -2585,8 +2592,8 @@ tr:last-child td{border-bottom:none}
     <div class="box"><div class="box-val" style="color:${net>=0?'#2ebd8f':'#d95f6e'}">${fmt(Math.abs(net))}</div><div class="box-lbl">${net>=0?'Net Savings':'Over Budget'}</div></div>
   </div>
   <div class="grid2">
-    <div class="person" style="background:#f0fdf8;border:1px solid #2ebd8f44"><div style="font-size:22px;margin-bottom:6px">👩</div><div style="font-size:18px;font-weight:900;color:#d95f6e">${fmt(chaExp)}</div><div style="font-size:11px;color:#5a6a82;margin-top:2px">Cha's Expenses</div></div>
-    <div class="person" style="background:#eff6ff;border:1px solid #4a90d944"><div style="font-size:22px;margin-bottom:6px">👨</div><div style="font-size:18px;font-weight:900;color:#d95f6e">${fmt(chadExp)}</div><div style="font-size:11px;color:#5a6a82;margin-top:2px">Chad's Expenses</div></div>
+    <div class="person" style="background:#f0fdf8;border:1px solid #2ebd8f44"><div style="font-size:22px;margin-bottom:6px">👩</div><div style="font-size:18px;font-weight:900;color:#d95f6e">${fmt(chaExp)}</div><div style="font-size:11px;color:#5a6a82;margin-top:2px">${user1Name||'User 1'}'s Expenses</div></div>
+    <div class="person" style="background:#eff6ff;border:1px solid #4a90d944"><div style="font-size:22px;margin-bottom:6px">👨</div><div style="font-size:18px;font-weight:900;color:#d95f6e">${fmt(chadExp)}</div><div style="font-size:11px;color:#5a6a82;margin-top:2px">${user2Name||'User 2'}'s Expenses</div></div>
   </div>
 </div>
 <div class="section"><div class="sec-title">📊 Expenses by Category</div>
@@ -2832,11 +2839,17 @@ function computeLoan() {
   const monthlyRate = annualRate / 100 / 12;
   const dailyRate   = annualRate / 100 / 365;
 
-  // Rate hint — show conversion
+  // Rate hint — show conversion with color
   const hint = document.getElementById('loan-rate-hint');
-  if (hint) hint.textContent = rateType === 'monthly'
-    ? '= ' + annualRate.toFixed(2) + '% p.a.'
-    : '= ' + (monthlyRate * 100).toFixed(4) + '% /mo';
+  if (hint) {
+    if (rateType === 'monthly') {
+      hint.textContent = '= ' + annualRate.toFixed(2) + '% annual';
+      hint.style.color = 'var(--acc)';
+    } else {
+      hint.textContent = '= ' + (monthlyRate * 100).toFixed(4) + '% /month';
+      hint.style.color = 'var(--acc2)';
+    }
+  }
 
   // Start date
   const startMonthEl = document.getElementById('loan-start-month');
@@ -2894,6 +2907,20 @@ function computeLoan() {
     : principal * periodicRate;
   const schedule = buildAmortSchedule(principal, periodicRate, periodicPayment, totalPeriods, payFreq, startMonth, startYear);
   const lastInt  = schedule.length > 0 ? schedule[schedule.length-1].interest : 0;
+
+  // ── Update settings summary badges ──
+  const summaryEl = document.getElementById('loan-settings-summary');
+  if (summaryEl) {
+    const rateLabel  = rateType === 'monthly' ? inputRate + '% /mo' : inputRate + '% /yr';
+    const methodLabel = interestMethod === 'addon' ? '🤝 Add-on' : '🏦 Amortizing';
+    const freqLabel2  = payFreq === 'monthly' ? '📅 Monthly' : payFreq === 'semi' ? '📅 Semi-mo' : '📅 Weekly';
+    const badge = (txt, col) => `<span style="padding:4px 10px;border-radius:99px;font-size:11px;font-weight:700;background:${col}22;color:${col};border:1px solid ${col}44">${txt}</span>`;
+    summaryEl.innerHTML = 
+      badge(rateLabel, 'var(--acc2)') +
+      badge(methodLabel, interestMethod==='addon' ? 'var(--acc3)' : 'var(--acc)') +
+      badge(freqLabel2, 'var(--acc)') +
+      badge(termMonths + ' months', 'var(--mut2)');
+  }
 
   // ── Update UI ──
   const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
