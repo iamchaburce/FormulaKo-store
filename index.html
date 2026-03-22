@@ -367,53 +367,47 @@ h1, h2, h3, .section-title-syne { font-family: 'Syne', sans-serif !important; }
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 .fade-in{animation:fadeUp .4s ease both}
 
+
 /* ══ DESKTOP / RESPONSIVE LAYOUT ══════════ */
 @media (min-width: 768px) {
 
-  body {
-    background: var(--bg);
-    align-items: flex-start;
-  }
+  body { align-items: flex-start; }
 
-  /* Desktop wrapper — sidebar + main */
+  /* App becomes a simple block */
   .app {
     max-width: 100%;
     width: 100%;
-    display: grid;
-    grid-template-columns: 240px 1fr;
-    grid-template-rows: auto 1fr;
     min-height: 100vh;
+    display: block;
     position: relative;
   }
 
-  /* Header spans full width — row 1 */
+  /* Header full width sticky */
   .hdr {
-    grid-column: 1 / -1;
-    grid-row: 1;
-    position: sticky;
-    top: 0;
+    position: fixed;
+    top: 0; left: 0; right: 0;
     z-index: 100;
-    padding: 14px 32px;
+    padding: 12px 32px;
+    width: 100%;
+    max-width: 100%;
   }
 
-  /* Sidebar nav — column 1, row 2 */
+  /* Sidebar — fixed left */
   .nav {
-    grid-column: 1;
-    grid-row: 2;
-    position: sticky;
-    top: 57px;
-    width: 240px;
+    position: fixed;
+    top: 57px; left: 0;
+    width: 220px;
     height: calc(100vh - 57px);
-    align-self: start;
     flex-direction: column;
-    padding: 24px 16px;
+    padding: 20px 12px;
     justify-content: flex-start;
-    gap: 4px;
+    gap: 2px;
     border-top: none;
     border-right: 1px solid var(--bdr);
     transform: none;
     background: var(--surf);
     overflow-y: auto;
+    z-index: 90;
   }
 
   .nav-item {
@@ -421,154 +415,89 @@ h1, h2, h3, .section-title-syne { font-family: 'Syne', sans-serif !important; }
     align-items: center;
     justify-content: flex-start;
     gap: 12px;
-    padding: 10px 14px;
+    padding: 10px 12px;
     border-radius: 12px;
     width: 100%;
-    transition: all .2s;
   }
-
   .nav-item:hover { background: var(--surf2); }
-  .nav-item.active { background: rgba(34,196,131,.1); }
-
-  .nav-icon-wrap {
-    width: 34px; height: 34px;
-    border-radius: 10px;
-    flex-shrink: 0;
-  }
-
-  .nav-lbl {
-    font-size: 13px;
-    font-weight: 700;
-    text-transform: none;
-    letter-spacing: 0;
-    color: var(--mut2);
-  }
-
-  .nav-item.active .nav-lbl { color: var(--acc); }
-
-  /* Sidebar label — FormulaKo text */
+  .nav-icon-wrap { width:32px; height:32px; border-radius:10px; flex-shrink:0; }
+  .nav-lbl { font-size:13px; font-weight:600; text-transform:none; letter-spacing:0; color:var(--mut2); }
+  .nav-item.active .nav-lbl { color:var(--acc); font-weight:700; }
   .nav::before {
     content: 'MENU';
-    display: block;
-    font-size: 9px;
-    font-weight: 800;
-    color: var(--mut);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    padding: 0 14px 12px;
-    font-family: 'DM Sans', sans-serif;
+    display:block; font-size:9px; font-weight:800;
+    color:var(--mut); text-transform:uppercase;
+    letter-spacing:2px; padding:0 12px 10px;
+    font-family:'DM Sans',sans-serif;
   }
 
-  /* Main content — column 2, row 2 */
+  /* Main content — pushed right of sidebar, below header */
   #main-content {
-    grid-column: 2;
-    grid-row: 2;
-    padding: 28px 40px 80px;
-    max-width: 800px;
-    width: 100%;
+    margin-left: 220px;
+    margin-top: 57px;
+    padding: 32px 48px 80px;
+    max-width: 860px;
   }
 
-  /* FAB — fixed bottom right of main area */
+  /* FAB */
   .fab {
     position: fixed;
-    bottom: 32px;
-    right: 32px;
-    width: 56px;
-    height: 56px;
-    border-radius: 18px;
+    bottom: 32px; right: 32px;
+    width: 54px; height: 54px;
   }
 
-  /* Module grid — 4 columns on desktop */
-  .mod-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-
-  /* Screens — show as overlay panel from right on desktop */
+  /* Screens — cover area right of sidebar */
   .screen {
     position: fixed;
-    top: 57px;
-    left: 240px;
-    right: 0;
-    bottom: 0;
-    width: auto;
-    height: auto;
-    border-left: 1px solid var(--bdr);
-    animation: slideInDesktop .25s ease;
+    top: 57px; left: 220px;
+    right: 0; bottom: 0;
+    width: auto; height: auto;
+    animation: slideInD .22s ease;
   }
-
-  @keyframes slideInDesktop {
-    from { opacity: 0; transform: translateX(20px); }
-    to   { opacity: 1; transform: translateX(0); }
+  @keyframes slideInD {
+    from { opacity:0; transform:translateX(16px); }
+    to   { opacity:1; transform:translateX(0); }
   }
+  .screen-body { padding:28px 48px 80px; max-width:800px; }
 
-  .screen-body {
-    padding: 24px 40px 80px;
-    max-width: 760px;
-  }
-
-  /* Modals — centered on desktop */
-  .overlay {
-    align-items: center;
-    justify-content: center;
-  }
-
+  /* Modals — centered */
+  .overlay { align-items:center; justify-content:center; }
   .sheet {
-    border-radius: 24px !important;
-    max-width: 480px;
-    max-height: 85vh;
-    animation: scaleIn .25s cubic-bezier(.34,1.2,.64,1);
-    border: 1px solid var(--bdr) !important;
-    border-top: 1px solid var(--bdr) !important;
+    border-radius:24px !important;
+    max-width:480px; max-height:88vh;
+    border:1px solid var(--bdr) !important;
+    animation:modalIn .22s cubic-bezier(.34,1.2,.64,1);
+  }
+  @keyframes modalIn {
+    from { opacity:0; transform:scale(.95); }
+    to   { opacity:1; transform:scale(1); }
   }
 
-  @keyframes scaleIn {
-    from { opacity: 0; transform: scale(.95); }
-    to   { opacity: 1; transform: scale(1); }
-  }
+  /* Module grid 4-col */
+  .mod-grid { grid-template-columns: repeat(4,1fr); }
 
-  /* Setup modal stays centered */
-  .setup-modal { padding: 40px 20px; }
-  .setup-box { border: 1px solid var(--bdr); }
+  /* Sync bar */
+  .sync-bar { left:220px; width:calc(100% - 220px); max-width:none; transform:none; }
 
-  /* Net card wider */
-  .net-card { padding: 28px; }
-  .net-amt { font-size: 44px; }
+  /* PWA/iOS banners */
+  .pwa-banner, .ios-tip { left:auto; right:32px; transform:none; width:320px; bottom:90px; }
 
-  /* Combined card row */
-  .cc-row { gap: 12px; }
-
-  /* Due banner full width */
-  .due-banner { max-width: 100%; }
-
-  /* Sync bar full width consideration */
-  .sync-bar { left: 240px; width: calc(100% - 240px); transform: none; max-width: none; }
-
-  /* iOS tip / PWA banner */
-  .pwa-banner, .ios-tip {
-    left: auto;
-    right: 32px;
-    transform: none;
-    width: 340px;
-    bottom: 100px;
-  }
+  /* Net card bigger */
+  .net-amt { font-size:42px; }
 }
 
-/* Medium screens — tablet */
 @media (min-width: 768px) and (max-width: 1024px) {
-  .app { grid-template-columns: 200px 1fr; }
-  .nav { grid-column: 1; grid-row: 2; width: 200px; }
-  #main-content { grid-column: 2; grid-row: 2; }
-  .screen { left: 200px; }
-  .sync-bar { left: 200px; width: calc(100% - 200px); }
-  #main-content { padding: 24px 28px 80px; }
-  .mod-grid { grid-template-columns: repeat(2, 1fr); }
+  .nav { width:180px; }
+  #main-content { margin-left:180px; padding:24px 28px 80px; }
+  .screen { left:180px; }
+  .sync-bar { left:180px; width:calc(100% - 180px); }
+  .mod-grid { grid-template-columns:repeat(2,1fr); }
 }
 
-/* Large screens */
-@media (min-width: 1400px) {
-  #main-content { max-width: 960px; }
-  .screen-body { max-width: 900px; }
+@media (min-width:1400px) {
+  #main-content { max-width:1000px; }
 }
+
 
 </style>
 </head>
@@ -629,7 +558,7 @@ h1, h2, h3, .section-title-syne { font-family: 'Syne', sans-serif !important; }
 
     <!-- Combined Card -->
     <div class="combined-card" id="combined-card">
-      <div class="cc-title" id="cc-main-title">👫 This Month</div>
+      <div class="cc-title" id="cc-main-title">This Month</div>
       <div class="cc-row">
         <div class="cc-person"><div class="cc-name pos">👤 User 1</div><div class="cc-val neg" id="cc-cha">₱0</div></div>
         <div class="cc-person"><div class="cc-name info">👤 User 2</div><div class="cc-val neg" id="cc-chad">₱0</div></div>
@@ -1312,15 +1241,21 @@ document.addEventListener('DOMContentLoaded', () => {
   currentUser = localStorage.getItem('fk-user') || '';
   loadLocal(); // restore persisted data
   // Load saved user names
-  user1Name = localStorage.getItem('fk-user1') || '';
-  user2Name = localStorage.getItem('fk-user2') || '';
-  currentUser = localStorage.getItem('fk-user') || '';
+  const storedU1 = localStorage.getItem('fk-user1') || '';
+  const storedU2 = localStorage.getItem('fk-user2') || '';
+  const storedCU = localStorage.getItem('fk-user')  || '';
+  // Validate: names should be simple strings, not code
+  const isValidName = s => s.length > 0 && s.length < 30 && !s.includes('{') && !s.includes('(') && !s.includes(';');
+  user1Name   = isValidName(storedU1) ? storedU1 : '';
+  user2Name   = isValidName(storedU2) ? storedU2 : '';
+  currentUser = isValidName(storedCU) ? storedCU : '';
+  // Show onboarding if no valid name stored
+  if (!currentUser) {
+    setTimeout(() => document.getElementById('setup-modal').classList.add('open'), 600);
+  }
   scriptUrl   = localStorage.getItem('fk-script-url') || '';
 
-  // Show setup if first time
-  if (!currentUser) {
-    document.getElementById('setup-modal').classList.add('open');
-  }
+  // Onboarding handled above after name validation
 
   // Build dynamic grids
   buildCatGrid();
@@ -1338,6 +1273,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Render all
   renderAll();
+  renderGreeting();
   updateUserButtons();
 
   // PWA
@@ -1446,8 +1382,18 @@ function renderDashboard() {
   // Combined card
   const chaExp  = expenses.filter(e=>e.date&&e.date.startsWith(m)&&e.addedBy===currentUser) .reduce((s,e)=>s+e.amount,0);
   const chadExp = expenses.filter(e=>e.date&&e.date.startsWith(m)&&e.addedBy===u2).reduce((s,e)=>s+e.amount,0);
-  document.getElementById('cc-main-title').textContent = '👫 ' + (user1Name||'User 1') + ' & ' + (user2Name||'User 2') + ' — This Month';
-  document.getElementById('cc-name1').textContent = '👤 ' + (user1Name || 'User 1');
+    // Update combined card based on whether user has partner
+  const u1 = user1Name || 'User 1';
+  const u2 = user2Name;
+  const titleEl = document.getElementById('cc-main-title');
+  const p2El    = document.getElementById('cc-person2');
+  const name1El = document.getElementById('cc-name1');
+  const name2El = document.getElementById('cc-name2');
+  if (titleEl) titleEl.textContent = u2 ? '👫 ' + u1 + ' & ' + u2 + ' — This Month' : '💰 ' + u1 + ' — This Month';
+  if (p2El)    p2El.style.display  = u2 ? '' : 'none';
+  if (name1El) name1El.textContent = '👤 ' + u1;
+  if (name2El) name2El.textContent = '👤 ' + u2;
+
   document.getElementById('cc-name2').textContent = '👤 ' + (user2Name || 'User 2');
   document.getElementById('cc-cha').textContent    = fmt(chaExp);
   document.getElementById('cc-chad').textContent   = fmt(chadExp);
@@ -2110,6 +2056,21 @@ function onboardNext(step) {
   }
 }
 
+
+function updateUserButtons() {
+  const u1 = user1Name || '';
+  const u2 = user2Name || '';
+  const eu1 = document.getElementById('eu-cha');
+  const eu2 = document.getElementById('eu-chad');
+  if (eu1) { eu1.textContent = '👤 ' + (u1 || 'User 1'); eu1.onclick = () => selExpUser(u1 || 'User 1'); }
+  if (eu2) { eu2.textContent = '👤 ' + (u2 || 'User 2'); eu2.onclick = () => selExpUser(u2 || 'User 2'); }
+  const cn1 = document.getElementById('cc-name1');
+  const cn2 = document.getElementById('cc-name2');
+  if (cn1) cn1.textContent = '👤 ' + (u1 || 'User 1');
+  if (cn2) cn2.textContent = '👤 ' + (u2 || 'User 2');
+  renderGreeting();
+}
+
 function selSetupUser(u) {
   setupUser = u;
   document.getElementById('su-cha').className  = 'user-btn' + (u===currentUser ?' on-cha':'');
@@ -2188,6 +2149,7 @@ async function syncFromCloud(silent=false) {
         if (mi.length) budgetData.income = mi.map((x,i)=>({id:parseInt(x.id)||i+1,type:x.type||'other',desc:x.description||'',amount:parseFloat(x.amount)||0}));
       }
       renderAll();
+  renderGreeting();
   updateUserButtons();
       if (!silent) showSyncBar('✅ Synced! ' + new Date().toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'}));
     }
@@ -2962,9 +2924,8 @@ function renderGreeting() {
   const timeStr = getGreetingTime();
   const greetEl = document.getElementById('greet-main');
   if (!greetEl) return;
-
-  if (name) {
-    greetEl.innerHTML = timeStr + ', <span style="color:var(--acc)">' + name + '</span>! 👋';
+  if (name && name !== 'User 1' && name !== '') {
+    greetEl.innerHTML = timeStr + ', <span style="color:var(--acc);font-family:\'Syne\',sans-serif">' + name + '</span>! 👋';
   } else {
     greetEl.innerHTML = timeStr + '! Let\'s track your <span style="color:var(--acc)">money</span> 💚';
   }
