@@ -1,0 +1,2526 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>FormulaKo BudgetBuddy</title>
+<meta name="theme-color" content="#0e1420" id="pwa-theme-color">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FormulaKo">
+<link rel="manifest" id="pwa-manifest">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── THEMES ─────────────────────────────── */
+:root {
+  --bg:#0A0C0A; --surf:#0f1a0f; --surf2:#172017;
+  --bdr:rgba(255,255,255,0.09); --acc:#22C483; --acc2:#5ecfaa;
+  --acc3:#F5D070; --acc4:#e07b8a; --txt:#FAF8F0;
+  --mut:#3d5c3d; --mut2:#7aaa7a;
+}
+[data-theme="light"]{
+  --bg:#FAF8F0; --surf:#ffffff; --surf2:#ede9df;
+  --bdr:rgba(10,12,10,0.08); --acc:#22C483; --acc2:#0A9C5A;
+  --acc3:#D4A017; --acc4:#d95f6e; --txt:#0A0C0A;
+  --mut:#7a9e7a; --mut2:#4d6b4d;
+}
+[data-theme="purple"]{
+  --bg:#051a0a; --surf:#0a2410; --surf2:#102e16;
+  --bdr:rgba(255,255,255,0.08); --acc:#22C483; --acc2:#F5D070;
+  --acc3:#5ecfaa; --acc4:#f07070; --txt:#FAF8F0;
+  --mut:#2a5c2a; --mut2:#5a9a5a;
+}
+[data-theme="sunset"]{
+  --bg:#1a1400; --surf:#221c00; --surf2:#2e2600;
+  --bdr:rgba(255,255,255,0.08); --acc:#F5D070; --acc2:#22C483;
+  --acc3:#e8a24a; --acc4:#e86464; --txt:#FAF8F0;
+  --mut:#6a5800; --mut2:#c4a000;
+}
+[data-theme="navy"]{
+  --bg:#06100a; --surf:#0c1e12; --surf2:#12281a;
+  --bdr:rgba(255,255,255,0.07); --acc:#22C483; --acc2:#F5D070;
+  --acc3:#5ecfaa; --acc4:#e87a7a; --txt:#FAF8F0;
+  --mut:#1a4028; --mut2:#4a8a5a;
+}
+
+/* ── BASE ───────────────────────────────── */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;display:flex;justify-content:center}
+.app{width:100%;max-width:420px;min-height:100vh;position:relative;overflow-x:hidden}
+
+/* ── HEADER ─────────────────────────────── */
+.hdr{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--bdr);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;backdrop-filter:blur(20px)}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-txt{font-size:17px;font-weight:800;font-family:'Syne',sans-serif;letter-spacing:-0.3px;line-height:1;color:var(--txt)}
+.logo-product{font-size:11px;font-weight:500;color:var(--mut2);font-family:'DM Sans',sans-serif;letter-spacing:0;vertical-align:middle;margin-left:2px}
+.logo-txt span{color:var(--acc)}
+.hdr-acts{display:flex;gap:8px;align-items:center}
+.icon-btn{width:36px;height:36px;border-radius:12px;background:var(--surf2);border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:all .2s;position:relative}
+.icon-btn:active{transform:scale(.9)}
+.notif-dot{position:absolute;top:-3px;right:-3px;width:16px;height:16px;border-radius:50%;background:var(--acc4);color:#fff;font-size:9px;font-weight:900;display:none;align-items:center;justify-content:center}
+
+/* ── SCROLL CONTENT ─────────────────────── */
+.content{padding:16px 16px 110px;overflow-y:auto}
+
+/* ── CARDS ──────────────────────────────── */
+.card{background:var(--surf);border:1px solid var(--bdr);border-radius:20px;padding:16px;margin-bottom:10px}
+.card-press{cursor:pointer;transition:transform .15s}
+.card-press:active{transform:scale(.98)}
+
+/* ── SECTION TITLE ──────────────────────── */
+.sec-title{font-size:10px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:2px;margin:16px 0 10px;font-family:'DM Sans',sans-serif}
+
+/* ── NET BALANCE CARD ───────────────────── */
+.net-card{background:var(--surf);border:1.5px solid var(--acc);border-radius:24px;padding:20px;margin-bottom:16px}
+.net-lbl{font-size:11px;color:var(--mut2);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;font-weight:700}
+.net-amt{font-size:36px;font-weight:700;color:var(--acc);letter-spacing:-1px;margin-bottom:8px;font-family:'JetBrains Mono',monospace}
+.net-chip{display:inline-flex;align-items:center;background:var(--acc);background:rgba(94,207,170,.15);padding:4px 12px;border-radius:99px;font-size:12px;font-weight:800;color:var(--acc);margin-bottom:14px}
+.net-div{height:1px;background:var(--bdr);margin-bottom:14px}
+.net-meta{display:flex}
+.net-mi{flex:1}
+.net-ml{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.8px;margin-bottom:2px;font-weight:700}
+.net-mv{font-size:15px;font-weight:900}
+
+/* ── COMBINED CARD ──────────────────────── */
+.combined-card{background:var(--surf);border:1px solid var(--acc2);border-radius:20px;padding:16px;margin-bottom:16px}
+.cc-title{font-size:11px;font-weight:900;color:var(--mut2);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
+.cc-row{display:flex;gap:8px;margin-bottom:8px}
+.cc-person{flex:1;background:var(--surf2);border-radius:14px;padding:12px;text-align:center}
+.cc-name{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.cc-val{font-size:17px;font-weight:900}
+.cc-total{background:var(--surf2);border-radius:14px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center}
+.cc-tl{font-size:12px;font-weight:700;color:var(--mut2)}
+.cc-tv{font-size:16px;font-weight:900}
+
+/* ── DUE BANNER ─────────────────────────── */
+.due-banner{background:rgba(232,184,109,.12);border:1px solid var(--acc3);border-radius:18px;padding:14px;margin-bottom:14px;cursor:pointer;display:none}
+.due-banner.show{display:block}
+.due-banner:active{opacity:.85}
+.db-title{font-size:13px;font-weight:900;margin-bottom:8px}
+.db-item{font-size:11px;color:var(--mut2);display:flex;justify-content:space-between;margin-bottom:4px}
+.db-item b{color:var(--txt)}
+
+/* ── MODULE GRID ────────────────────────── */
+.mod-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.mod-card{background:var(--surf);border:1px solid var(--bdr);border-radius:20px;padding:14px;cursor:pointer;transition:all .2s}
+.mod-card:active{transform:scale(.96)}
+.mod-icon{width:40px;height:40px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:10px}
+.mod-name{font-size:10px;font-weight:900;color:var(--mut2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px}
+.mod-val{font-size:17px;font-weight:700;margin-bottom:3px;font-family:'JetBrains Mono',monospace}
+.mod-sub{font-size:10px;color:var(--mut)}
+.prog-track{height:4px;background:var(--surf2);border-radius:4px;margin-top:10px;overflow:hidden}
+.prog-fill{height:100%;border-radius:4px;transition:width .8s}
+
+/* ── ALERT ITEMS ────────────────────────── */
+.alert-item{background:var(--surf);border:1px solid var(--bdr);border-radius:14px;padding:12px;display:flex;align-items:center;gap:10px;margin-bottom:8px;cursor:pointer}
+.alert-item:active{opacity:.8}
+.a-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.a-txt{flex:1}
+.a-name{font-size:13px;font-weight:800;margin-bottom:2px}
+.a-sub{font-size:11px;color:var(--mut2)}
+.a-amt{font-size:14px;font-weight:900}
+
+/* ── BOTTOM NAV ─────────────────────────── */
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:var(--bg);border-top:1px solid var(--bdr);display:flex;padding:8px 0 24px;z-index:100}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 0;transition:all .2s}
+.nav-item:active{transform:scale(.88)}
+.nav-icon-wrap{width:44px;height:30px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;transition:all .2s}
+.nav-item.active .nav-icon-wrap{background:rgba(94,207,170,.15)}
+.nav-lbl{font-size:9px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.8px;transition:all .2s;font-family:'DM Sans',sans-serif}
+.nav-item.active .nav-lbl{color:var(--acc)}
+
+/* ── FAB ────────────────────────────────── */
+.fab{position:fixed;bottom:84px;right:max(16px,calc(50% - 194px));width:52px;height:52px;background:var(--acc);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;color:var(--bg);cursor:pointer;box-shadow:0 4px 20px rgba(94,207,170,.4);z-index:99;transition:all .2s}
+.fab:active{transform:scale(.9)}
+
+/* ── SCREENS ────────────────────────────── */
+.screen{display:none;flex-direction:column;position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;background:var(--bg);z-index:200;overflow:hidden}
+.screen.open{display:flex;animation:slideIn .25s ease}
+@keyframes slideIn{from{transform:translateX(40px);opacity:0}to{transform:translateX(0);opacity:1}}
+.screen-hdr{padding:14px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--bdr);background:var(--bg);flex-shrink:0}
+.back-btn{width:36px;height:36px;border-radius:12px;background:var(--surf2);border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;flex-shrink:0}
+.back-btn:active{transform:scale(.9)}
+.screen-title{font-size:17px;font-weight:700;flex:1;font-family:'Syne',sans-serif;letter-spacing:-0.3px}
+.add-btn{width:36px;height:36px;border-radius:12px;background:var(--acc);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:var(--bg);cursor:pointer}
+.add-btn:active{transform:scale(.9)}
+.screen-body{flex:1;overflow-y:auto;padding:16px 16px 100px}
+
+/* ── SUMMARY STRIPS ─────────────────────── */
+.sum-strip{display:flex;gap:8px;margin-bottom:16px}
+.sum-box{flex:1;background:var(--surf);border:1px solid var(--bdr);border-radius:18px;padding:14px;text-align:center}
+.sum-icon{font-size:20px;margin-bottom:6px}
+.sum-val{font-size:17px;font-weight:900;margin-bottom:2px}
+.sum-lbl{font-size:9px;font-weight:800;color:var(--mut);text-transform:uppercase;letter-spacing:.5px}
+
+/* ── FILTER TABS ────────────────────────── */
+.ftabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none}
+.ftabs::-webkit-scrollbar{display:none}
+.ftab{padding:7px 14px;border-radius:99px;background:var(--surf);border:1px solid var(--bdr);font-size:12px;font-weight:800;color:var(--mut2);cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;transition:all .2s}
+.ftab.on{background:var(--acc);color:var(--bg);border-color:var(--acc)}
+.ftab:active{transform:scale(.95)}
+
+/* ── DEBT CARDS ─────────────────────────── */
+.debt-card{background:var(--surf);border:1px solid var(--bdr);border-radius:20px;padding:16px;margin-bottom:10px}
+.dc-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
+.dc-avatar{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;flex-shrink:0}
+.dc-info{flex:1;min-width:0}
+.dc-name{font-size:15px;font-weight:900;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dc-note{font-size:11px;color:var(--mut2)}
+.badge{padding:4px 10px;border-radius:99px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.5px;flex-shrink:0}
+.stats-row{display:flex;margin-bottom:10px}
+.stat-i{flex:1;text-align:center}
+.stat-v{font-size:13px;font-weight:900;margin-bottom:2px}
+.stat-l{font-size:9px;font-weight:800;color:var(--mut);text-transform:uppercase;letter-spacing:.3px}
+.prog-bar{height:6px;background:var(--surf2);border-radius:4px;overflow:hidden;margin-bottom:10px}
+.prog-bar-fill{height:100%;border-radius:4px;transition:width .8s}
+.dc-foot{display:flex;align-items:center;justify-content:space-between}
+.due-lbl{font-size:11px;font-weight:800}
+.row-acts{display:flex;gap:6px}
+.sm-btn{padding:6px 12px;border-radius:12px;font-size:12px;font-weight:900;cursor:pointer;border:1px solid var(--bdr);font-family:'DM Sans',sans-serif;transition:all .2s}
+.sm-btn:active{transform:scale(.92)}
+.sm-btn-acc{background:var(--acc);color:var(--bg);border-color:var(--acc)}
+.sm-btn-ghost{background:var(--surf2);color:var(--mut2)}
+
+/* ── EXPENSE ITEMS ──────────────────────── */
+.exp-hero{background:var(--surf);border:1px solid var(--bdr);border-radius:20px;padding:16px;margin-bottom:14px}
+.exp-total{font-size:34px;font-weight:900;color:var(--acc4);letter-spacing:-1px;margin-bottom:4px}
+.exp-pills{display:flex;gap:8px;margin-top:12px}
+.exp-pill{flex:1;background:var(--surf2);border-radius:14px;padding:10px;text-align:center}
+.ep-val{font-size:14px;font-weight:900;margin-bottom:2px}
+.ep-lbl{font-size:9px;font-weight:800;color:var(--mut);text-transform:uppercase;letter-spacing:.5px}
+.date-grp-hdr{display:flex;justify-content:space-between;padding:10px 0 6px;border-bottom:1px solid var(--bdr);margin-bottom:4px}
+.date-grp-lbl{font-size:11px;font-weight:900;color:var(--mut);text-transform:uppercase;letter-spacing:.8px}
+.exp-item{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--bdr)}
+.exp-item:last-child{border-bottom:none}
+.exp-cat-icon{width:40px;height:40px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.exp-desc{font-size:14px;font-weight:800;margin-bottom:2px}
+.exp-cat{font-size:11px;color:var(--mut2)}
+.exp-amt{font-size:15px;font-weight:900;color:var(--acc4)}
+.del-btn{width:28px;height:28px;border-radius:10px;border:none;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+.del-btn:active{transform:scale(.85)}
+
+/* ── DONUT CHART ────────────────────────── */
+.donut-wrap{display:flex;align-items:center;gap:14px;padding:4px 0}
+.legend-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.leg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.leg-name{flex:1;font-size:12px;font-weight:700}
+.leg-pct{font-size:12px;font-weight:900;color:var(--mut2)}
+
+/* ── HULOG CARDS ────────────────────────── */
+.hulog-card{background:var(--surf);border:1px solid var(--bdr);border-radius:20px;padding:16px;margin-bottom:10px}
+.hc-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.hc-icon{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.hc-name{font-size:15px;font-weight:900;margin-bottom:2px}
+.hc-store{font-size:11px;color:var(--mut2)}
+.timeline{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+.tl-dot{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:900}
+
+/* ── BUDGET SCREEN ──────────────────────── */
+.budget-hero{background:var(--surf);border:1px solid var(--bdr);border-radius:20px;padding:18px;margin-bottom:14px}
+.bh-body{display:flex;align-items:center;gap:16px;margin-bottom:14px}
+.ring-wrap{position:relative;width:110px;height:110px;flex-shrink:0}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring-pct{font-size:18px;font-weight:900}
+.ring-sub{font-size:9px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px}
+.bh-remaining{font-size:28px;font-weight:900;color:var(--acc);letter-spacing:-.5px;margin-bottom:2px}
+.bh-rem-lbl{font-size:11px;color:var(--mut2);margin-bottom:10px}
+.bh-pills{display:flex;gap:6px}
+.bh-pill{padding:5px 10px;border-radius:99px;background:var(--surf2);font-size:11px;font-weight:900}
+.income-row{display:flex;gap:8px}
+.income-item{flex:1;background:var(--surf2);border-radius:13px;padding:10px;display:flex;align-items:center;gap:8px}
+.inc-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.inc-val{font-size:14px;font-weight:900}
+.inc-lbl{font-size:9px;font-weight:800;color:var(--mut);text-transform:uppercase;letter-spacing:.5px}
+.bcat-row{background:var(--surf);border:1px solid var(--bdr);border-radius:18px;padding:14px;margin-bottom:8px;cursor:pointer}
+.bcat-row:active{opacity:.85}
+.bcat-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.bcat-icon{width:38px;height:38px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.bcat-name{flex:1;font-size:14px;font-weight:900}
+.pct-badge{padding:4px 10px;border-radius:99px;font-size:11px;font-weight:900}
+.bcat-foot{display:flex;justify-content:space-between;margin-top:6px;font-size:11px}
+.goal-card{background:var(--surf);border:1px solid var(--bdr);border-radius:18px;padding:14px;margin-bottom:8px}
+.goal-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.goal-name{font-size:14px;font-weight:900;margin-bottom:2px}
+.goal-dl{font-size:11px;color:var(--mut2)}
+.goal-pct{font-size:16px;font-weight:900;color:var(--acc)}
+.goal-foot{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.goal-add-btn{padding:6px 12px;border-radius:12px;background:var(--acc);color:var(--bg);font-size:11px;font-weight:900;border:none;cursor:pointer;font-family:inherit}
+.goal-add-btn:active{transform:scale(.92)}
+
+/* ── MODALS ─────────────────────────────── */
+.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);z-index:300;display:none;align-items:flex-end;justify-content:center}
+.overlay.open{display:flex}
+.sheet{width:100%;max-width:420px;background:var(--surf);border-radius:28px 28px 0 0;border-top:1px solid var(--bdr);padding:20px 20px 44px;max-height:90vh;overflow-y:auto;animation:sheetUp .3s cubic-bezier(.34,1.2,.64,1)}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sheet-handle{width:36px;height:4px;background:var(--bdr);border-radius:2px;margin:0 auto 18px}
+.sheet-title{font-size:18px;font-weight:700;margin-bottom:18px;font-family:'Syne',sans-serif}
+.type-toggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.type-opt{border-radius:16px;border:2px solid transparent;padding:14px;text-align:center;cursor:pointer;background:var(--surf2);transition:all .2s}
+.type-opt:active{transform:scale(.96)}
+.type-opt.on-a{border-color:var(--acc);background:rgba(94,207,170,.1)}
+.type-opt.on-b{border-color:var(--acc4);background:rgba(224,123,138,.1)}
+.type-opt.on-c{border-color:var(--acc2);background:rgba(107,163,214,.1)}
+.type-icon{font-size:24px;margin-bottom:4px}
+.type-lbl{font-size:14px;font-weight:900}
+.type-sub{font-size:10px;color:var(--mut);margin-top:2px}
+.field-grp{margin-bottom:13px}
+.field-lbl{font-size:11px;font-weight:900;color:var(--mut2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px}
+.field-in{width:100%;padding:12px 14px;background:var(--surf2);border:1px solid var(--bdr);border-radius:14px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;outline:none;transition:border-color .2s}
+.field-in:focus{border-color:var(--acc)}
+.field-in::placeholder{color:var(--mut)}
+select.field-in{appearance:none}
+.cat-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.cat-opt{width:calc(25% - 6px);border-radius:14px;border:2px solid transparent;padding:10px 4px;text-align:center;cursor:pointer;background:var(--surf2);transition:all .2s}
+.cat-opt:active{transform:scale(.92)}
+.cat-opt.on{border-color:var(--acc)}
+.cat-opt-icon{font-size:20px;margin-bottom:3px}
+.cat-opt-lbl{font-size:9px;font-weight:900;color:var(--mut2);text-transform:uppercase;letter-spacing:.3px}
+.submit-btn{width:100%;padding:14px;background:var(--acc);color:var(--bg);border:none;border-radius:16px;font-size:15px;font-weight:900;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:6px;transition:all .2s}
+.submit-btn:active{transform:scale(.97);opacity:.9}
+.user-toggle{display:flex;gap:8px;margin-bottom:14px}
+.user-btn{flex:1;padding:10px;border-radius:14px;background:var(--surf2);border:2px solid transparent;text-align:center;font-size:13px;font-weight:900;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--mut2);transition:all .2s}
+.user-btn.on-cha{border-color:var(--acc);background:rgba(94,207,170,.1);color:var(--acc)}
+.user-btn.on-chad{border-color:var(--acc2);background:rgba(107,163,214,.1);color:var(--acc2)}
+.user-btn:active{transform:scale(.95)}
+
+/* ── THEME PICKER ───────────────────────── */
+.theme-grid{display:flex;flex-wrap:wrap;gap:10px}
+.theme-card{width:calc(50% - 5px);border-radius:18px;border:2px solid transparent;padding:14px;cursor:pointer;position:relative;transition:all .2s}
+.theme-card:active{transform:scale(.96)}
+.theme-card.selected{border-color:var(--acc)}
+.theme-check{position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;display:none;align-items:center;justify-content:center;font-size:11px;font-weight:900}
+.theme-card.selected .theme-check{display:flex}
+.theme-dots{display:flex;gap:4px;margin-bottom:10px}
+.theme-dot{width:14px;height:14px;border-radius:50%}
+.theme-name{font-size:13px;font-weight:900;margin-bottom:2px}
+.theme-desc{font-size:10px;opacity:.7}
+.theme-card.navy-wide{width:100%}
+
+/* ── DUE ALERTS SHEET ───────────────────── */
+.due-item{background:var(--surf2);border-radius:16px;padding:14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;border-left:4px solid var(--acc3)}
+.due-item.overdue{border-left-color:var(--acc4);background:rgba(224,123,138,.07)}
+.due-icon{width:40px;height:40px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.due-info{flex:1;min-width:0}
+.due-name{font-size:13px;font-weight:900;margin-bottom:2px}
+.due-meta{font-size:11px;color:var(--mut2)}
+.due-right{text-align:right;flex-shrink:0}
+.due-amt{font-size:14px;font-weight:900;margin-bottom:3px}
+.due-tag{font-size:10px;font-weight:900;padding:2px 8px;border-radius:99px}
+
+/* ── SYNC BAR ───────────────────────────── */
+.sync-bar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;padding:10px 16px;z-index:999;display:none;align-items:center;justify-content:center;gap:8px;font-size:12px;font-weight:900;background:var(--acc);color:var(--bg)}
+.sync-bar{background:var(--acc);color:var(--bg)}
+.sync-bar.show{display:flex}
+.sync-bar.err{background:var(--acc4);color:#fff}
+.sync-bar.syncing{background:var(--acc3);color:var(--bg)}
+
+/* ── SETUP MODAL ────────────────────────── */
+.setup-modal{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px}
+.setup-modal.open{display:flex}
+.setup-box{background:var(--surf);border:1px solid var(--bdr);border-radius:28px;padding:28px 24px;width:100%;max-width:380px}
+.setup-box h2{font-size:20px;font-weight:900;margin-bottom:6px}
+.setup-box p{font-size:13px;color:var(--mut2);margin-bottom:20px;line-height:1.6}
+
+/* ── PWA BANNER ─────────────────────────── */
+.pwa-banner{position:fixed;bottom:84px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:388px;background:var(--surf);border:1px solid var(--acc);border-radius:20px;padding:14px 16px;display:none;align-items:center;gap:12px;z-index:98;box-shadow:0 8px 32px rgba(0,0,0,.3);animation:sheetUp .4s cubic-bezier(.34,1.56,.64,1)}
+.pwa-banner.show{display:flex}
+.pwa-icon{width:44px;height:44px;background:var(--acc);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:var(--bg);flex-shrink:0}
+.pwa-txt{flex:1}
+.pwa-title{font-size:13px;font-weight:900;margin-bottom:2px}
+.pwa-sub{font-size:11px;color:var(--mut2)}
+.pwa-btn{padding:8px 14px;background:var(--acc);border:none;border-radius:12px;font-size:12px;font-weight:900;color:var(--bg);cursor:pointer;font-family:'DM Sans',sans-serif;flex-shrink:0}
+.pwa-close{width:24px;height:24px;background:var(--surf2);border:none;border-radius:8px;color:var(--mut);cursor:pointer;font-size:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+
+/* ── IOS TIP ────────────────────────────── */
+.ios-tip{position:fixed;bottom:84px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:388px;background:var(--surf);border:1px solid var(--acc2);border-radius:20px;padding:16px;z-index:98;display:none;box-shadow:0 8px 32px rgba(0,0,0,.3)}
+.ios-tip.show{display:block}
+.ios-tip-title{font-size:14px;font-weight:900;margin-bottom:8px}
+.ios-tip-steps{font-size:12px;color:var(--mut2);line-height:1.9}
+.ios-tip-steps b{color:var(--txt)}
+.ios-tip-close{width:100%;margin-top:12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:12px;padding:8px;font-size:12px;font-weight:800;color:var(--mut2);cursor:pointer;font-family:inherit}
+
+/* ── EMPTY STATE ────────────────────────── */
+.empty{text-align:center;padding:48px 20px}
+.empty-icon{font-size:52px;margin-bottom:12px}
+.empty-title{font-size:18px;font-weight:900;margin-bottom:8px}
+.empty-sub{font-size:14px;color:var(--mut2);line-height:1.5}
+
+/* ── FORMULAKO FONT SYSTEM ─────────────── */
+/* DM Sans for all UI text */
+*, *::before, *::after { font-family: 'DM Sans', sans-serif; }
+/* Syne for headings & branding */
+.logo-txt, .screen-title, .sheet-title,
+h1, h2, h3, .section-title-syne { font-family: 'Syne', sans-serif !important; }
+/* JetBrains Mono for all numbers/amounts */
+.net-amt, .mod-val, .sum-val, .exp-total,
+.ep-val, .stat-v, .cp-val, .cc-val, .cc-tv,
+.bh-remaining, .ring-pct, .hc-name + *,
+.da-val, .hstat-val, .goal-pct,
+.due-amt, .pricing-amount { font-family: 'JetBrains Mono', monospace !important; }
+
+/* ── UTILS ──────────────────────────────── */
+.pos{color:var(--acc)} .neg{color:var(--acc4)} .warn{color:var(--acc3)} .info{color:var(--acc2)}
+.hidden{display:none!important}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.fade-in{animation:fadeUp .4s ease both}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <div class="logo">
+      <svg width="32" height="32" viewBox="0 0 32 32" style="flex-shrink:0">
+  <rect x="1" y="1" width="8" height="8" rx="2.5" fill="#22C483"/>
+  <rect x="12" y="1" width="8" height="8" rx="2.5" fill="#22C483" opacity="0.8"/>
+  <rect x="23" y="1" width="8" height="8" rx="2.5" fill="#22C483" opacity="0.6"/>
+  <rect x="1" y="12" width="8" height="8" rx="2.5" fill="#22C483" opacity="0.7"/>
+  <rect x="12" y="12" width="8" height="8" rx="2.5" fill="#F5D070"/>
+  <rect x="23" y="12" width="8" height="8" rx="2.5" fill="#22C483" opacity="0.3"/>
+  <rect x="1" y="23" width="8" height="8" rx="2.5" fill="#22C483" opacity="0.5"/>
+  <rect x="12" y="23" width="8" height="8" rx="2.5" fill="#22C483" opacity="0.25"/>
+  <rect x="23" y="23" width="8" height="8" rx="2.5" fill="#F5D070" opacity="0.5"/>
+</svg>
+      <div class="logo-txt">Formula<span style="color:#F5D070">Ko</span><span class="logo-product"> BudgetBuddy</span></div>
+    </div>
+    <div class="hdr-acts">
+      <div class="icon-btn" id="pdf-btn" title="Export PDF" onclick="exportPDF()">📄</div>
+      <div class="icon-btn" id="sync-btn" onclick="manualSync()" title="Sync with Google Sheets">🔄</div>
+      <div class="icon-btn" id="bell-btn" onclick="openDues()">🔔<div class="notif-dot" id="notif-dot"></div></div>
+      <div class="icon-btn" onclick="openTheme()">⚙️</div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="content" id="main-content">
+
+    <!-- Due Banner -->
+    <div class="due-banner" id="due-banner" onclick="openDues()">
+      <div class="db-title" id="due-banner-title">⚠️ Upcoming dues</div>
+      <div id="due-banner-items"></div>
+    </div>
+
+    <!-- Greeting -->
+    <div style="margin-bottom:18px">
+      <div style="font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px" id="greet-date"></div>
+      <div style="font-size:22px;font-weight:900">Good day! Let's track your <span style="color:var(--acc);font-family:'Syne',sans-serif">money</span> 💚</div>
+    </div>
+
+    <!-- Net Balance -->
+    <div class="net-card">
+      <div class="net-lbl">Total Net Balance</div>
+      <div class="net-amt" id="net-amount">₱0</div>
+      <div class="net-chip" id="net-chip">↑ Good financial standing</div>
+      <div class="net-div"></div>
+      <div class="net-meta">
+        <div class="net-mi"><div class="net-ml">Income</div><div class="net-mv pos" id="nm-income">₱0</div></div>
+        <div class="net-mi"><div class="net-ml">Expenses</div><div class="net-mv neg" id="nm-expenses">₱0</div></div>
+        <div class="net-mi"><div class="net-ml">Pending</div><div class="net-mv warn" id="nm-pending">₱0</div></div>
+      </div>
+    </div>
+
+    <!-- Combined Card -->
+    <div class="combined-card" id="combined-card">
+      <div class="cc-title">👫 Cha & Chad — This Month</div>
+      <div class="cc-row">
+        <div class="cc-person"><div class="cc-name pos">👤 User 1</div><div class="cc-val neg" id="cc-cha">₱0</div></div>
+        <div class="cc-person"><div class="cc-name info">👤 User 2</div><div class="cc-val neg" id="cc-chad">₱0</div></div>
+      </div>
+      <div class="cc-total"><span class="cc-tl">💸 Total Spent</span><span class="cc-tv neg" id="cc-total">₱0</span></div>
+      <div class="cc-total" style="margin-top:6px"><span class="cc-tl">💰 Total Income</span><span class="cc-tv pos" id="cc-income">₱0</span></div>
+      <div class="cc-total" style="margin-top:6px" id="cc-net-wrap"><span class="cc-tl">📊 Net Balance</span><span class="cc-tv" id="cc-net">₱0</span></div>
+    </div>
+
+    <!-- Module Cards -->
+    <div class="sec-title">Modules</div>
+    <div class="mod-grid">
+      <div class="mod-card" onclick="openScreen('debts')">
+        <div class="mod-icon" style="background:rgba(224,123,138,.15)">💸</div>
+        <div class="mod-name">Debt Tracker</div>
+        <div class="mod-val neg" id="mod-debts">₱0</div>
+        <div class="mod-sub" id="mod-debts-sub">0 active</div>
+        <div class="prog-track"><div class="prog-fill" id="mod-debts-prog" style="background:var(--acc4)"></div></div>
+      </div>
+      <div class="mod-card" onclick="openScreen('expenses')">
+        <div class="mod-icon" style="background:rgba(107,163,214,.15)">📊</div>
+        <div class="mod-name">Expenses</div>
+        <div class="mod-val info" id="mod-expenses">₱0</div>
+        <div class="mod-sub" id="mod-expenses-sub">This month</div>
+        <div class="prog-track"><div class="prog-fill" id="mod-expenses-prog" style="background:var(--acc2)"></div></div>
+      </div>
+      <div class="mod-card" onclick="openScreen('hulog')">
+        <div class="mod-icon" style="background:rgba(232,184,109,.15)">📦</div>
+        <div class="mod-name">Payments</div>
+        <div class="mod-val warn" id="mod-hulog">0 active</div>
+        <div class="mod-sub" id="mod-hulog-sub">₱0/mo</div>
+        <div class="prog-track"><div class="prog-fill" id="mod-hulog-prog" style="background:var(--acc3)"></div></div>
+      </div>
+      <div class="mod-card" onclick="openScreen('budget')">
+        <div class="mod-icon" style="background:rgba(94,207,170,.15)">🏡</div>
+        <div class="mod-name">Family Budget</div>
+        <div class="mod-val pos" id="mod-budget">0%</div>
+        <div class="mod-sub" id="mod-budget-sub">₱0 left</div>
+        <div class="prog-track"><div class="prog-fill" id="mod-budget-prog" style="background:var(--acc)"></div></div>
+      </div>
+      <div class="mod-card" onclick="openScreen('loans')" style="grid-column:span 2">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="mod-icon" style="background:rgba(107,163,214,.15);margin-bottom:0">🏦</div>
+          <div>
+            <div class="mod-name">Loan Calculator</div>
+            <div class="mod-val info">Compute monthly payments</div>
+            <div class="mod-sub">Interest rate · amortization · breakdown</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Upcoming Dues on Dashboard -->
+    <div id="dash-dues"></div>
+
+  </div><!-- end main-content -->
+
+  <!-- BOTTOM NAV -->
+  <nav class="nav">
+    <div class="nav-item active" id="nav-home" onclick="showHome()">
+      <div class="nav-icon-wrap">🏠</div>
+      <div class="nav-lbl">Home</div>
+    </div>
+    <div class="nav-item" id="nav-debts" onclick="openScreen('debts')">
+      <div class="nav-icon-wrap">💸</div>
+      <div class="nav-lbl">Debts</div>
+    </div>
+    <div class="nav-item" id="nav-expenses" onclick="openScreen('expenses')">
+      <div class="nav-icon-wrap">📊</div>
+      <div class="nav-lbl">Expenses</div>
+    </div>
+    <div class="nav-item" id="nav-hulog" onclick="openScreen('hulog')">
+      <div class="nav-icon-wrap">📦</div>
+      <div class="nav-lbl">Payments</div>
+    </div>
+    <div class="nav-item" id="nav-budget" onclick="openScreen('budget')">
+      <div class="nav-icon-wrap">🏡</div>
+      <div class="nav-lbl">Budget</div>
+    </div>
+  </nav>
+
+  <!-- FAB -->
+  <div class="fab" id="fab" onclick="openQuickAdd()">+</div>
+
+  <!-- ══ DEBT SCREEN ══ -->
+  <div class="screen" id="screen-debts">
+    <div class="screen-hdr">
+      <div class="back-btn" onclick="closeScreen('debts')">←</div>
+      <div class="screen-title">💸 Debt Tracker</div>
+      <div class="add-btn" onclick="openModal('add-debt')">+</div>
+    </div>
+    <div class="screen-body">
+      <div class="sum-strip">
+        <div class="sum-box"><div class="sum-icon">🤝</div><div class="sum-val pos" id="ds-oweme">₱0</div><div class="sum-lbl">Owe Me</div></div>
+        <div class="sum-box"><div class="sum-icon">😬</div><div class="sum-val neg" id="ds-iowe">₱0</div><div class="sum-lbl">I Owe</div></div>
+        <div class="sum-box"><div class="sum-icon">✅</div><div class="sum-val" id="ds-settled" style="color:var(--mut2)">0</div><div class="sum-lbl">Settled</div></div>
+      </div>
+      <div class="ftabs" id="debt-filters">
+        <button class="ftab on" onclick="filterDebts('all',this)">All</button>
+        <button class="ftab" onclick="filterDebts('oweme',this)">Owe Me 🤝</button>
+        <button class="ftab" onclick="filterDebts('iowe',this)">I Owe 😬</button>
+        <button class="ftab" onclick="filterDebts('overdue',this)">Overdue ⚠️</button>
+        <button class="ftab" onclick="filterDebts('settled',this)">Settled ✅</button>
+      </div>
+      <div id="debt-list"></div>
+    </div>
+  </div>
+
+  <!-- ══ EXPENSE SCREEN ══ -->
+  <div class="screen" id="screen-expenses">
+    <div class="screen-hdr">
+      <div class="back-btn" onclick="closeScreen('expenses')">←</div>
+      <div class="screen-title">📊 Expenses</div>
+      <div class="add-btn" onclick="openModal('add-expense')">+</div>
+    </div>
+    <div class="screen-body">
+      <div class="exp-hero">
+        <div style="font-size:11px;font-weight:700;color:var(--mut2);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">This Month's Total</div>
+        <div class="exp-total" id="exp-total">₱0</div>
+        <div style="font-size:12px;color:var(--mut2)" id="exp-status">Loading...</div>
+        <div class="exp-pills">
+          <div class="exp-pill"><div class="ep-val pos" id="exp-today">₱0</div><div class="ep-lbl">Today</div></div>
+          <div class="exp-pill"><div class="ep-val info" id="exp-week">₱0</div><div class="ep-lbl">This Week</div></div>
+          <div class="exp-pill"><div class="ep-val warn" id="exp-count">0</div><div class="ep-lbl">Transactions</div></div>
+        </div>
+      </div>
+      <div class="sec-title">By Category</div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="donut-wrap">
+          <svg id="donut-svg" width="120" height="120" viewBox="0 0 120 120" style="flex-shrink:0"></svg>
+          <div id="donut-legend" style="flex:1"></div>
+        </div>
+      </div>
+      <div class="sec-title">Transactions</div>
+      <div class="ftabs" id="exp-filters">
+        <button class="ftab on" onclick="filterExp('all',this)">All</button>
+        <button class="ftab" onclick="filterExp('food',this)">🍚 Food</button>
+        <button class="ftab" onclick="filterExp('transpo',this)">🚌 Transpo</button>
+        <button class="ftab" onclick="filterExp('bills',this)">⚡ Bills</button>
+        <button class="ftab" onclick="filterExp('shopping',this)">🛍️ Shopping</button>
+        <button class="ftab" onclick="filterExp('health',this)">💊 Health</button>
+        <button class="ftab" onclick="filterExp('others',this)">📦 Others</button>
+      </div>
+      <div id="exp-list"></div>
+    </div>
+  </div>
+
+  <!-- ══ HULOG SCREEN ══ -->
+  <div class="screen" id="screen-hulog">
+    <div class="screen-hdr">
+      <div class="back-btn" onclick="closeScreen('hulog')">←</div>
+      <div class="screen-title">📦 Payment Tracker</div>
+      <div class="add-btn" onclick="openModal('add-hulog')">+</div>
+    </div>
+    <div class="screen-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">
+        <div class="sum-box"><div class="sum-icon">📦</div><div class="sum-val warn" id="hs-active">0</div><div class="sum-lbl">Active</div></div>
+        <div class="sum-box"><div class="sum-icon">💸</div><div class="sum-val neg" id="hs-monthly">₱0</div><div class="sum-lbl">Monthly</div></div>
+        <div class="sum-box"><div class="sum-icon">⚠️</div><div class="sum-val warn" id="hs-due">₱0</div><div class="sum-lbl">Due This Month</div></div>
+        <div class="sum-box"><div class="sum-icon">✅</div><div class="sum-val pos" id="hs-done">0</div><div class="sum-lbl">Completed</div></div>
+      </div>
+      <div class="ftabs" id="hulog-filters">
+        <button class="ftab on" onclick="filterHulog('all',this)">All</button>
+        <button class="ftab" onclick="filterHulog('active',this)">Active</button>
+        <button class="ftab" onclick="filterHulog('due',this)">Due Soon ⚠️</button>
+        <button class="ftab" onclick="filterHulog('done',this)">Completed ✅</button>
+      </div>
+      <div id="hulog-list"></div>
+    </div>
+  </div>
+
+  <!-- ══ BUDGET SCREEN ══ -->
+  <div class="screen" id="screen-budget">
+    <div class="screen-hdr">
+      <div class="back-btn" onclick="closeScreen('budget')">←</div>
+      <div class="screen-title">🏡 Family Budget</div>
+      <div class="add-btn" onclick="openModal('add-income')">+</div>
+    </div>
+    <div class="screen-body">
+      <div class="budget-hero">
+        <div style="font-size:11px;font-weight:700;color:var(--mut2);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px" id="budget-month-lbl">March 2026</div>
+        <div class="bh-body">
+          <div class="ring-wrap">
+            <svg id="ring-svg" width="110" height="110" viewBox="0 0 110 110"></svg>
+            <div class="ring-center"><div class="ring-pct" id="ring-pct">0%</div><div class="ring-sub">Used</div></div>
+          </div>
+          <div style="flex:1">
+            <div class="bh-remaining" id="bh-remaining">₱0</div>
+            <div class="bh-rem-lbl">remaining this month</div>
+            <div class="bh-pills">
+              <div class="bh-pill pos" id="bh-in">↑ ₱0 in</div>
+              <div class="bh-pill neg" id="bh-out">↓ ₱0 out</div>
+            </div>
+          </div>
+        </div>
+        <div class="income-row">
+          <div class="income-item"><div class="inc-dot" style="background:var(--acc)"></div><div><div class="inc-val pos" id="inc-salary">₱0</div><div class="inc-lbl">Salary</div></div></div>
+          <div class="income-item"><div class="inc-dot" style="background:var(--acc2)"></div><div><div class="inc-val info" id="inc-other">₱0</div><div class="inc-lbl">Other Income</div></div></div>
+        </div>
+      </div>
+      <div class="sec-title">Budget Categories</div>
+      <div id="budget-cat-list"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">
+      <div class="sec-title" style="margin:0">🐷 Savings Goals</div>
+      <button onclick="openModal('add-goal')" style="padding:6px 14px;background:var(--acc);color:var(--bg);border:none;border-radius:12px;font-size:12px;font-weight:900;cursor:pointer;font-family:inherit">+ Add Goal</button>
+    </div>
+      <div id="savings-list"></div>
+    </div>
+  </div>
+
+  <!-- ══ MODALS ══ -->
+
+  <!-- Quick Add -->
+  <div class="overlay" id="modal-quick">
+    <div class="sheet" onclick="event.stopPropagation()">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">What do you want to add?</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="type-opt" onclick="quickAdd('expense')"><div class="type-icon">💸</div><div class="type-lbl">Expense</div><div class="type-sub">Log a spending</div></div>
+        <div class="type-opt" onclick="quickAdd('income')"><div class="type-icon">💰</div><div class="type-lbl">Income</div><div class="type-sub">Add earnings</div></div>
+        <div class="type-opt" onclick="quickAdd('debt')"><div class="type-icon">🤝</div><div class="type-lbl">Debt</div><div class="type-sub">Track utang</div></div>
+        <div class="type-opt" onclick="quickAdd('hulog')"><div class="type-icon">📦</div><div class="type-lbl">Payments</div><div class="type-sub">Add payment plan</div></div>
+        <div class="type-opt" onclick="quickAdd('loans')" style="grid-column:span 2"><div class="type-icon">🏦</div><div class="type-lbl">Loan Calculator</div><div class="type-sub">Compute payments & amortization</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Debt -->
+  <div class="overlay" id="modal-add-debt">
+    <div class="sheet" onclick="event.stopPropagation()">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">Add Debt Record</div>
+      <div class="type-toggle">
+        <div class="type-opt on-a" id="dt-oweme" onclick="selDebtType('oweme')"><div class="type-icon">🤝</div><div class="type-lbl">Owe Me</div><div class="type-sub">Someone owes you</div></div>
+        <div class="type-opt" id="dt-iowe" onclick="selDebtType('iowe')"><div class="type-icon">😬</div><div class="type-lbl">I Owe</div><div class="type-sub">You owe someone</div></div>
+      </div>
+      <div class="field-grp"><div class="field-lbl">Name</div><input class="field-in" id="d-name" type="text" placeholder="e.g. Juan dela Cruz"></div>
+      <div class="field-grp"><div class="field-lbl">Amount (₱)</div><input class="field-in" id="d-amount" type="number" placeholder="0.00"></div>
+      <div class="field-grp"><div class="field-lbl">Due Date (YYYY-MM-DD)</div><input class="field-in" id="d-due" type="date"></div>
+      <div class="field-grp"><div class="field-lbl">Notes (optional)</div><input class="field-in" id="d-notes" type="text" placeholder="e.g. Pinautang sa birthday"></div>
+      <button class="submit-btn" onclick="saveDebt()">💾 Save Debt Record</button>
+    </div>
+  </div>
+
+  <!-- Add Expense -->
+  <div class="overlay" id="modal-add-expense">
+    <div class="sheet" onclick="event.stopPropagation()">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">Log an Expense</div>
+      <div class="field-lbl" style="margin-bottom:8px">Category</div>
+      <div class="cat-grid" id="exp-cat-grid"></div>
+      <div class="field-grp"><div class="field-lbl">Description</div><input class="field-in" id="e-desc" type="text" placeholder="e.g. Jollibee lunch"></div>
+      <div class="field-grp"><div class="field-lbl">Amount (₱)</div><input class="field-in" id="e-amount" type="number" placeholder="0.00"></div>
+      <div class="field-grp"><div class="field-lbl">Date</div><input class="field-in" id="e-date" type="date"></div>
+      <div class="field-lbl" style="margin-bottom:8px">Added By</div>
+      <div class="user-toggle" style="margin-bottom:14px">
+        <button class="user-btn on-cha" id="eu-cha" onclick="selExpUser(user1Name || 'User 1')">👤 User 1</button>
+        <button class="user-btn" id="eu-chad" onclick="selExpUser(user2Name || 'User 2')">👤 User 2</button>
+      </div>
+      <button class="submit-btn" onclick="saveExpense()">💾 Save Expense</button>
+    </div>
+  </div>
+
+  <!-- Add Hulog -->
+  <div class="overlay" id="modal-add-hulog">
+    <div class="sheet" onclick="event.stopPropagation()">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">📦 Add Payment Plan</div>
+      <div class="field-lbl" style="margin-bottom:8px">Item Type</div>
+      <div class="cat-grid" id="hulog-type-grid"></div>
+      <div class="field-grp"><div class="field-lbl">Item Name</div><input class="field-in" id="h-name" type="text" placeholder="e.g. LG Inverter Ref"></div>
+      <div class="field-grp"><div class="field-lbl">Store / Source</div><input class="field-in" id="h-store" type="text" placeholder="e.g. SM Appliance, BDO"></div>
+      <div class="field-grp"><div class="field-lbl">Total Amount (₱)</div><input class="field-in" id="h-total" type="number" placeholder="0.00"></div>
+      <div class="field-grp"><div class="field-lbl">Monthly Payment (₱)</div><input class="field-in" id="h-monthly" type="number" placeholder="0.00"></div>
+      <div class="field-grp"><div class="field-lbl">Months Already Paid</div><input class="field-in" id="h-paid" type="number" placeholder="0" value="0"></div>
+      <div class="field-grp"><div class="field-lbl">Next Due Date</div><input class="field-in" id="h-due" type="date"></div>
+      <button class="submit-btn" onclick="saveHulog()">💾 Save Payment Plan</button>
+    </div>
+  </div>
+
+  <!-- Add Income / Budget Spending -->
+  <div class="overlay" id="modal-add-income">
+    <div class="sheet" onclick="event.stopPropagation()">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title" id="income-modal-title">Add Income</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:16px">
+        <button class="user-btn on-cha" id="it-salary" onclick="selIncomeType('salary')" style="font-size:11px">💼 Salary</button>
+        <button class="user-btn" id="it-other" onclick="selIncomeType('other')" style="font-size:11px">🤑 Other</button>
+        <button class="user-btn" id="it-budget" onclick="selIncomeType('budget')" style="font-size:11px">📋 Spending</button>
+      </div>
+      <div class="field-grp" id="income-desc-grp"><div class="field-lbl">Source / Description</div><input class="field-in" id="i-desc" type="text" placeholder="e.g. Monthly salary"></div>
+      <div class="field-grp" id="budget-cat-grp" style="display:none">
+        <div class="field-lbl">Category</div>
+        <select class="field-in" id="i-budget-cat">
+          <option value="food">🍚 Food & Groceries</option>
+          <option value="bills">⚡ Bills & Utilities</option>
+          <option value="transpo">🚌 Transportation</option>
+          <option value="health">💊 Health & Medical</option>
+          <option value="school">🎓 Education</option>
+          <option value="leisure">🎮 Leisure & Fun</option>
+          <option value="savings">🐷 Savings</option>
+          <option value="others">📦 Others</option>
+        </select>
+      </div>
+      <div class="field-grp"><div class="field-lbl">Amount (₱)</div><input class="field-in" id="i-amount" type="number" placeholder="0.00"></div>
+      <button class="submit-btn" onclick="saveIncome()">💾 Save</button>
+    </div>
+  </div>
+
+
+  <!-- ══ LOAN CALCULATOR SCREEN ══ -->
+  <div class="screen" id="screen-loans">
+    <div class="screen-hdr">
+      <div class="back-btn" onclick="closeScreen('loans')">←</div>
+      <div class="screen-title">🏦 Loan Calculator</div>
+      <div class="add-btn" onclick="saveLoanResult()" title="Save result">💾</div>
+    </div>
+    <div class="screen-body">
+
+      <!-- Input Card -->
+      <div class="card" style="margin-bottom:14px">
+        <div class="sec-title" style="margin-top:0">Loan Details</div>
+
+        <div class="field-grp">
+          <div class="field-lbl">Loan Type</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap" id="loan-type-btns">
+            <button class="ftab on" onclick="selLoanType('personal',this)">Personal</button>
+            <button class="ftab" onclick="selLoanType('home',this)">Home</button>
+            <button class="ftab" onclick="selLoanType('car',this)">Car</button>
+            <button class="ftab" onclick="selLoanType('salary',this)">Salary</button>
+            <button class="ftab" onclick="selLoanType('business',this)">Business</button>
+          </div>
+        </div>
+
+        <div class="field-grp">
+          <div class="field-lbl">Loan Amount (₱)</div>
+          <input class="field-in" id="loan-amount" type="number" placeholder="e.g. 50000" oninput="computeLoan()">
+        </div>
+
+        <div class="field-grp">
+          <div class="field-lbl">Annual Interest Rate (%)</div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input class="field-in" id="loan-rate" type="number" placeholder="e.g. 12" step="0.1" oninput="computeLoan()" style="flex:1">
+            <div id="loan-rate-hint" style="font-size:11px;color:var(--mut2);white-space:nowrap;flex-shrink:0"></div>
+          </div>
+        </div>
+
+        <div class="field-grp">
+          <div class="field-lbl">Loan Term</div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input class="field-in" id="loan-term" type="number" placeholder="e.g. 12" oninput="computeLoan()" style="flex:1">
+            <div style="display:flex;gap:6px">
+              <button class="ftab on" id="term-months" onclick="selTermUnit('months',this)" style="padding:8px 12px">Months</button>
+              <button class="ftab" id="term-years" onclick="selTermUnit('years',this)" style="padding:8px 12px">Years</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-grp">
+          <div class="field-lbl">Payment Frequency</div>
+          <div style="display:flex;gap:6px">
+            <button class="ftab on" onclick="selFreq('monthly',this)" id="freq-monthly">Monthly</button>
+            <button class="ftab" onclick="selFreq('semi',this)" id="freq-semi">Semi-monthly</button>
+            <button class="ftab" onclick="selFreq('weekly',this)" id="freq-weekly">Weekly</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Card -->
+      <div id="loan-results" style="display:none">
+
+        <!-- Main result -->
+        <div class="net-card" style="margin-bottom:14px">
+          <div class="net-lbl" id="loan-payment-label">Monthly Payment</div>
+          <div class="net-amt pos" id="loan-payment">₱0</div>
+          <div class="net-chip" id="loan-payment-chip">Per month</div>
+          <div class="net-div"></div>
+          <div class="net-meta">
+            <div class="net-mi">
+              <div class="net-ml">Principal</div>
+              <div class="net-mv" id="lr-principal">₱0</div>
+            </div>
+            <div class="net-mi">
+              <div class="net-ml">Total Interest</div>
+              <div class="net-mv neg" id="lr-interest">₱0</div>
+            </div>
+            <div class="net-mi">
+              <div class="net-ml">Total Payment</div>
+              <div class="net-mv warn" id="lr-total">₱0</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Summary stats -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+          <div class="sum-box">
+            <div class="sum-icon">📅</div>
+            <div class="sum-val warn" id="lr-payments">0</div>
+            <div class="sum-lbl">Total Payments</div>
+          </div>
+          <div class="sum-box">
+            <div class="sum-icon">📊</div>
+            <div class="sum-val neg" id="lr-interest-pct">0%</div>
+            <div class="sum-lbl">Interest of Total</div>
+          </div>
+          <div class="sum-box">
+            <div class="sum-icon">💰</div>
+            <div class="sum-val pos" id="lr-monthly-int">₱0</div>
+            <div class="sum-lbl">Monthly Interest</div>
+          </div>
+          <div class="sum-box">
+            <div class="sum-icon">⏱️</div>
+            <div class="sum-val info" id="lr-duration">0 months</div>
+            <div class="sum-lbl">Loan Duration</div>
+          </div>
+        </div>
+
+        <!-- Interest breakdown donut -->
+        <div class="card" style="margin-bottom:14px">
+          <div style="font-size:13px;font-weight:900;margin-bottom:12px">💡 Principal vs Interest</div>
+          <div style="display:flex;align-items:center;gap:16px">
+            <svg id="loan-donut" width="110" height="110" viewBox="0 0 110 110" style="flex-shrink:0"></svg>
+            <div style="flex:1">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+                <div style="width:12px;height:12px;border-radius:50%;background:var(--acc)"></div>
+                <div style="flex:1;font-size:13px;font-weight:700">Principal</div>
+                <div style="font-size:13px;font-weight:900;color:var(--acc)" id="ld-principal-pct">0%</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="width:12px;height:12px;border-radius:50%;background:var(--acc4)"></div>
+                <div style="flex:1;font-size:13px;font-weight:700">Interest</div>
+                <div style="font-size:13px;font-weight:900;color:var(--acc4)" id="ld-interest-pct">0%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Amortization schedule toggle -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div class="sec-title" style="margin:0">📋 Amortization Schedule</div>
+          <div style="display:flex;gap:6px">
+            <button class="ftab on" id="amort-show-all" onclick="toggleAmort('all',this)">All</button>
+            <button class="ftab" id="amort-show-first" onclick="toggleAmort('first',this)">First 6</button>
+            <button class="ftab" id="amort-show-last" onclick="toggleAmort('last',this)">Last 6</button>
+          </div>
+        </div>
+
+        <div id="amort-table" style="overflow-x:auto">
+          <!-- filled by JS -->
+        </div>
+
+      </div><!-- end loan-results -->
+
+      <!-- Saved Loans -->
+      <div id="saved-loans-section" style="display:none">
+        <div class="sec-title" style="margin-top:16px">💾 Saved Loan Scenarios</div>
+        <div id="saved-loans-list"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Theme Picker -->
+  <div class="overlay" id="modal-theme">
+    <div class="sheet" onclick="event.stopPropagation()">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">🎨 Choose Your Theme</div>
+      <div style="font-size:12px;color:var(--mut2);margin-bottom:18px">Pick a look that feels right for you</div>
+      <div class="theme-grid" id="theme-grid"></div>
+    </div>
+  </div>
+
+  <!-- Due Dates Sheet -->
+  <div class="overlay" id="modal-dues">
+    <div class="sheet" onclick="event.stopPropagation()">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">🔔 Upcoming Due Dates</div>
+      <div style="font-size:12px;color:var(--mut2);margin-bottom:16px" id="dues-sub">Checking schedule...</div>
+      <div id="dues-list"></div>
+    </div>
+  </div>
+
+
+  <!-- Add Savings Goal -->
+  <div class="overlay" id="modal-add-goal">
+    <div class="sheet" onclick="event.stopPropagation()">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">🐷 Add Savings Goal</div>
+      <div class="field-grp"><div class="field-lbl">Icon (emoji)</div><input class="field-in" id="g-icon" type="text" placeholder="🏖️" maxlength="2" value="🎯"></div>
+      <div class="field-grp"><div class="field-lbl">Goal Name</div><input class="field-in" id="g-name" type="text" placeholder="e.g. Boracay Vacation"></div>
+      <div class="field-grp"><div class="field-lbl">Target Amount (₱)</div><input class="field-in" id="g-target" type="number" placeholder="0.00"></div>
+      <div class="field-grp"><div class="field-lbl">Already Saved (₱)</div><input class="field-in" id="g-saved" type="number" placeholder="0" value="0"></div>
+      <div class="field-grp"><div class="field-lbl">Target Date</div><input class="field-in" id="g-deadline" type="text" placeholder="e.g. Dec 2026"></div>
+      <button class="submit-btn" onclick="saveGoal()">💾 Save Goal</button>
+    </div>
+  </div>
+
+  <!-- Sync Bar -->
+  <div class="sync-bar" id="sync-bar"><span id="sync-msg">⟳ Syncing...</span></div>
+
+  <!-- Setup Modal -->
+  <div class="setup-modal" id="setup-modal">
+    <div class="setup-box" style="max-width:360px;width:100%">
+
+      <!-- Logo -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+        <svg width="28" height="28" viewBox="0 0 32 32">
+          <rect x="1" y="1" width="8" height="8" rx="2.5" fill="#22C483"/>
+          <rect x="12" y="1" width="8" height="8" rx="2.5" fill="#22C483" opacity="0.8"/>
+          <rect x="23" y="1" width="8" height="8" rx="2.5" fill="#22C483" opacity="0.6"/>
+          <rect x="1" y="12" width="8" height="8" rx="2.5" fill="#22C483" opacity="0.7"/>
+          <rect x="12" y="12" width="8" height="8" rx="2.5" fill="#F5D070"/>
+          <rect x="23" y="12" width="8" height="8" rx="2.5" fill="#22C483" opacity="0.3"/>
+          <rect x="1" y="23" width="8" height="8" rx="2.5" fill="#22C483" opacity="0.5"/>
+          <rect x="12" y="23" width="8" height="8" rx="2.5" fill="#22C483" opacity="0.25"/>
+          <rect x="23" y="23" width="8" height="8" rx="2.5" fill="#F5D070" opacity="0.5"/>
+        </svg>
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--txt)">Formula<span style="color:#F5D070">Ko</span></div>
+          <div style="font-size:10px;color:var(--mut2);font-style:italic">Your formula for everything.</div>
+        </div>
+      </div>
+
+      <!-- Step indicators -->
+      <div style="display:flex;gap:6px;margin-bottom:22px">
+        <div style="flex:1;height:3px;border-radius:2px;background:var(--acc)" id="step-bar-1"></div>
+        <div style="flex:1;height:3px;border-radius:2px;background:var(--surf2)" id="step-bar-2"></div>
+        <div style="flex:1;height:3px;border-radius:2px;background:var(--surf2)" id="step-bar-3"></div>
+      </div>
+
+      <!-- STEP 1: Your name -->
+      <div id="onboard-1">
+        <div style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--txt);margin-bottom:6px">👋 Welcome!</div>
+        <p style="font-size:13px;color:var(--mut2);margin-bottom:18px;line-height:1.6">Let's set up your app. What's your name?</p>
+        <div class="field-grp">
+          <div class="field-lbl">Your Name</div>
+          <input class="field-in" id="onboard-name1" type="text" placeholder="e.g. Juan, Marie, Alex...">
+        </div>
+        <button class="submit-btn" onclick="onboardNext(1)">Next →</button>
+      </div>
+
+      <!-- STEP 2: Partner name -->
+      <div id="onboard-2" style="display:none">
+        <div style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--txt);margin-bottom:6px">👥 Sharing with someone?</div>
+        <p style="font-size:13px;color:var(--mut2);margin-bottom:18px;line-height:1.6">Will you share this app with a partner or spouse? Leave blank for solo use.</p>
+        <div class="field-grp">
+          <div class="field-lbl">Partner's Name <span style="color:var(--mut);font-weight:500">(optional)</span></div>
+          <input class="field-in" id="onboard-name2" type="text" placeholder="e.g. Partner, Spouse...">
+        </div>
+        <button class="submit-btn" onclick="onboardNext(2)">Next →</button>
+        <button onclick="onboardNext(2)" style="width:100%;margin-top:8px;padding:11px;background:transparent;border:1px solid var(--bdr);border-radius:14px;color:var(--mut2);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;font-weight:600">Solo use lang — Skip</button>
+      </div>
+
+      <!-- STEP 3: Google Sheets -->
+      <div id="onboard-3" style="display:none">
+        <div style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--txt);margin-bottom:6px">☁️ Cloud Backup</div>
+        <p style="font-size:13px;color:var(--mut2);margin-bottom:18px;line-height:1.6">Connect Google Sheets to back up data and sync with your partner. <strong style="color:var(--txt)">100% optional.</strong></p>
+        <div class="field-grp">
+          <div class="field-lbl">Apps Script URL <span style="color:var(--mut);font-weight:500">(optional)</span></div>
+          <input class="field-in" id="setup-url" type="url" placeholder="https://script.google.com/macros/s/...">
+          <div style="font-size:10px;color:var(--mut);margin-top:6px">Leave blank to use offline. You can add this later via ⚙️.</div>
+        </div>
+        <button class="submit-btn" onclick="finishSetup()">🚀 Let's go!</button>
+        <button onclick="finishSetup()" style="width:100%;margin-top:8px;padding:11px;background:transparent;border:1px solid var(--bdr);border-radius:14px;color:var(--mut2);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;font-weight:600">Skip — offline lang</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PWA Install Banner -->
+  <div class="pwa-banner" id="pwa-banner">
+    <div class="pwa-icon" style="background:#0A0C0A;padding:6px">
+      <svg width="30" height="30" viewBox="0 0 32 32">
+        <rect x="1" y="1" width="8" height="8" rx="2.5" fill="#22C483"/>
+        <rect x="12" y="1" width="8" height="8" rx="2.5" fill="#22C483" opacity="0.8"/>
+        <rect x="23" y="1" width="8" height="8" rx="2.5" fill="#22C483" opacity="0.6"/>
+        <rect x="1" y="12" width="8" height="8" rx="2.5" fill="#22C483" opacity="0.7"/>
+        <rect x="12" y="12" width="8" height="8" rx="2.5" fill="#F5D070"/>
+        <rect x="23" y="12" width="8" height="8" rx="2.5" fill="#22C483" opacity="0.3"/>
+        <rect x="1" y="23" width="8" height="8" rx="2.5" fill="#22C483" opacity="0.5"/>
+        <rect x="12" y="23" width="8" height="8" rx="2.5" fill="#22C483" opacity="0.25"/>
+        <rect x="23" y="23" width="8" height="8" rx="2.5" fill="#F5D070" opacity="0.5"/>
+      </svg>
+    </div>
+    <div class="pwa-txt"><div class="pwa-title">Add FormulaKo to Home Screen</div><div class="pwa-sub">Works offline!</div></div>
+    <button class="pwa-btn" id="pwa-install-btn">Install</button>
+    <button class="pwa-close" onclick="dismissPWA()">✕</button>
+  </div>
+
+  <!-- iOS Tip -->
+  <div class="ios-tip" id="ios-tip">
+    <div class="ios-tip-title">📲 Add to Home Screen</div>
+    <div class="ios-tip-steps">1. Tap the <b>Share button</b> (□↑) at the bottom<br>2. Tap <b>"Add to Home Screen"</b><br>3. Tap <b>"Add"</b> — done! 🎉</div>
+    <button class="ios-tip-close" onclick="dismissIOS()">Got it!</button>
+  </div>
+
+</div><!-- end app -->
+
+<script>
+'use strict';
+
+// ══════════════════════════════════════════════
+//  DATA STORE
+// ══════════════════════════════════════════════
+const CATS = {
+  food:     {icon:'🍚',label:'Food',    color:'#5ecfaa'},
+  transpo:  {icon:'🚌',label:'Transpo', color:'#6ba3d6'},
+  bills:    {icon:'⚡',label:'Bills',   color:'#e8b86d'},
+  shopping: {icon:'🛍️',label:'Shopping',color:'#b57bee'},
+  health:   {icon:'💊',label:'Health',  color:'#e07b8a'},
+  leisure:  {icon:'🎮',label:'Leisure', color:'#5acce8'},
+  savings:  {icon:'🐷',label:'Savings', color:'#2ebd8f'},
+  others:   {icon:'📦',label:'Others',  color:'#8898aa'},
+};
+const HTYPES = {
+  appliance:{icon:'🏠',color:'#5ecfaa'}, gadget:{icon:'📱',color:'#6ba3d6'},
+  vehicle:  {icon:'🏍️',color:'#e8b86d'}, loan:  {icon:'🏦',color:'#b57bee'},
+  school:   {icon:'🎓',color:'#5acce8'}, medical:{icon:'🏥',color:'#e07b8a'},
+  rent:     {icon:'🏡',color:'#2ebd8f'}, others:{icon:'📦',color:'#8898aa'},
+};
+const THEMES = [
+  {key:'dark',   name:'Forest Black', emoji:'🌲',desc:'FormulaKo default',  bg:'#0e1420',dots:['#5ecfaa','#6ba3d6','#e07b8a'],acc:'#5ecfaa',txt:'#e8edf5'},
+  {key:'light',  name:'Warm Cream',   emoji:'🤍',desc:'Clean & minimal',  bg:'#f5f7fa',dots:['#2ebd8f','#4a90d9','#d95f6e'],acc:'#2ebd8f',txt:'#1a2233'},
+  {key:'purple', name:'Forest Night', emoji:'🌿',desc:'Deep & focused',   bg:'#16101e',dots:['#b57bee','#e87eb8','#f07070'],acc:'#b57bee',txt:'#ede8f5'},
+  {key:'sunset', name:'Gold Rush',    emoji:'🟡',desc:'Formula Gold',     bg:'#1a1208',dots:['#e8a24a','#e86c4a','#e8c84a'],acc:'#e8a24a',txt:'#f5ede0'},
+  {key:'navy',   name:'Midnight',     emoji:'🌑',desc:'Dark & minimal',bg:'#08102a',dots:['#6a9ee8','#5acce8','#e8c86a'],acc:'#6a9ee8',txt:'#dde8f8',wide:true},
+];
+const BCAT = {
+  food:    {icon:'🍚',label:'Food & Groceries', color:'#5ecfaa'},
+  bills:   {icon:'⚡',label:'Bills & Utilities',color:'#e8b86d'},
+  transpo: {icon:'🚌',label:'Transportation',   color:'#6ba3d6'},
+  health:  {icon:'💊',label:'Health & Medical', color:'#e07b8a'},
+  school:  {icon:'🎓',label:'Education',        color:'#b57bee'},
+  leisure: {icon:'🎮',label:'Leisure & Fun',    color:'#5acce8'},
+  savings: {icon:'🐷',label:'Savings',          color:'#2ebd8f'},
+  others:  {icon:'📦',label:'Others',           color:'#8898aa'},
+};
+
+// ── User names (set during onboarding) ──
+let user1Name = localStorage.getItem('fk-user1') || 'User 1';
+let user2Name = localStorage.getItem('fk-user2') || 'User 2';
+
+let debts   = [];
+let expenses = [];
+let hulogs   = [];
+let budgetData = {
+  income: [],
+  cats:[
+    {cat:'food',   budget:5000,spent:0},
+    {cat:'bills',  budget:5000,spent:0},
+    {cat:'transpo',budget:2000,spent:0},
+    {cat:'health', budget:2000,spent:0},
+    {cat:'school', budget:3000,spent:0},
+    {cat:'leisure',budget:2000,spent:0},
+    {cat:'savings',budget:5000,spent:0},
+    {cat:'others', budget:1000,spent:0},
+  ],
+  goals:[],
+};
+
+let _debtId=10, _expId=10, _hulogId=10, _incId=10, _goalId=10;
+let debtFilter='all', expFilter='all', hulogFilter='all';
+let debtType='oweme', expCat='food', expUser=user1Name, hulogType='appliance', incomeType='salary';
+let setupUser=user1Name, scriptUrl='', currentUser='', isSyncing=false, syncTimer=null;
+
+const fmt = n => '₱' + (parseFloat(n)||0).toLocaleString('en-PH');
+const today = () => new Date().toISOString().split('T')[0];
+const thisMonth = () => new Date().toISOString().slice(0,7);
+
+// ══════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  // Set date
+  document.getElementById('greet-date').textContent =
+    new Date().toLocaleDateString('en-PH',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+
+  // Load saved settings
+  currentUser = localStorage.getItem('fk-user') || '';
+  loadLocal(); // restore persisted data
+  // Load saved user names
+  user1Name = localStorage.getItem('fk-user1') || 'User 1';
+  user2Name = localStorage.getItem('fk-user2') || 'User 2';
+  currentUser = localStorage.getItem('fk-user') || '';
+  scriptUrl   = localStorage.getItem('fk-script-url') || '';
+
+  // Show setup if first time
+  if (!currentUser) {
+    document.getElementById('setup-modal').classList.add('open');
+  }
+
+  // Build dynamic grids
+  buildCatGrid();
+  buildHulogTypeGrid();
+  buildThemeGrid();
+
+  // Set default dates
+  document.getElementById('d-due').value = today();
+  document.getElementById('e-date').value = today();
+  document.getElementById('h-due').value = today();
+
+  // Load saved theme
+  const savedTheme = localStorage.getItem('fk-theme') || 'dark';
+  applyTheme(savedTheme);
+
+  // Render all
+  renderAll();
+  updateUserButtons();
+
+  // PWA
+  initPWA();
+
+  // Sync if configured
+  if (scriptUrl) {
+    syncFromCloud(true);
+    syncTimer = setInterval(() => syncFromCloud(true), 30000);
+  }
+
+  // iOS tip
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  if (isIOS && !isStandalone && !localStorage.getItem('fk-ios-seen')) {
+    setTimeout(() => document.getElementById('ios-tip').classList.add('show'), 3000);
+  }
+});
+
+function renderAll() {
+  renderDashboard();
+  renderDebts();
+  renderExpenses();
+  renderHulogs();
+  renderBudget();
+  renderDueBanner();
+}
+
+// ══════════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════════
+function openScreen(name) {
+  document.getElementById('screen-'+name).classList.add('open');
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const navEl = document.getElementById('nav-'+name);
+  if (navEl) navEl.classList.add('active');
+}
+
+function closeScreen(name) {
+  document.getElementById('screen-'+name).classList.remove('open');
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('nav-home').classList.add('active');
+}
+
+function showHome() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('open'));
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('nav-home').classList.add('active');
+}
+
+function openModal(id) {
+  document.getElementById('modal-'+id).classList.add('open');
+}
+
+function closeModal(id) {
+  document.getElementById('modal-'+id).classList.remove('open');
+}
+
+function openQuickAdd() { openModal('quick'); }
+function openTheme()    { openModal('theme'); }
+function openDues()     { renderDuesSheet(); openModal('dues'); }
+
+// Close overlay on backdrop click
+document.querySelectorAll('.overlay').forEach(el => {
+  el.addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('open');
+  });
+});
+
+// ══════════════════════════════════════════════
+//  DASHBOARD RENDER
+// ══════════════════════════════════════════════
+function renderDashboard() {
+  const m = thisMonth();
+  const totalInc  = budgetData.income.reduce((s,i) => s+i.amount, 0);
+  const totalExp  = expenses.filter(e => e.date && e.date.startsWith(m)).reduce((s,e) => s+e.amount, 0);
+  const net       = totalInc - totalExp;
+  const oweMeTotal= debts.filter(d=>d.type==='oweme'&&!d.settled).reduce((s,d)=>s+(d.amount-d.paid),0);
+  const iOweTotal = debts.filter(d=>d.type==='iowe' &&!d.settled).reduce((s,d)=>s+(d.amount-d.paid),0);
+  const activeHulogs = hulogs.filter(h=>!h.done);
+  const monthlyHulog = activeHulogs.reduce((s,h)=>s+h.monthly,0);
+  const budgSpent = budgetData.cats.reduce((s,c)=>s+c.spent,0);
+  const budgTotal = budgetData.cats.reduce((s,c)=>s+c.budget,0);
+  const budgPct   = budgTotal>0 ? Math.round(budgSpent/budgTotal*100) : 0;
+
+  // Net balance card
+  document.getElementById('net-amount').textContent   = fmt(net);
+  document.getElementById('nm-income').textContent    = fmt(totalInc);
+  document.getElementById('nm-expenses').textContent  = fmt(totalExp);
+  document.getElementById('nm-pending').textContent   = fmt(oweMeTotal);
+
+  // Module cards
+  document.getElementById('mod-debts').textContent       = fmt(oweMeTotal);
+  document.getElementById('mod-debts-sub').textContent   = debts.filter(d=>!d.settled).length + ' active';
+  document.getElementById('mod-debts-prog').style.width  = Math.min(100,oweMeTotal/50000*100) + '%';
+  document.getElementById('mod-expenses').textContent    = fmt(totalExp);
+  document.getElementById('mod-expenses-sub').textContent= expenses.filter(e=>e.date&&e.date.startsWith(m)).length + ' transactions';
+  document.getElementById('mod-expenses-prog').style.width = Math.min(100,totalExp/30000*100) + '%';
+  document.getElementById('mod-hulog').textContent       = activeHulogs.length + ' active';
+  document.getElementById('mod-hulog-sub').textContent   = fmt(monthlyHulog) + '/mo';
+  document.getElementById('mod-hulog-prog').style.width  = '60%';
+  document.getElementById('mod-budget').textContent      = budgPct + '% used';
+  document.getElementById('mod-budget-sub').textContent  = fmt(budgTotal-budgSpent) + ' left';
+  document.getElementById('mod-budget-prog').style.width = Math.min(100,budgPct) + '%';
+
+  // Combined card
+  const chaExp  = expenses.filter(e=>e.date&&e.date.startsWith(m)&&e.addedBy===currentUser) .reduce((s,e)=>s+e.amount,0);
+  const chadExp = expenses.filter(e=>e.date&&e.date.startsWith(m)&&e.addedBy===u2).reduce((s,e)=>s+e.amount,0);
+  document.getElementById('cc-name1').textContent = '👤 ' + (user1Name || 'User 1');
+  document.getElementById('cc-name2').textContent = '👤 ' + (user2Name || 'User 2');
+  document.getElementById('cc-cha').textContent    = fmt(chaExp);
+  document.getElementById('cc-chad').textContent   = fmt(chadExp);
+  document.getElementById('cc-total').textContent  = fmt(totalExp);
+  document.getElementById('cc-income').textContent = fmt(totalInc);
+  const netEl = document.getElementById('cc-net');
+  netEl.textContent = fmt(Math.abs(net));
+  netEl.className   = 'cc-tv ' + (net>=0?'pos':'neg');
+
+  // Dashboard dues
+  renderDashDues();
+}
+
+// ══════════════════════════════════════════════
+//  DEBT TRACKER
+// ══════════════════════════════════════════════
+function renderDebts() {
+  const d = today();
+  const oweMeTotal = debts.filter(x=>x.type==='oweme'&&!x.settled).reduce((s,x)=>s+(x.amount-x.paid),0);
+  const iOweTotal  = debts.filter(x=>x.type==='iowe' &&!x.settled).reduce((s,x)=>s+(x.amount-x.paid),0);
+  const settledCt  = debts.filter(x=>x.settled).length;
+
+  document.getElementById('ds-oweme').textContent   = fmt(oweMeTotal);
+  document.getElementById('ds-iowe').textContent    = fmt(iOweTotal);
+  document.getElementById('ds-settled').textContent = settledCt;
+
+  const now = new Date(); now.setHours(0,0,0,0);
+  const filtered = debts.filter(x => {
+    if (debtFilter==='all')     return !x.settled;
+    if (debtFilter==='oweme')   return x.type==='oweme' && !x.settled;
+    if (debtFilter==='iowe')    return x.type==='iowe'  && !x.settled;
+    if (debtFilter==='settled') return x.settled;
+    if (debtFilter==='overdue') { const dd=new Date(x.due); return !x.settled && dd<now; }
+    return true;
+  });
+
+  const list = document.getElementById('debt-list');
+  if (!filtered.length) { list.innerHTML = emptyHTML('🎉','All clear!','No debts in this category 😄'); return; }
+
+  list.innerHTML = filtered.map(d => {
+    const pct  = Math.min(100, Math.round(d.paid/d.amount*100));
+    const rem  = d.amount - d.paid;
+    const due  = new Date(d.due);
+    const diff = Math.ceil((due - now) / 86400000);
+    const init = d.name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+    const isOweme = d.type==='oweme';
+    const col  = isOweme ? 'var(--acc)' : 'var(--acc4)';
+    let dueLabel='', dueColor='var(--mut2)';
+    if (d.settled)     { dueLabel='✅ Settled'; }
+    else if (diff<0)   { dueLabel='⚠️ Overdue '+Math.abs(diff)+'d'; dueColor='var(--acc4)'; }
+    else if (diff<=5)  { dueLabel='🔔 Due in '+diff+'d'; dueColor='var(--acc3)'; }
+    else               { dueLabel='📅 Due '+due.toLocaleDateString('en-PH',{month:'short',day:'numeric'}); }
+
+    return `<div class="debt-card">
+      <div class="dc-top">
+        <div class="dc-avatar" style="background:${col}22;color:${col}">${init}</div>
+        <div class="dc-info"><div class="dc-name">${d.name}</div><div class="dc-note">${d.notes||'No notes'}</div></div>
+        <div class="badge" style="background:${col}22;color:${col}">${d.settled?'Settled':isOweme?'Owes Me':'I Owe'}</div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-i"><div class="stat-v">${fmt(d.amount)}</div><div class="stat-l">Total</div></div>
+        <div class="stat-i"><div class="stat-v pos">${fmt(d.paid)}</div><div class="stat-l">Paid</div></div>
+        <div class="stat-i"><div class="stat-v" style="color:${col}">${fmt(rem)}</div><div class="stat-l">Balance</div></div>
+        <div class="stat-i"><div class="stat-v pos">${pct}%</div><div class="stat-l">Progress</div></div>
+      </div>
+      <div class="prog-bar"><div class="prog-bar-fill" style="width:${pct}%;background:${col}"></div></div>
+      <div class="dc-foot">
+        <div style="font-size:11px;font-weight:800;color:${dueColor}">${dueLabel}</div>
+        ${!d.settled?`<div class="row-acts">
+          <button class="sm-btn sm-btn-ghost" onclick="deleteDebt(${d.id})">🗑️</button>
+          <button class="sm-btn sm-btn-acc" onclick="settleDebt(${d.id})">✅ Settle</button>
+        </div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterDebts(f, el) {
+  debtFilter = f;
+  document.querySelectorAll('#debt-filters .ftab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  renderDebts();
+}
+
+function selDebtType(t) {
+  debtType = t;
+  document.getElementById('dt-oweme').className = 'type-opt' + (t==='oweme'?' on-a':'');
+  document.getElementById('dt-iowe').className  = 'type-opt' + (t==='iowe' ?' on-b':'');
+}
+
+function saveDebt() {
+  const name = document.getElementById('d-name').value.trim();
+  const amt  = parseFloat(document.getElementById('d-amount').value);
+  const due  = document.getElementById('d-due').value;
+  const notes= document.getElementById('d-notes').value.trim();
+  if (!name) return toast('⚠️ Enter a name');
+  if (!amt||amt<=0) return toast('⚠️ Enter a valid amount');
+  if (!due) return toast('⚠️ Pick a due date');
+  debts.push({id:_debtId++,type:debtType,name,amount:amt,paid:0,due,notes,settled:false});
+  closeModal('add-debt');
+  document.getElementById('d-name').value = '';
+  document.getElementById('d-amount').value = '';
+  document.getElementById('d-notes').value = '';
+  renderDebts(); renderDashboard(); renderDueBanner(); saveLocal();
+  pushCloud('addDebt',{id:_debtId-1,type:debtType,name,amount:amt,paid:0,duedate:due,notes,settled:false,addedby:currentUser});
+  toast('💾 Debt saved!');
+}
+
+function settleDebt(id) {
+  const d = debts.find(x=>x.id===id);
+  if (!d) return;
+  d.paid = d.amount; d.settled = true;
+  renderDebts(); renderDashboard();
+  pushCloud('updateDebt',{...d,duedate:d.due});
+  saveLocal();
+  toast('✅ ' + d.name + ' — Settled!');
+}
+
+function deleteDebt(id) {
+  if (!confirm('Delete this debt record?')) return;
+  debts = debts.filter(x=>x.id!==id);
+  renderDebts(); renderDashboard(); saveLocal();
+  toast('🗑️ Debt deleted');
+}
+
+// ══════════════════════════════════════════════
+//  EXPENSES
+// ══════════════════════════════════════════════
+function buildCatGrid() {
+  document.getElementById('exp-cat-grid').innerHTML =
+    Object.entries(CATS).map(([k,c]) =>
+      `<div class="cat-opt${k==='food'?' on':''}" id="ec-${k}" onclick="selExpCat('${k}',this)">
+        <div class="cat-opt-icon">${c.icon}</div>
+        <div class="cat-opt-lbl">${c.label}</div>
+      </div>`
+    ).join('');
+}
+
+function selExpCat(cat, el) {
+  expCat = cat;
+  document.querySelectorAll('#exp-cat-grid .cat-opt').forEach(o=>o.classList.remove('on'));
+  el.classList.add('on');
+}
+
+function selExpUser(u) {
+  expUser = u;
+  document.getElementById('eu-cha').className  = 'user-btn' + (u===currentUser ?' on-cha':'');
+  document.getElementById('eu-chad').className = 'user-btn' + (u===user2Name?' on-chad':'');
+}
+
+function renderExpenses() {
+  const m = thisMonth();
+  const now = today();
+  const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate()-7);
+  const weekStr = weekAgo.toISOString().split('T')[0];
+  const monthExp = expenses.filter(e=>e.date&&e.date.startsWith(m));
+  const total    = monthExp.reduce((s,e)=>s+e.amount,0);
+  const todayAmt = expenses.filter(e=>e.date===now).reduce((s,e)=>s+e.amount,0);
+  const weekAmt  = expenses.filter(e=>e.date&&e.date>=weekStr).reduce((s,e)=>s+e.amount,0);
+
+  document.getElementById('exp-total').textContent  = fmt(total);
+  document.getElementById('exp-status').textContent = total>15000 ? '⚠️ Above average spending' : '✅ Good spending pace';
+  document.getElementById('exp-today').textContent  = fmt(todayAmt);
+  document.getElementById('exp-week').textContent   = fmt(weekAmt);
+  document.getElementById('exp-count').textContent  = monthExp.length;
+
+  // Donut
+  drawDonut(monthExp);
+
+  // List
+  const filtered = expFilter==='all' ? expenses : expenses.filter(e=>e.cat===expFilter);
+  const grouped  = {};
+  filtered.forEach(e=>{ if(!grouped[e.date]) grouped[e.date]=[]; grouped[e.date].push(e); });
+  const sortedDates = Object.keys(grouped).sort((a,b)=>b.localeCompare(a));
+  const list = document.getElementById('exp-list');
+
+  if (!filtered.length) { list.innerHTML = emptyHTML('💸','No expenses yet!','Start logging your spending'); return; }
+
+  const yest = new Date(); yest.setDate(yest.getDate()-1);
+  const yestStr = yest.toISOString().split('T')[0];
+
+  list.innerHTML = sortedDates.map(date => {
+    const label = date===now?'Today':date===yestStr?'Yesterday':
+      new Date(date+'T00:00:00').toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'});
+    const dayTotal = grouped[date].reduce((s,e)=>s+e.amount,0);
+    const items = grouped[date].map(e => {
+      const c = CATS[e.cat]||CATS.others;
+      return `<div class="exp-item">
+        <div class="exp-cat-icon" style="background:${c.color}22">${c.icon}</div>
+        <div style="flex:1;min-width:0">
+          <div class="exp-desc">${e.desc}</div>
+          <div class="exp-cat">${c.label}${e.addedBy?' · '+e.addedBy:''}</div>
+        </div>
+        <div class="exp-amt">${fmt(e.amount)}</div>
+        <button class="del-btn" style="background:var(--acc4)22;color:var(--acc4)" onclick="deleteExpenseById(${e.id})">✕</button>
+      </div>`;
+    }).join('');
+    return `<div class="date-grp-hdr">
+      <span class="date-grp-lbl">${label}</span>
+      <span style="font-size:12px;font-weight:900;color:var(--acc4)">${fmt(dayTotal)}</span>
+    </div>${items}`;
+  }).join('');
+}
+
+function drawDonut(data) {
+  const svg = document.getElementById('donut-svg');
+  const leg = document.getElementById('donut-legend');
+  const total = data.reduce((s,e)=>s+e.amount,0);
+  if (!total) { svg.innerHTML=''; leg.innerHTML=''; return; }
+  const catTotals = {};
+  data.forEach(e=>{ catTotals[e.cat]=(catTotals[e.cat]||0)+e.amount; });
+  const sorted = Object.entries(catTotals).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const cx=60,cy=60,r=44,sw=13,circ=2*Math.PI*r;
+  let offset=0;
+  const circles = sorted.map(([cat,amt])=>{
+    const c=CATS[cat]||CATS.others;
+    const pct=amt/total;
+    const dash=pct*circ;
+    const rot=(offset/circ)*360-90;
+    offset+=dash;
+    return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${c.color}" stroke-width="${sw}" stroke-dasharray="${dash.toFixed(1)} ${(circ-dash).toFixed(1)}" stroke-linecap="round" transform="rotate(${rot} ${cx} ${cy})"/>`;
+  });
+  svg.innerHTML = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--surf2)" stroke-width="${sw}"/>
+    ${circles.join('')}
+    <text x="${cx}" y="${cy-4}" text-anchor="middle" fill="var(--txt)" font-size="11" font-weight="900" font-family="Nunito,sans-serif">${fmt(total).replace('₱','₱')}</text>
+    <text x="${cx}" y="${cy+10}" text-anchor="middle" fill="var(--mut)" font-size="8" font-family="Nunito,sans-serif">total</text>`;
+  leg.innerHTML = sorted.map(([cat,amt])=>{
+    const c=CATS[cat]||CATS.others;
+    return `<div class="legend-row">
+      <div class="leg-dot" style="background:${c.color}"></div>
+      <div class="leg-name">${c.icon} ${c.label}</div>
+      <div class="leg-pct">${Math.round(amt/total*100)}%</div>
+    </div>`;
+  }).join('');
+}
+
+function filterExp(f, el) {
+  expFilter = f;
+  document.querySelectorAll('#exp-filters .ftab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  renderExpenses();
+}
+
+function saveExpense() {
+  const desc = document.getElementById('e-desc').value.trim();
+  const amt  = parseFloat(document.getElementById('e-amount').value);
+  const date = document.getElementById('e-date').value;
+  if (!desc) return toast('⚠️ Enter a description');
+  if (!amt||amt<=0) return toast('⚠️ Enter a valid amount');
+  if (!date) return toast('⚠️ Pick a date');
+  const exp = {id:_expId++,cat:expCat,desc,amount:amt,date,addedBy:expUser};
+  expenses.unshift(exp);
+  closeModal('add-expense');
+  document.getElementById('e-desc').value='';
+  document.getElementById('e-amount').value='';
+  renderExpenses(); renderDashboard(); saveLocal();
+  pushCloud('addExpense',{id:exp.id,category:expCat,description:desc,amount:amt,date,addedby:expUser});
+  toast('💾 Expense saved!');
+}
+
+function deleteExpense(id) {
+  expenses = expenses.filter(e=>e.id!==id);
+  renderExpenses(); renderDashboard();
+  toast('🗑️ Expense deleted');
+}
+
+// ══════════════════════════════════════════════
+//  HULOG / INSTALLMENTS
+// ══════════════════════════════════════════════
+function buildHulogTypeGrid() {
+  document.getElementById('hulog-type-grid').innerHTML =
+    Object.entries(HTYPES).map(([k,t]) =>
+      `<div class="cat-opt${k==='appliance'?' on':''}" id="ht-${k}" onclick="selHulogType('${k}',this)">
+        <div class="cat-opt-icon">${t.icon}</div>
+        <div class="cat-opt-lbl">${k.charAt(0).toUpperCase()+k.slice(1)}</div>
+      </div>`
+    ).join('');
+}
+
+function selHulogType(k, el) {
+  hulogType = k;
+  document.querySelectorAll('#hulog-type-grid .cat-opt').forEach(o=>o.classList.remove('on'));
+  el.classList.add('on');
+}
+
+function renderHulogs() {
+  const now = new Date(); now.setHours(0,0,0,0);
+  const active = hulogs.filter(h=>!h.done);
+  document.getElementById('hs-active').textContent  = active.length;
+  document.getElementById('hs-monthly').textContent = fmt(active.reduce((s,h)=>s+h.monthly,0));
+  document.getElementById('hs-due').textContent     = fmt(active.filter(h=>{
+    const d=new Date(h.nextDue); return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
+  }).reduce((s,h)=>s+h.monthly,0));
+  document.getElementById('hs-done').textContent    = hulogs.filter(h=>h.done).length;
+
+  const filtered = hulogs.filter(h=>{
+    if (hulogFilter==='all')    return true;
+    if (hulogFilter==='active') return !h.done;
+    if (hulogFilter==='done')   return h.done;
+    if (hulogFilter==='due')    { if(h.done)return false; const d=new Date(h.nextDue); return Math.ceil((d-now)/86400000)<=7; }
+    return true;
+  });
+
+  const list = document.getElementById('hulog-list');
+  if (!filtered.length) { list.innerHTML = emptyHTML('🎉','No payments!','Add a hulog item to start tracking'); return; }
+
+  list.innerHTML = filtered.map(h => {
+    const pct  = Math.min(100,Math.round(h.paidMonths/h.totalMonths*100));
+    const rem  = h.total - h.monthly*h.paidMonths;
+    const t    = HTYPES[h.type]||HTYPES.others;
+    const due  = new Date(h.nextDue);
+    const diff = Math.ceil((due-now)/86400000);
+    let badgeLabel,badgeCol,dueLabel,dueCol;
+    if (h.done)         { badgeLabel='Completed';badgeCol='var(--mut2)';dueLabel='✅ Fully paid';dueCol='var(--mut2)'; }
+    else if (diff<0)    { badgeLabel='Overdue';  badgeCol='var(--acc4)';dueLabel='⚠️ Overdue '+Math.abs(diff)+'d';dueCol='var(--acc4)'; }
+    else if (diff<=5)   { badgeLabel='Due Soon'; badgeCol='var(--acc3)';dueLabel='🔔 Due in '+diff+'d';dueCol='var(--acc3)'; }
+    else                { badgeLabel='Active';   badgeCol='var(--acc)'; dueLabel='📅 Due '+due.toLocaleDateString('en-PH',{month:'short',day:'numeric'});dueCol='var(--mut2)'; }
+
+    const maxDots = Math.min(h.totalMonths,24);
+    const dots = Array.from({length:maxDots},(_,i)=>{
+      if (i<h.paidMonths)              return `<div class="tl-dot" style="background:${t.color};color:var(--bg)">✓</div>`;
+      if (i===h.paidMonths&&!h.done)   return `<div class="tl-dot" style="background:var(--acc3);color:var(--bg)">${i+1}</div>`;
+      return `<div class="tl-dot" style="background:var(--surf2);color:var(--mut)">${i+1}</div>`;
+    }).join('');
+
+    return `<div class="hulog-card">
+      <div class="hc-top">
+        <div class="hc-icon" style="background:${t.color}22">${t.icon}</div>
+        <div style="flex:1;min-width:0"><div class="hc-name">${h.name}</div><div class="hc-store">${h.store}</div></div>
+        <div class="badge" style="background:${badgeCol}22;color:${badgeCol}">${badgeLabel}</div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-i"><div class="stat-v">${fmt(h.monthly)}</div><div class="stat-l">Monthly</div></div>
+        <div class="stat-i"><div class="stat-v warn">${h.paidMonths}/${h.totalMonths}</div><div class="stat-l">Months</div></div>
+        <div class="stat-i"><div class="stat-v neg">${fmt(rem)}</div><div class="stat-l">Balance</div></div>
+        <div class="stat-i"><div class="stat-v pos">${pct}%</div><div class="stat-l">Done</div></div>
+      </div>
+      <div class="prog-bar" style="margin-bottom:8px"><div class="prog-bar-fill" style="width:${pct}%;background:${t.color}"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--mut2);margin-bottom:10px">
+        <span>${fmt(h.monthly*h.paidMonths)} paid</span><span>${fmt(h.total)} total</span>
+      </div>
+      <div class="timeline">${dots}${h.totalMonths>maxDots?`<span style="font-size:11px;color:var(--mut);align-self:center">+${h.totalMonths-maxDots}</span>`:''}</div>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <span style="font-size:11px;font-weight:800;color:${dueCol}">${dueLabel}</span>
+        ${!h.done?`<div class="row-acts">
+          <button class="sm-btn sm-btn-ghost" onclick="skipHulog(${h.id})">Skip</button>
+          <button class="sm-btn sm-btn-acc" onclick="payHulog(${h.id})">✅ Pay Now</button>
+        </div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterHulog(f, el) {
+  hulogFilter = f;
+  document.querySelectorAll('#hulog-filters .ftab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  renderHulogs();
+}
+
+function payHulog(id) {
+  const h = hulogs.find(x=>x.id===id);
+  if (!h||h.done) return;
+  h.paidMonths++;
+  const d=new Date(h.nextDue); d.setMonth(d.getMonth()+1); h.nextDue=d.toISOString().split('T')[0];
+  if (h.paidMonths>=h.totalMonths) { h.done=true; toast('🎉 '+h.name+' — Fully Paid!'); }
+  else toast('✅ Month '+h.paidMonths+' of '+h.totalMonths+' paid!');
+  renderHulogs(); renderDashboard(); saveLocal();
+  pushCloud('updateHulog',{id:h.id,paidmonths:h.paidMonths,nextdue:h.nextDue,done:h.done});
+}
+
+function skipHulog(id) {
+  const h = hulogs.find(x=>x.id===id);
+  if (!h) return;
+  const d=new Date(h.nextDue); d.setMonth(d.getMonth()+1); h.nextDue=d.toISOString().split('T')[0];
+  renderHulogs(); saveLocal();
+  toast('⏭️ Skipped — next due moved forward');
+}
+
+function saveHulog() {
+  const name    = document.getElementById('h-name').value.trim();
+  const store   = document.getElementById('h-store').value.trim();
+  const total   = parseFloat(document.getElementById('h-total').value);
+  const monthly = parseFloat(document.getElementById('h-monthly').value);
+  const paid    = parseInt(document.getElementById('h-paid').value)||0;
+  const due     = document.getElementById('h-due').value;
+  if (!name)    return toast('⚠️ Enter item name');
+  if (!total)   return toast('⚠️ Enter total amount');
+  if (!monthly) return toast('⚠️ Enter monthly payment');
+  if (!due)     return toast('⚠️ Pick a due date');
+  const totalMonths = Math.round(total/monthly);
+  hulogs.unshift({id:_hulogId++,type:hulogType,name,store:store||'—',total,monthly,paidMonths:paid,totalMonths,nextDue:due,done:paid>=totalMonths});
+  closeModal('add-hulog');
+  ['h-name','h-store','h-total','h-monthly'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('h-paid').value='0';
+  renderHulogs(); renderDashboard(); saveLocal();
+  toast('💾 Payment plan saved!');
+}
+
+// ══════════════════════════════════════════════
+//  BUDGET
+// ══════════════════════════════════════════════
+function renderBudget() {
+  const m = thisMonth();
+  document.getElementById('budget-month-lbl').textContent =
+    new Date().toLocaleDateString('en-PH',{month:'long',year:'numeric'}) + ' — Overview';
+
+  const totalInc = budgetData.income.reduce((s,i)=>s+i.amount,0);
+  const salary   = budgetData.income.filter(i=>i.type==='salary').reduce((s,i)=>s+i.amount,0);
+  const other    = budgetData.income.filter(i=>i.type==='other').reduce((s,i)=>s+i.amount,0);
+  const totalSp  = budgetData.cats.reduce((s,c)=>s+c.spent,0);
+  const remaining= totalInc - totalSp;
+  const pct      = totalInc>0 ? Math.min(100,Math.round(totalSp/totalInc*100)) : 0;
+
+  document.getElementById('bh-remaining').textContent = fmt(Math.max(0,remaining));
+  document.getElementById('bh-in').textContent        = '↑ ' + fmt(totalInc);
+  document.getElementById('bh-out').textContent       = '↓ ' + fmt(totalSp);
+  document.getElementById('inc-salary').textContent   = fmt(salary);
+  document.getElementById('inc-other').textContent    = fmt(other);
+  document.getElementById('ring-pct').textContent     = pct + '%';
+
+  // Ring SVG
+  const svg = document.getElementById('ring-svg');
+  const r=44,cx=55,cy=55,sw=14,circ=2*Math.PI*r;
+  const dash=(pct/100)*circ;
+  const col=pct>=100?'var(--acc4)':pct>=80?'var(--acc3)':'var(--acc)';
+  svg.innerHTML = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--surf2)" stroke-width="${sw}"/>
+    ${pct>0?`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${col}" stroke-width="${sw}" stroke-dasharray="${dash.toFixed(1)} ${(circ-dash).toFixed(1)}" stroke-linecap="round" transform="rotate(-90 ${cx} ${cy})"/>`:''}`;
+
+  // Budget categories
+  document.getElementById('budget-cat-list').innerHTML = budgetData.cats.map(c=>{
+    const cfg = BCAT[c.cat]||BCAT.others;
+    const p   = c.budget>0 ? Math.min(110,Math.round(c.spent/c.budget*100)) : 0;
+    const rem = c.budget - c.spent;
+    const col = p>=100?'var(--acc4)':p>=85?'var(--acc3)':'var(--acc)';
+    return `<div class="bcat-row" onclick="editBudgetCat('${c.cat}',${c.budget})">
+      <div class="bcat-top">
+        <div class="bcat-icon" style="background:${cfg.color}22">${cfg.icon}</div>
+        <div class="bcat-name">${cfg.label}</div>
+        <div class="pct-badge" style="background:${col}22;color:${col}">${p>=100?'Over!':p+'%'}</div>
+      </div>
+      <div class="prog-bar" style="height:7px;margin-bottom:6px"><div class="prog-bar-fill" style="width:${Math.min(100,p)}%;background:${cfg.color}"></div></div>
+      <div class="bcat-foot">
+        <span style="color:${cfg.color};font-weight:800">${fmt(c.spent)} spent</span>
+        <span style="color:var(--mut2)">${rem>=0?fmt(rem)+' left':fmt(Math.abs(rem))+' over'} of ${fmt(c.budget)}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Savings goals
+  document.getElementById('savings-list').innerHTML = budgetData.goals.map(g=>{
+    const p = Math.min(100,Math.round(g.saved/g.target*100));
+    return `<div class="goal-card">
+      <div class="goal-top">
+        <span style="font-size:24px">${g.icon}</span>
+        <div style="flex:1"><div class="goal-name">${g.name}</div><div class="goal-dl">🏁 Target: ${g.deadline}</div></div>
+        <div class="goal-pct">${p}%</div>
+      </div>
+      <div class="prog-bar" style="height:8px;margin-bottom:8px"><div class="prog-bar-fill" style="width:${p}%;background:linear-gradient(90deg,var(--acc2),var(--acc))"></div></div>
+      <div class="goal-foot">
+        <span style="font-size:11px;color:var(--mut2)">${fmt(g.saved)} saved</span>
+        <span style="font-size:11px;color:var(--mut2)">${fmt(g.target-g.saved)} to go</span>
+        <button class="goal-add-btn" onclick="addToGoal(${g.id})">+ ₱500</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function addToGoal(id) {
+  const g = budgetData.goals.find(x=>x.id===id);
+  if (!g) return;
+  g.saved = Math.min(g.target, g.saved+500);
+  renderBudget();
+  saveLocal(); toast('🐷 ₱500 added to ' + g.name + '!');
+}
+
+function editBudgetCat(cat, current) {
+  const newVal = prompt('Update monthly budget for ' + (BCAT[cat]||BCAT.others).label + ':', current);
+  if (!newVal) return;
+  const val = parseFloat(newVal);
+  if (!val||val<=0) return toast('⚠️ Invalid amount');
+  const c = budgetData.cats.find(x=>x.cat===cat);
+  if (c) c.budget = val;
+  renderBudget();
+  toast('💾 Budget updated!');
+}
+
+// Income type selector
+function selIncomeType(t) {
+  incomeType = t;
+  ['salary','other','budget'].forEach(k=>{
+    document.getElementById('it-'+k).className = 'user-btn' + (k===t?' on-cha':'');
+  });
+  const isBudget = t==='budget';
+  document.getElementById('budget-cat-grp').style.display  = isBudget?'':'none';
+  document.getElementById('income-desc-grp').style.display = isBudget?'none':'';
+  document.getElementById('income-modal-title').textContent = isBudget?'Log Budget Spending':'Add Income';
+}
+
+function saveIncome() {
+  const amt  = parseFloat(document.getElementById('i-amount').value);
+  if (!amt||amt<=0) return toast('⚠️ Enter a valid amount');
+  if (incomeType==='budget') {
+    const cat = document.getElementById('i-budget-cat').value;
+    const c   = budgetData.cats.find(x=>x.cat===cat);
+    if (c) c.spent += amt;
+  } else {
+    const desc = document.getElementById('i-desc').value.trim();
+    budgetData.income.push({id:_incId++,type:incomeType,desc:desc||incomeType,amount:amt});
+    pushCloud('addIncome',{type:incomeType,description:desc,amount:amt,month:thisMonth(),addedby:currentUser});
+  }
+  closeModal('add-income');
+  document.getElementById('i-amount').value='';
+  document.getElementById('i-desc').value='';
+  renderBudget(); renderDashboard(); saveLocal();
+  toast(incomeType==='budget'?'💸 Spending logged!':'💰 Income added!');
+}
+
+// ══════════════════════════════════════════════
+//  DUE DATE NOTIFICATIONS
+// ══════════════════════════════════════════════
+function getDues(daysAhead=14) {
+  const now = new Date(); now.setHours(0,0,0,0);
+  const items = [];
+  debts.filter(d=>!d.settled&&d.due).forEach(d=>{
+    const due=new Date(d.due), diff=Math.ceil((due-now)/86400000);
+    if (diff<=daysAhead) items.push({icon:d.type==='oweme'?'🤝':'😬',name:d.name,meta:d.type==='oweme'?'Owes Me':'I Owe',amount:d.amount-d.paid,diff,col:d.type==='oweme'?'var(--acc)':'var(--acc4)'});
+  });
+  hulogs.filter(h=>!h.done&&h.nextDue).forEach(h=>{
+    const due=new Date(h.nextDue), diff=Math.ceil((due-now)/86400000);
+    if (diff<=daysAhead) items.push({icon:'📦',name:h.name,meta:h.store+' · Month '+(h.paidMonths+1)+'/'+h.totalMonths,amount:h.monthly,diff,col:'var(--acc3)'});
+  });
+  return items.sort((a,b)=>a.diff-b.diff);
+}
+
+function renderDueBanner() {
+  const items = getDues(7);
+  const banner= document.getElementById('due-banner');
+  const dot   = document.getElementById('notif-dot');
+  if (!items.length) { banner.classList.remove('show'); dot.style.display='none'; return; }
+  banner.classList.add('show');
+  dot.textContent    = items.length;
+  dot.style.display  = 'flex';
+  const overdue = items.filter(i=>i.diff<0).length;
+  document.getElementById('due-banner-title').textContent =
+    overdue ? '🚨 '+overdue+' overdue · '+items.length+' total this week'
+            : '🔔 '+items.length+' due within 7 days';
+  document.getElementById('due-banner-items').innerHTML =
+    items.slice(0,3).map(i=>`
+      <div class="db-item">
+        <b>${i.icon} ${i.name}</b>
+        <span style="color:${i.diff<=0?'var(--acc4)':'var(--acc3)'};font-weight:900">
+          ${fmt(i.amount)} · ${i.diff<0?'Overdue '+Math.abs(i.diff)+'d':i.diff===0?'Today!':'In '+i.diff+'d'}
+        </span>
+      </div>`).join('') +
+    (items.length>3?`<div style="font-size:10px;color:var(--mut);margin-top:4px">+${items.length-3} more — tap to view all</div>`:'');
+}
+
+function renderDashDues() {
+  const items = getDues(7);
+  const now = new Date(); now.setHours(0,0,0,0);
+  const el  = document.getElementById('dash-dues');
+  if (!items.length) { el.innerHTML=''; return; }
+  el.innerHTML = `<div class="sec-title">⚠️ Due This Week</div>` +
+    items.map(i=>`
+      <div class="alert-item" onclick="openDues()">
+        <div class="a-dot" style="background:${i.diff<0?'var(--acc4)':i.diff<=5?'var(--acc3)':'var(--acc2)'}"></div>
+        <div class="a-txt"><div class="a-name">${i.name}</div><div class="a-sub">${i.meta}</div></div>
+        <div class="a-amt" style="color:${i.col}">${fmt(i.amount)}</div>
+      </div>`).join('');
+}
+
+function renderDuesSheet() {
+  const items = getDues(14);
+  const sub   = document.getElementById('dues-sub');
+  const list  = document.getElementById('dues-list');
+  if (!items.length) {
+    sub.textContent = 'All clear for the next 2 weeks! 🎉';
+    list.innerHTML  = '<div class="empty"><div class="empty-icon">🎉</div></div>';
+    return;
+  }
+  const overdue = items.filter(i=>i.diff<0).length;
+  const today_ct= items.filter(i=>i.diff===0).length;
+  const upcoming= items.filter(i=>i.diff>0).length;
+  sub.textContent = [overdue?overdue+' overdue':'',today_ct?today_ct+' due today':'',upcoming?upcoming+' upcoming':''].filter(Boolean).join(' · ');
+  list.innerHTML = items.map(i=>{
+    let tagBg,tagCol,itemCls;
+    if (i.diff<0)      { tagBg='var(--acc4)22';tagCol='var(--acc4)';itemCls='overdue'; }
+    else if (i.diff===0){ tagBg='var(--acc4)22';tagCol='var(--acc4)';itemCls=''; }
+    else if (i.diff<=3) { tagBg='var(--acc3)22';tagCol='var(--acc3)';itemCls=''; }
+    else               { tagBg='var(--acc2)22';tagCol='var(--acc2)';itemCls=''; }
+    const label = i.diff<0?'Overdue '+Math.abs(i.diff)+'d':i.diff===0?'Today!':'In '+i.diff+'d';
+    return `<div class="due-item ${itemCls}">
+      <div class="due-icon" style="background:${i.col}22">${i.icon}</div>
+      <div class="due-info"><div class="due-name">${i.name}</div><div class="due-meta">${i.meta}</div></div>
+      <div class="due-right">
+        <div class="due-amt" style="color:${i.col}">${fmt(i.amount)}</div>
+        <div class="due-tag" style="background:${tagBg};color:${tagCol}">${label}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════
+//  THEME SYSTEM
+// ══════════════════════════════════════════════
+function buildThemeGrid() {
+  document.getElementById('theme-grid').innerHTML = THEMES.map(t=>
+    `<div class="theme-card${t.wide?' navy-wide':''}" id="tc-${t.key}" style="background:${t.bg};color:${t.txt}" onclick="setTheme('${t.key}')">
+      <div class="theme-check" style="background:${t.acc};color:${t.key==='light'?'#fff':'#0e1420'}">✓</div>
+      <div class="theme-dots">${t.dots.map(d=>`<div class="theme-dot" style="background:${d}"></div>`).join('')}</div>
+      <div class="theme-name">${t.emoji} ${t.name}</div>
+      <div class="theme-desc">${t.desc}</div>
+    </div>`
+  ).join('');
+}
+
+function setTheme(key) {
+  applyTheme(key);
+  localStorage.setItem('fk-theme', key);
+  closeModal('theme');
+  toast('🎨 Theme: ' + (THEMES.find(t=>t.key===key)||{}).name);
+}
+
+function applyTheme(key) {
+  document.documentElement.setAttribute('data-theme', key);
+  THEMES.forEach(t => {
+    const el = document.getElementById('tc-'+t.key);
+    if (el) el.classList.toggle('selected', t.key===key);
+  });
+  const t = THEMES.find(x=>x.key===key);
+  if (t) document.getElementById('pwa-theme-color').content = t.bg;
+}
+
+// ══════════════════════════════════════════════
+//  SETUP & USER
+// ══════════════════════════════════════════════
+
+// ── Onboarding ────────────────────────────
+function onboardNext(step) {
+  if (step === 1) {
+    const name = document.getElementById('onboard-name1').value.trim();
+    if (!name) { toast('⚠️ Please enter your name'); return; }
+    user1Name = name;
+    currentUser = name;
+    localStorage.setItem('fk-user1', name);
+    localStorage.setItem('fk-user', name);
+    document.getElementById('onboard-1').style.display = 'none';
+    document.getElementById('onboard-2').style.display = 'block';
+    document.getElementById('step-bar-2').style.background = 'var(--acc)';
+  } else if (step === 2) {
+    const name2 = document.getElementById('onboard-name2').value.trim();
+    if (name2) {
+      user2Name = name2;
+      localStorage.setItem('fk-user2', name2);
+    }
+    document.getElementById('onboard-2').style.display = 'none';
+    document.getElementById('onboard-3').style.display = 'block';
+    document.getElementById('step-bar-3').style.background = 'var(--acc)';
+  }
+}
+
+function selSetupUser(u) {
+  setupUser = u;
+  document.getElementById('su-cha').className  = 'user-btn' + (u===currentUser ?' on-cha':'');
+  document.getElementById('su-chad').className = 'user-btn' + (u===user2Name?' on-chad':'');
+}
+
+function finishSetup() {
+  currentUser = setupUser;
+  const url   = document.getElementById('setup-url').value.trim();
+  if (url) scriptUrl = url;
+  localStorage.setItem('fk-user', currentUser);
+  if (scriptUrl) localStorage.setItem('fk-script-url', scriptUrl);
+  document.getElementById('setup-modal').classList.remove('open');
+  selExpUser(currentUser);
+  toast('👋 Welcome, ' + currentUser + '!');
+  if (scriptUrl) {
+    syncFromCloud(false);
+    syncTimer = setInterval(()=>syncFromCloud(true),30000);
+  }
+}
+
+// ══════════════════════════════════════════════
+//  SYNC
+// ══════════════════════════════════════════════
+function showSyncBar(msg, type='') {
+  const bar  = document.getElementById('sync-bar');
+  const msgEl= document.getElementById('sync-msg');
+  bar.className = 'sync-bar show' + (type?' '+type:'');
+  msgEl.textContent = msg;
+  if (type!=='syncing') setTimeout(()=>bar.classList.remove('show'),3000);
+}
+
+async function pushCloud(action, data) {
+  if (!scriptUrl) return;
+  try {
+    await fetch(scriptUrl, {method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,data:{...data,addedby:currentUser}})});
+    showSyncBar('✅ Saved to Google Sheets!');
+  } catch(e) { showSyncBar('⚠️ Offline — saved locally','err'); }
+}
+
+function manualSync() {
+  if (!scriptUrl) {
+    // Open setup to enter URL
+    document.getElementById('setup-modal').classList.add('open');
+    toast('⚙️ Enter your Google Sheets URL first');
+    return;
+  }
+  // Animate sync button
+  const btn = document.getElementById('sync-btn');
+  btn.style.animation = 'spin 1s linear infinite';
+  setTimeout(() => btn.style.animation = '', 2000);
+  syncFromCloud(false);
+}
+
+async function syncFromCloud(silent=false) {
+  if (!scriptUrl || isSyncing) return;
+  isSyncing = true;
+  if (!silent) showSyncBar('⟳ Syncing...','syncing');
+  try {
+    const res  = await fetch(scriptUrl + '?action=getAll&t=' + Date.now());
+    const json = await res.json();
+    if (json.success && json.data) {
+      const d = json.data;
+      if (d.expenses && d.expenses.length) {
+        expenses = d.expenses.map((e,i)=>({id:parseInt(e.id)||i+1,cat:(e.category||'others').toLowerCase(),desc:e.description||'',amount:parseFloat(e.amount)||0,date:e.date||'',addedBy:e.addedby||''}));
+      }
+      if (d.debts && d.debts.length) {
+        debts = d.debts.map((x,i)=>({id:parseInt(x.id)||i+1,type:x.type||'oweme',name:x.name||'',amount:parseFloat(x.amount)||0,paid:parseFloat(x.paid)||0,due:x.duedate||'',notes:x.notes||'',settled:x.settled===true||x.settled==='TRUE'}));
+      }
+      if (d.hulog && d.hulog.length) {
+        hulogs = d.hulog.map((x,i)=>({id:parseInt(x.id)||i+1,type:x.type||'others',name:x.name||'',store:x.store||'',total:parseFloat(x.total)||0,monthly:parseFloat(x.monthly)||0,paidMonths:parseInt(x.paidmonths)||0,totalMonths:parseInt(x.totalmonths)||0,nextDue:x.nextdue||'',done:x.done===true||x.done==='TRUE'}));
+      }
+      if (d.income && d.income.length) {
+        const m = thisMonth();
+        const mi = d.income.filter(i=>i.month===m);
+        if (mi.length) budgetData.income = mi.map((x,i)=>({id:parseInt(x.id)||i+1,type:x.type||'other',desc:x.description||'',amount:parseFloat(x.amount)||0}));
+      }
+      renderAll();
+  updateUserButtons();
+      if (!silent) showSyncBar('✅ Synced! ' + new Date().toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'}));
+    }
+  } catch(e) { if (!silent) showSyncBar('⚠️ Sync failed','err'); }
+  isSyncing = false;
+}
+
+// ══════════════════════════════════════════════
+//  PDF EXPORT
+// ══════════════════════════════════════════════
+function exportPDF() {
+  const m   = thisMonth();
+  const month = new Date().toLocaleDateString('en-PH',{month:'long',year:'numeric'});
+  const totalInc = budgetData.income.reduce((s,i)=>s+i.amount,0);
+  const totalExp = expenses.filter(e=>e.date&&e.date.startsWith(m)).reduce((s,e)=>s+e.amount,0);
+  const net  = totalInc - totalExp;
+  const chaExp  = expenses.filter(e=>e.date&&e.date.startsWith(m)&&e.addedBy===currentUser) .reduce((s,e)=>s+e.amount,0);
+  const chadExp = expenses.filter(e=>e.date&&e.date.startsWith(m)&&e.addedBy===u2).reduce((s,e)=>s+e.amount,0);
+  const activeDebts  = debts.filter(d=>!d.settled);
+  const oweMeTotal   = activeDebts.filter(d=>d.type==='oweme').reduce((s,d)=>s+(d.amount-d.paid),0);
+  const iOweTotal    = activeDebts.filter(d=>d.type==='iowe') .reduce((s,d)=>s+(d.amount-d.paid),0);
+  const activeHulogs = hulogs.filter(h=>!h.done);
+  const monthlyHulog = activeHulogs.reduce((s,h)=>s+h.monthly,0);
+  const catTotals = {};
+  expenses.filter(e=>e.date&&e.date.startsWith(m)).forEach(e=>{catTotals[e.cat]=(catTotals[e.cat]||0)+e.amount;});
+
+  const catRows = Object.entries(catTotals).sort((a,b)=>b[1]-a[1]).map(([cat,amt])=>
+    `<tr><td>${(CATS[cat]||CATS.others).icon} ${(CATS[cat]||CATS.others).label}</td><td style="text-align:right;color:#d95f6e;font-weight:700">${fmt(amt)}</td><td style="text-align:right;color:#5a6a82">${totalExp>0?Math.round(amt/totalExp*100):0}%</td></tr>`
+  ).join('');
+
+  const recentRows = expenses.filter(e=>e.date&&e.date.startsWith(m)).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,10).map(e=>
+    `<tr><td>${e.date}</td><td>${e.desc}</td><td style="color:#5a6a82">${(CATS[e.cat]||CATS.others).label}</td><td style="color:#4a90d9;font-weight:700">${e.addedBy||'-'}</td><td style="text-align:right;color:#d95f6e;font-weight:700">${fmt(e.amount)}</td></tr>`
+  ).join('');
+
+  const debtRows = activeDebts.map(d=>
+    `<tr><td>${d.name}</td><td style="color:${d.type==='oweme'?'#2ebd8f':'#d95f6e'}">${d.type==='oweme'?'Owes Me':'I Owe'}</td><td style="text-align:right">${fmt(d.amount)}</td><td style="text-align:right;color:#2ebd8f">${fmt(d.paid)}</td><td style="text-align:right;color:#d95f6e;font-weight:700">${fmt(d.amount-d.paid)}</td></tr>`
+  ).join('');
+
+  const hulogRows = activeHulogs.map(h=>
+    `<tr><td>${h.name}</td><td style="color:#5a6a82">${h.store}</td><td style="text-align:right;color:#e8b86d;font-weight:700">${fmt(h.monthly)}/mo</td><td style="text-align:right">${h.paidMonths}/${h.totalMonths}</td><td style="text-align:right;color:#2ebd8f">${Math.round(h.paidMonths/h.totalMonths*100)}%</td></tr>`
+  ).join('');
+
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>BudgetBuddy Report — ${month}</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Arial,sans-serif;color:#1a2233;background:#fff;padding:32px;font-size:13px}
+.hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;padding-bottom:16px;border-bottom:3px solid #0e1420}
+.app-name{font-size:28px;font-weight:900;color:#0e1420}.app-name span{color:#2ebd8f}
+.meta{text-align:right;color:#5a6a82;font-size:12px}
+.section{margin-bottom:24px}
+.sec-title{font-size:13px;font-weight:900;color:#0e1420;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;padding:6px 10px;background:#f5f7fa;border-left:4px solid #2ebd8f;border-radius:0 6px 6px 0}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.box{background:#f5f7fa;border-radius:10px;padding:14px;text-align:center}
+.box-val{font-size:20px;font-weight:900;margin-bottom:4px}
+.box-lbl{font-size:10px;color:#5a6a82;text-transform:uppercase;letter-spacing:.5px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.person{border-radius:10px;padding:14px;text-align:center}
+table{width:100%;border-collapse:collapse}
+th{background:#f5f7fa;padding:8px 10px;text-align:left;font-size:11px;text-transform:uppercase;color:#5a6a82;border-bottom:2px solid #e8edf5}
+td{padding:8px 10px;border-bottom:1px solid #f0f0f0;font-size:12px}
+tr:last-child td{border-bottom:none}
+.pos{color:#2ebd8f}.neg{color:#d95f6e}
+.footer{margin-top:32px;padding-top:16px;border-top:2px solid #f0f0f0;text-align:center;color:#8898aa;font-size:11px}
+.no-print{text-align:center;margin-top:24px}
+@media print{.no-print{display:none}}
+</style></head><body>
+<div class="hdr">
+  <div><div class="app-name">Budget<span>Buddy</span></div><div style="color:#5a6a82;font-size:12px;margin-top:4px">Personal Finance Tracker</div></div>
+  <div class="meta"><div style="font-size:16px;font-weight:700;color:#0e1420;margin-bottom:4px">📊 ${month} Report</div>
+    <div>Generated: ${new Date().toLocaleDateString('en-PH',{year:'numeric',month:'long',day:'numeric'})}</div>
+    <div style="margin-top:4px">👩 Cha &amp; 👨 Chad</div></div>
+</div>
+<div class="section">
+  <div class="sec-title">💰 Financial Summary</div>
+  <div class="grid3">
+    <div class="box"><div class="box-val pos">${fmt(totalInc)}</div><div class="box-lbl">Total Income</div></div>
+    <div class="box"><div class="box-val neg">${fmt(totalExp)}</div><div class="box-lbl">Total Expenses</div></div>
+    <div class="box"><div class="box-val" style="color:${net>=0?'#2ebd8f':'#d95f6e'}">${fmt(Math.abs(net))}</div><div class="box-lbl">${net>=0?'Net Savings':'Over Budget'}</div></div>
+  </div>
+  <div class="grid2">
+    <div class="person" style="background:#f0fdf8;border:1px solid #2ebd8f44"><div style="font-size:22px;margin-bottom:6px">👩</div><div style="font-size:18px;font-weight:900;color:#d95f6e">${fmt(chaExp)}</div><div style="font-size:11px;color:#5a6a82;margin-top:2px">Cha's Expenses</div></div>
+    <div class="person" style="background:#eff6ff;border:1px solid #4a90d944"><div style="font-size:22px;margin-bottom:6px">👨</div><div style="font-size:18px;font-weight:900;color:#d95f6e">${fmt(chadExp)}</div><div style="font-size:11px;color:#5a6a82;margin-top:2px">Chad's Expenses</div></div>
+  </div>
+</div>
+<div class="section"><div class="sec-title">📊 Expenses by Category</div>
+  <table><tr><th>Category</th><th style="text-align:right">Amount</th><th style="text-align:right">% of Total</th></tr>
+  ${catRows||'<tr><td colspan="3" style="text-align:center;color:#8898aa">No expenses this month</td></tr>'}</table>
+</div>
+<div class="section"><div class="sec-title">🧾 Recent Transactions (Top 10)</div>
+  <table><tr><th>Date</th><th>Description</th><th>Category</th><th>By</th><th style="text-align:right">Amount</th></tr>
+  ${recentRows||'<tr><td colspan="5" style="text-align:center;color:#8898aa">No transactions</td></tr>'}</table>
+</div>
+<div class="section"><div class="sec-title">💸 Active Debts</div>
+  <table><tr><th>Name</th><th>Type</th><th style="text-align:right">Total</th><th style="text-align:right">Paid</th><th style="text-align:right">Balance</th></tr>
+  ${debtRows||'<tr><td colspan="5" style="text-align:center;color:#8898aa">No active debts 🎉</td></tr>'}</table>
+  <div style="background:#f5f7fa;border-radius:8px;padding:10px;margin-top:10px;display:flex;gap:20px">
+    <span style="color:#5a6a82;font-size:11px">Others owe us: <strong class="pos">${fmt(oweMeTotal)}</strong></span>
+    <span style="color:#5a6a82;font-size:11px">We owe others: <strong class="neg">${fmt(iOweTotal)}</strong></span>
+  </div>
+</div>
+<div class="section"><div class="sec-title">📦 Active Payments</div>
+  <table><tr><th>Item</th><th>Store</th><th style="text-align:right">Monthly</th><th style="text-align:right">Progress</th><th style="text-align:right">Done</th></tr>
+  ${hulogRows||'<tr><td colspan="5" style="text-align:center;color:#8898aa">No active payments 🎉</td></tr>'}</table>
+  ${activeHulogs.length?`<div style="background:#f5f7fa;border-radius:8px;padding:10px;margin-top:10px;font-size:11px;color:#5a6a82">Total monthly commitment: <strong style="color:#e8b86d">${fmt(monthlyHulog)}/month</strong></div>`:''}
+</div>
+<div class="footer"><strong>BudgetBuddy</strong> — Personal Finance for Cha &amp; Chad 💚<br>Auto-generated on ${new Date().toLocaleDateString('en-PH',{year:'numeric',month:'long',day:'numeric'})}</div>
+<div class="no-print">
+  <button onclick="window.print()" style="padding:12px 28px;background:#2ebd8f;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:900;cursor:pointer;margin-right:8px">🖨️ Print / Save as PDF</button>
+  <button onclick="window.close()" style="padding:12px 28px;background:#f5f7fa;color:#1a2233;border:1px solid #e8edf5;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer">✕ Close</button>
+</div>
+</body></html>`;
+
+  const blob = new Blob([html],{type:'text/html'});
+  const url  = URL.createObjectURL(blob);
+  const win  = window.open(url,'_blank');
+  if (!win) { const a=document.createElement('a');a.href=url;a.download='BudgetBuddy_'+m+'.html';a.click(); }
+  toast('📊 Report ready — tap Print to save as PDF!');
+}
+
+// ══════════════════════════════════════════════
+//  PWA
+// ══════════════════════════════════════════════
+function initPWA() {
+  const manifest = {name:'FormulaKo BudgetBuddy',short_name:'FormulaKo',description:'Personal Finance Tracker for Cha & Chad',start_url:'.',display:'standalone',background_color:'#0e1420',theme_color:'#0e1420',orientation:'portrait',icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='120' fill='%230e1420'/%3E%3Ctext x='256' y='340' text-anchor='middle' font-size='280' font-family='Arial' fill='%2322C483'%3E%E2%82%B1%3C/text%3E%3C/svg%3E",sizes:'512x512',type:'image/svg+xml',purpose:'any maskable'}]};
+  const blob = new Blob([JSON.stringify(manifest)],{type:'application/json'});
+  document.getElementById('pwa-manifest').href = URL.createObjectURL(blob);
+
+  let deferredPrompt = null;
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault(); deferredPrompt = e;
+    if (!window.matchMedia('(display-mode: standalone)').matches && !localStorage.getItem('fk-pwa-dismissed')) {
+      setTimeout(()=>document.getElementById('pwa-banner').classList.add('show'), 2000);
+    }
+  });
+
+  document.getElementById('pwa-install-btn').addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const {outcome} = await deferredPrompt.userChoice;
+    if (outcome==='accepted') toast('🎉 BudgetBuddy installed!');
+    deferredPrompt=null; dismissPWA();
+  });
+
+  if ('serviceWorker' in navigator) {
+    const sw=`const C='bb-v1';self.addEventListener('install',e=>e.waitUntil(caches.open(C).then(c=>c.addAll(['/']))));self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))))`;
+    const swBlob=new Blob([sw],{type:'application/javascript'});
+    navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(()=>{});
+  }
+}
+
+function dismissPWA() { document.getElementById('pwa-banner').classList.remove('show'); localStorage.setItem('fk-pwa-dismissed','1'); }
+function dismissIOS()  { document.getElementById('ios-tip').classList.remove('show'); localStorage.setItem('fk-ios-seen','1'); }
+
+// ══════════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════════
+
+// ── Save Savings Goal ──────────────────────
+function saveGoal() {
+  const icon     = document.getElementById('g-icon').value.trim() || '🎯';
+  const name     = document.getElementById('g-name').value.trim();
+  const target   = parseFloat(document.getElementById('g-target').value);
+  const saved    = parseFloat(document.getElementById('g-saved').value) || 0;
+  const deadline = document.getElementById('g-deadline').value.trim();
+  if (!name)   return toast('⚠️ Enter a goal name');
+  if (!target) return toast('⚠️ Enter a target amount');
+  budgetData.goals.push({id:_goalId++,icon,name,target,saved,deadline:deadline||'—'});
+  closeModal('add-goal');
+  ['g-name','g-target','g-saved','g-deadline'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('g-icon').value='🎯';
+  renderBudget();
+  saveLocal();
+  toast('💾 Savings goal saved!');
+}
+
+// ── Delete functions ─────────────────────────
+function deleteExpenseById(id) {
+  if (!confirm('Delete this expense?')) return;
+  expenses = expenses.filter(e=>e.id!==id);
+  renderExpenses(); renderDashboard(); saveLocal();
+  toast('🗑️ Expense deleted');
+}
+
+// ── LocalStorage persistence ─────────────────
+function saveLocal() {
+  try {
+    localStorage.setItem('fk-debts',    JSON.stringify(debts));
+    localStorage.setItem('fk-expenses', JSON.stringify(expenses));
+    localStorage.setItem('fk-hulogs',   JSON.stringify(hulogs));
+    localStorage.setItem('fk-budget',   JSON.stringify(budgetData));
+  } catch(e) { console.warn('Save failed:', e); }
+}
+
+function loadLocal() {
+  try {
+    const d = localStorage.getItem('fk-debts');
+    const e = localStorage.getItem('fk-expenses');
+    const h = localStorage.getItem('fk-hulogs');
+    const b = localStorage.getItem('fk-budget');
+    if (d) debts       = JSON.parse(d);
+    if (e) expenses    = JSON.parse(e);
+    if (h) hulogs      = JSON.parse(h);
+    if (b) budgetData  = JSON.parse(b);
+    // Update ID counters
+    if (debts.length)    _debtId  = Math.max(...debts.map(x=>x.id))   + 1;
+    if (expenses.length) _expId   = Math.max(...expenses.map(x=>x.id)) + 1;
+    if (hulogs.length)   _hulogId = Math.max(...hulogs.map(x=>x.id))   + 1;
+    if (budgetData.goals && budgetData.goals.length) _goalId = Math.max(...budgetData.goals.map(x=>x.id)) + 1;
+  } catch(e) { console.warn('Load failed:', e); }
+}
+
+// ── Quick Add Handler ────────────────────────
+function quickAdd(type) {
+  // Close quick modal first
+  document.getElementById('modal-quick').classList.remove('open');
+  
+  // Small delay then open the right form
+  setTimeout(() => {
+    if (type === 'expense') {
+      openScreen('expenses');
+      setTimeout(() => document.getElementById('modal-add-expense').classList.add('open'), 100);
+    } else if (type === 'income') {
+      document.getElementById('modal-add-income').classList.add('open');
+    } else if (type === 'debt') {
+      openScreen('debts');
+      setTimeout(() => document.getElementById('modal-add-debt').classList.add('open'), 100);
+    } else if (type === 'hulog') {
+      openScreen('hulog');
+      setTimeout(() => document.getElementById('modal-add-hulog').classList.add('open'), 100);
+    }
+  }, 200);
+}
+
+
+// ══════════════════════════════════════════════
+//  LOAN CALCULATOR
+// ══════════════════════════════════════════════
+let loanType    = 'personal';
+let termUnit    = 'months';
+let payFreq     = 'monthly';
+let amortView   = 'all';
+let savedLoans  = [];
+let _loanId     = 1;
+
+// Typical PH interest rates by loan type
+const LOAN_TYPE_RATES = {
+  personal: {rate: 24,  label: 'Typical PH: 24–36% p.a.'},
+  home:     {rate: 6.5, label: 'Typical PH: 5–8% p.a.'},
+  car:      {rate: 10,  label: 'Typical PH: 8–12% p.a.'},
+  salary:   {rate: 18,  label: 'SSS/GSIS: ~10–24% p.a.'},
+  business: {rate: 15,  label: 'Typical PH: 12–24% p.a.'},
+};
+
+function selLoanType(type, el) {
+  loanType = type;
+  document.querySelectorAll('#loan-type-btns .ftab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  // Suggest typical rate
+  const info = LOAN_TYPE_RATES[type];
+  if (info) {
+    document.getElementById('loan-rate').value = info.rate;
+    document.getElementById('loan-rate-hint').textContent = info.label;
+  }
+  computeLoan();
+}
+
+function selTermUnit(unit, el) {
+  termUnit = unit;
+  document.querySelectorAll('#loan-type-btns').forEach(()=>{});
+  document.getElementById('term-months').classList.toggle('on', unit==='months');
+  document.getElementById('term-years').classList.toggle('on', unit==='years');
+  computeLoan();
+}
+
+function selFreq(freq, el) {
+  payFreq = freq;
+  ['monthly','semi','weekly'].forEach(f => {
+    document.getElementById('freq-'+f).classList.toggle('on', f===freq);
+  });
+  computeLoan();
+}
+
+function toggleAmort(view, el) {
+  amortView = view;
+  ['all','first','last'].forEach(v => {
+    document.getElementById('amort-show-'+v).classList.toggle('on', v===view);
+  });
+  renderAmortTable(window._lastSchedule || []);
+}
+
+function computeLoan() {
+  const principal = parseFloat(document.getElementById('loan-amount').value) || 0;
+  const annualRate = parseFloat(document.getElementById('loan-rate').value) || 0;
+  const termVal   = parseFloat(document.getElementById('loan-term').value) || 0;
+  if (!principal || !annualRate || !termVal) {
+    document.getElementById('loan-results').style.display = 'none';
+    return;
+  }
+
+  // Convert term to months
+  const termMonths = termUnit === 'years' ? termVal * 12 : termVal;
+
+  // Frequency multiplier
+  let freqPerYear, freqLabel, freqChip;
+  if (payFreq === 'monthly')     { freqPerYear = 12;  freqLabel = 'Monthly Payment';      freqChip = 'Per month (12x/year)'; }
+  else if (payFreq === 'semi')   { freqPerYear = 24;  freqLabel = 'Semi-monthly Payment'; freqChip = 'Twice a month (24x/year)'; }
+  else                           { freqPerYear = 52;  freqLabel = 'Weekly Payment';       freqChip = 'Every week (52x/year)'; }
+
+  // Total payment periods
+  const totalPeriods = Math.round(termMonths / 12 * freqPerYear);
+
+  // Periodic interest rate
+  const periodicRate = annualRate / 100 / freqPerYear;
+
+  // Monthly payment using amortization formula: M = P[r(1+r)^n]/[(1+r)^n-1]
+  let periodicPayment;
+  if (periodicRate === 0) {
+    periodicPayment = principal / totalPeriods;
+  } else {
+    periodicPayment = principal * (periodicRate * Math.pow(1+periodicRate, totalPeriods)) /
+                      (Math.pow(1+periodicRate, totalPeriods) - 1);
+  }
+
+  const totalPayment  = periodicPayment * totalPeriods;
+  const totalInterest = totalPayment - principal;
+  const interestPct   = totalPayment > 0 ? Math.round(totalInterest / totalPayment * 100) : 0;
+  const principalPct  = 100 - interestPct;
+
+  // Monthly interest (for display)
+  const monthlyInterest = principal * (annualRate / 100 / 12);
+
+  // Duration label
+  const years  = Math.floor(termMonths / 12);
+  const months = termMonths % 12;
+  const durLabel = [years>0?years+'y':'', months>0?months+'mo':''].filter(Boolean).join(' ') || termMonths+'mo';
+
+  // Update UI
+  document.getElementById('loan-results').style.display = 'block';
+  document.getElementById('loan-payment-label').textContent = freqLabel;
+  document.getElementById('loan-payment').textContent       = fmt(Math.round(periodicPayment));
+  document.getElementById('loan-payment-chip').textContent  = freqChip;
+  document.getElementById('lr-principal').textContent       = fmt(principal);
+  document.getElementById('lr-interest').textContent        = fmt(Math.round(totalInterest));
+  document.getElementById('lr-total').textContent           = fmt(Math.round(totalPayment));
+  document.getElementById('lr-payments').textContent        = totalPeriods;
+  document.getElementById('lr-interest-pct').textContent    = interestPct + '%';
+  document.getElementById('lr-monthly-int').textContent     = fmt(Math.round(monthlyInterest));
+  document.getElementById('lr-duration').textContent        = durLabel;
+  document.getElementById('ld-principal-pct').textContent   = principalPct + '%';
+  document.getElementById('ld-interest-pct').textContent    = interestPct + '%';
+
+  // Draw donut
+  drawLoanDonut(principal, totalInterest);
+
+  // Build amortization schedule
+  const schedule = buildAmortSchedule(principal, periodicRate, periodicPayment, totalPeriods, payFreq);
+  window._lastSchedule = schedule;
+  renderAmortTable(schedule);
+
+  // Render saved loans
+  renderSavedLoans();
+}
+
+function drawLoanDonut(principal, interest) {
+  const svg    = document.getElementById('loan-donut');
+  const total  = principal + interest;
+  const cx=55, cy=55, r=44, sw=14, circ=2*Math.PI*r;
+  const principalDash = (principal/total) * circ;
+  const interestDash  = (interest/total)  * circ;
+  svg.innerHTML = `
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--surf2)" stroke-width="${sw}"/>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--acc)" stroke-width="${sw}"
+      stroke-dasharray="${principalDash.toFixed(1)} ${(circ-principalDash).toFixed(1)}"
+      stroke-linecap="round" transform="rotate(-90 ${cx} ${cy})"/>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--acc4)" stroke-width="${sw}"
+      stroke-dasharray="${interestDash.toFixed(1)} ${(circ-interestDash).toFixed(1)}"
+      stroke-linecap="round" transform="rotate(${(-90 + (principal/total)*360).toFixed(1)} ${cx} ${cy})"/>
+    <text x="${cx}" y="${cy-4}" text-anchor="middle" fill="var(--txt)" font-size="10" font-weight="900" font-family="Nunito,sans-serif">${fmt(Math.round((principal+interest)/1000)*1000).replace('₱','₱')}</text>
+    <text x="${cx}" y="${cy+10}" text-anchor="middle" fill="var(--mut)" font-size="8" font-family="Nunito,sans-serif">total</text>`;
+}
+
+function buildAmortSchedule(principal, periodicRate, payment, periods, freq) {
+  const schedule = [];
+  let balance = principal;
+  const periodLabel = freq==='monthly'?'Month':freq==='semi'?'Period':'Week';
+
+  for (let i=1; i<=periods; i++) {
+    const interestPaid  = balance * periodicRate;
+    const principalPaid = payment - interestPaid;
+    balance = Math.max(0, balance - principalPaid);
+    schedule.push({
+      period:    i,
+      label:     periodLabel + ' ' + i,
+      payment:   Math.round(payment),
+      principal: Math.round(principalPaid),
+      interest:  Math.round(interestPaid),
+      balance:   Math.round(balance),
+    });
+  }
+  return schedule;
+}
+
+function renderAmortTable(schedule) {
+  if (!schedule.length) return;
+  let rows;
+  if (amortView === 'first')     rows = schedule.slice(0, 6);
+  else if (amortView === 'last') rows = schedule.slice(-6);
+  else                           rows = schedule;
+
+  const totalRows = schedule.length;
+  const tableEl   = document.getElementById('amort-table');
+
+  tableEl.innerHTML = `
+    <div style="font-size:11px;color:var(--mut2);margin-bottom:8px">${totalRows} payment periods total</div>
+    <div style="overflow-x:auto">
+    <table style="width:100%;border-collapse:collapse;font-size:12px">
+      <thead>
+        <tr style="background:var(--surf2)">
+          <th style="padding:8px 6px;text-align:left;font-weight:900;color:var(--mut);font-size:10px;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap">Period</th>
+          <th style="padding:8px 6px;text-align:right;font-weight:900;color:var(--mut);font-size:10px;text-transform:uppercase;letter-spacing:.5px">Payment</th>
+          <th style="padding:8px 6px;text-align:right;font-weight:900;color:var(--mut);font-size:10px;text-transform:uppercase;letter-spacing:.5px">Principal</th>
+          <th style="padding:8px 6px;text-align:right;font-weight:900;color:var(--mut);font-size:10px;text-transform:uppercase;letter-spacing:.5px">Interest</th>
+          <th style="padding:8px 6px;text-align:right;font-weight:900;color:var(--mut);font-size:10px;text-transform:uppercase;letter-spacing:.5px">Balance</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows.map((r,i) => `
+          <tr style="border-bottom:1px solid var(--bdr);${i%2===0?'background:rgba(255,255,255,0.02)':''}">
+            <td style="padding:8px 6px;font-weight:700;color:var(--txt)">${r.label}</td>
+            <td style="padding:8px 6px;text-align:right;font-weight:900;color:var(--acc)">${fmt(r.payment)}</td>
+            <td style="padding:8px 6px;text-align:right;color:var(--acc2)">${fmt(r.principal)}</td>
+            <td style="padding:8px 6px;text-align:right;color:var(--acc4)">${fmt(r.interest)}</td>
+            <td style="padding:8px 6px;text-align:right;font-weight:700;color:var(--txt)">${fmt(r.balance)}</td>
+          </tr>`).join('')}
+      </tbody>
+    </table>
+    </div>
+    ${amortView !== 'all' && totalRows > 6 ? `<div style="text-align:center;margin-top:10px;font-size:11px;color:var(--mut2)">Showing ${rows.length} of ${totalRows} periods — tap "All" to see full schedule</div>` : ''}
+  `;
+}
+
+function saveLoanResult() {
+  const principal = parseFloat(document.getElementById('loan-amount').value) || 0;
+  const rate      = parseFloat(document.getElementById('loan-rate').value) || 0;
+  const term      = parseFloat(document.getElementById('loan-term').value) || 0;
+  if (!principal || !rate || !term) return toast('⚠️ Fill in loan details first');
+
+  const payment = document.getElementById('loan-payment').textContent;
+  const total   = document.getElementById('lr-total').textContent;
+  const interest= document.getElementById('lr-interest').textContent;
+  const label   = loanType.charAt(0).toUpperCase()+loanType.slice(1) + ' Loan — ' + fmt(principal);
+
+  savedLoans.unshift({
+    id: _loanId++, label, principal, rate, term, termUnit,
+    freq: payFreq, payment, total, interest, type: loanType,
+    savedAt: new Date().toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'})
+  });
+
+  try { localStorage.setItem('fk-loans', JSON.stringify(savedLoans)); } catch(e){}
+  renderSavedLoans();
+  toast('💾 Loan scenario saved!');
+}
+
+function deleteSavedLoan(id) {
+  savedLoans = savedLoans.filter(l=>l.id!==id);
+  try { localStorage.setItem('fk-loans', JSON.stringify(savedLoans)); } catch(e){}
+  renderSavedLoans();
+  toast('🗑️ Deleted');
+}
+
+function loadSavedLoan(id) {
+  const l = savedLoans.find(x=>x.id===id);
+  if (!l) return;
+  document.getElementById('loan-amount').value = l.principal;
+  document.getElementById('loan-rate').value   = l.rate;
+  document.getElementById('loan-term').value   = l.term;
+  termUnit = l.termUnit || 'months';
+  payFreq  = l.freq || 'monthly';
+  document.getElementById('term-months').classList.toggle('on', termUnit==='months');
+  document.getElementById('term-years').classList.toggle('on',  termUnit==='years');
+  ['monthly','semi','weekly'].forEach(f => document.getElementById('freq-'+f).classList.toggle('on', f===payFreq));
+  computeLoan();
+  toast('📂 Loan loaded!');
+}
+
+function renderSavedLoans() {
+  // Load from storage if empty
+  if (!savedLoans.length) {
+    try { const s=localStorage.getItem('fk-loans'); if(s) savedLoans=JSON.parse(s); } catch(e){}
+  }
+  const section = document.getElementById('saved-loans-section');
+  const list    = document.getElementById('saved-loans-list');
+  if (!savedLoans.length) { section.style.display='none'; return; }
+  section.style.display = 'block';
+  list.innerHTML = savedLoans.map(l => `
+    <div class="card" style="margin-bottom:8px">
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <div style="width:38px;height:38px;border-radius:12px;background:rgba(107,163,214,.15);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🏦</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:900;color:var(--txt);margin-bottom:2px">${l.label}</div>
+          <div style="font-size:11px;color:var(--mut2)">${l.rate}% · ${l.term} ${l.termUnit} · ${l.freq} · Saved ${l.savedAt}</div>
+          <div style="display:flex;gap:12px;margin-top:8px">
+            <div><div style="font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;font-weight:700">Payment</div><div style="font-size:14px;font-weight:900;color:var(--acc)">${l.payment}</div></div>
+            <div><div style="font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;font-weight:700">Total</div><div style="font-size:14px;font-weight:900;color:var(--acc3)">${l.total}</div></div>
+            <div><div style="font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;font-weight:700">Interest</div><div style="font-size:14px;font-weight:900;color:var(--acc4)">${l.interest}</div></div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
+          <button class="sm-btn sm-btn-acc" onclick="loadSavedLoan(${l.id})" style="font-size:11px">📂 Load</button>
+          <button class="sm-btn sm-btn-ghost" onclick="deleteSavedLoan(${l.id})" style="font-size:11px">🗑️</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// Load saved loans on init
+window.addEventListener('DOMContentLoaded', () => {
+  try {
+    const s = localStorage.getItem('fk-loans');
+    if (s) savedLoans = JSON.parse(s);
+  } catch(e) {}
+});
+
+
+function toast(msg) {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  Object.assign(t.style,{position:'fixed',top:'70px',left:'50%',transform:'translateX(-50%)',background:'var(--surf)',border:'1px solid var(--bdr)',color:'var(--txt)',padding:'10px 18px',borderRadius:'20px',fontSize:'13px',fontFamily:'DM Sans,sans-serif',fontWeight:'700',zIndex:'999',whiteSpace:'nowrap',boxShadow:'0 4px 20px rgba(0,0,0,.3)',backdropFilter:'blur(10px)',transition:'opacity .3s'});
+  document.body.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';},1800);
+  setTimeout(()=>t.remove(),2100);
+}
+
+function emptyHTML(icon, title, sub) {
+  return `<div class="empty"><div class="empty-icon">${icon}</div><div class="empty-title">${title}</div><div class="empty-sub">${sub}</div></div>`;
+}
+</script>
+</body>
+</html>
