@@ -3609,7 +3609,10 @@ function renderLoanTracker() {
       <div style="padding:14px 16px;border-bottom:1px solid var(--bdr)">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
           <div style="flex:1;min-width:0">
-            <div style="font-size:14px;font-weight:800;color:var(--txt);margin-bottom:2px">${loan.label}</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+              <div style="font-size:14px;font-weight:800;color:var(--txt)">${loan.label}</div>
+              <button onclick="renameLoan(${loan.id})" style="background:none;border:none;cursor:pointer;font-size:13px;color:var(--mut);padding:0;line-height:1" title="Rename">✏️</button>
+            </div>
             <div style="font-size:11px;color:var(--mut2)">${methodLabel} · ${loan.rate}% ${loan.rateType==='monthly'?'/mo':'/yr'} · Ends ${loan.endDate||'—'}</div>
           </div>
           <div style="font-size:11px;font-weight:800;padding:4px 10px;border-radius:99px;background:${statusColor}22;color:${statusColor};white-space:nowrap;flex-shrink:0">${statusLabel}</div>
@@ -3683,13 +3686,14 @@ function renderLoanTracker() {
       <!-- Action buttons -->
       <div style="padding:10px 16px;display:flex;gap:8px;align-items:center">
         ${!isDone ? `
-        <button onclick="${paidThisMonth ? '' : 'openPaymentModal(' + loan.id + ')'}" style="flex:1;padding:10px;background:${paidThisMonth?'var(--surf2)':'var(--acc)'};color:${paidThisMonth?'var(--mut2)':'var(--bg)'};border:none;border-radius:12px;font-size:13px;font-weight:800;cursor:pointer;font-family:'DM Sans',sans-serif;${paidThisMonth?'opacity:0.6':''}">
+        <button onclick="openPaymentModal(${loan.id})" style="flex:1;padding:10px;background:${paidThisMonth?'var(--surf2)':'var(--acc)'};color:${paidThisMonth?'var(--mut2)':'var(--bg)'};border:none;border-radius:12px;font-size:13px;font-weight:800;cursor:${paidThisMonth?'default':'pointer'};opacity:${paidThisMonth?'0.6':'1'}" ${paidThisMonth?'disabled':''}>
           ${paidThisMonth ? '✅ Paid this month' : '💳 Record Payment'}
         </button>
         <button onclick="undoLoanPaid(${loan.id})" style="padding:10px 14px;background:var(--surf2);border:1px solid var(--bdr);border-radius:12px;font-size:12px;font-weight:700;color:var(--mut2);cursor:pointer;font-family:'DM Sans',sans-serif" title="Undo last payment">↩</button>
         ` : `<div style="flex:1;text-align:center;font-size:13px;font-weight:700;color:var(--acc)">🎉 Loan fully paid!</div>`}
-        <button onclick="toggleLoanHistory(${loan.id})" style="padding:10px 14px;background:var(--surf2);border:1px solid var(--bdr);border-radius:12px;font-size:12px;font-weight:700;color:var(--mut2);cursor:pointer;font-family:'DM Sans',sans-serif">📋</button>
-        <button onclick="deleteLoanFromTracker(${loan.id})" style="padding:10px 14px;background:var(--surf2);border:1px solid var(--bdr);border-radius:12px;font-size:12px;color:var(--acc4);cursor:pointer;font-family:'DM Sans',sans-serif">🗑️</button>
+        <button onclick="toggleLoanHistory(${loan.id})" style="padding:10px 14px;background:var(--surf2);border:1px solid var(--bdr);border-radius:12px;font-size:12px;font-weight:700;color:var(--mut2);cursor:pointer;font-family:'DM Sans',sans-serif" title="Toggle history">📋</button>
+        <button onclick="downloadLoanPDF(${loan.id})" style="padding:10px 14px;background:var(--surf2);border:1px solid var(--bdr);border-radius:12px;font-size:12px;color:var(--acc2);cursor:pointer;font-family:'DM Sans',sans-serif" title="Download PDF">⬇️</button>
+        <button onclick="deleteLoanFromTracker(${loan.id})" style="padding:10px 14px;background:var(--surf2);border:1px solid var(--bdr);border-radius:12px;font-size:12px;color:var(--acc4);cursor:pointer;font-family:'DM Sans',sans-serif" title="Delete">🗑️</button>
       </div>
 
       <!-- Payment history (collapsible) -->
@@ -4021,6 +4025,7 @@ function recordPayment() {
   try { localStorage.setItem('fk-loans', JSON.stringify(savedLoans)); } catch(e) {}
   document.getElementById('modal-payment-record').classList.remove('open');
   renderLoanTracker();
+  renderSavedLoans(); // also update loan calculator saved section
 }
 
 
@@ -4120,6 +4125,149 @@ function deletePaymentHistory(loanId, histIdx) {
   try { localStorage.setItem('fk-loans', JSON.stringify(savedLoans)); } catch(e) {}
   renderLoanTracker();
   toast('🗑️ Payment record deleted');
+}
+
+
+
+// ── Rename Loan ──────────────────────────────
+function renameLoan(loanId) {
+  const loan = savedLoans.find(l => l.id === loanId);
+  if (!loan) return;
+  const newName = prompt('Rename loan:', loan.label);
+  if (newName === null) return; // cancelled
+  if (!newName.trim()) return toast('⚠️ Name cannot be empty');
+  loan.label = newName.trim();
+  try { localStorage.setItem('fk-loans', JSON.stringify(savedLoans)); } catch(e) {}
+  renderLoanTracker();
+  renderSavedLoans();
+  toast('✅ Loan renamed to: ' + newName.trim());
+}
+
+
+// ── Download Loan Payment History as PDF ─────
+function downloadLoanPDF(loanId) {
+  const loan = savedLoans.find(l => l.id === loanId);
+  if (!loan) return;
+
+  const schedule      = loan.schedule || [];
+  const history       = loan.paymentHistory || [];
+  const paidCt        = loan.paidCount || 0;
+  const totalPds      = schedule.length;
+  const pct           = totalPds > 0 ? Math.round(paidCt / totalPds * 100) : 0;
+  const carryover     = loan.carryoverBalance || 0;
+  const totalLateFees = loan.totalLateFees || 0;
+  const totalSkipped  = loan.totalSkipped  || 0;
+  const methodLabel   = loan.interestMethod === 'addon' ? 'Add-on (Simple Interest)' : 'Amortizing';
+  const rateLabel     = loan.rateType === 'monthly' ? loan.rate + '% per month' : loan.rate + '% per annum';
+  const genDate       = new Date().toLocaleDateString('en-PH', {year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
+
+  // Payment history rows
+  const typeMap = {normal:'Full Payment', late:'Late Payment', partial:'Partial', skip:'Skipped'};
+  const typeColors = {normal:'#1aad72', late:'#b87020', partial:'#2d8a6a', skip:'#c04060'};
+  let histRows = '';
+  if (history.length === 0) {
+    histRows = '<tr><td colspan="6" style="padding:16px;text-align:center;color:#888;font-style:italic">No payment records yet</td></tr>';
+  } else {
+    history.forEach(function(h, i) {
+      const extra = h.lateFee > 0 ? '+\u20b1' + h.lateFee.toLocaleString() + ' fee'
+                  : h.unpaid  > 0 ? '\u20b1' + h.unpaid.toLocaleString() + ' unpaid' : '\u2014';
+      histRows += '<tr style="' + (i%2===0?'background:#f9f9f6':'') + '">';
+      histRows += '<td style="padding:8px 10px;border-bottom:1px solid #e8e8e0">' + h.label + '</td>';
+      histRows += '<td style="padding:8px 10px;border-bottom:1px solid #e8e8e0;text-align:center;font-weight:700;color:' + (typeColors[h.type]||'#333') + '">' + (typeMap[h.type]||h.type) + '</td>';
+      histRows += '<td style="padding:8px 10px;border-bottom:1px solid #e8e8e0;text-align:right;font-family:monospace;font-weight:700">' + (h.amount > 0 ? '\u20b1' + h.amount.toLocaleString() : '\u2014') + '</td>';
+      histRows += '<td style="padding:8px 10px;border-bottom:1px solid #e8e8e0;text-align:right;color:#c04060;font-family:monospace">' + extra + '</td>';
+      histRows += '<td style="padding:8px 10px;border-bottom:1px solid #e8e8e0;color:#888">' + (h.date||'\u2014') + '</td>';
+      histRows += '<td style="padding:8px 10px;border-bottom:1px solid #e8e8e0;color:#888;font-size:11px">' + (h.notes||'') + '</td>';
+      histRows += '</tr>';
+    });
+  }
+
+  // Amortization rows
+  let amortRows = '';
+  schedule.forEach(function(s, i) {
+    const isPaid    = i < paidCt;
+    const isCurrent = i === paidCt;
+    const bg = isPaid ? 'background:#f0fdf6' : isCurrent ? 'background:#fffbec' : '';
+    amortRows += '<tr style="' + bg + '">';
+    amortRows += '<td style="padding:7px 10px;border-bottom:1px solid #e8e8e0;font-weight:' + (isCurrent?'800':'400') + '">' + s.label + (isCurrent?' \u2190 CURRENT':'') + '</td>';
+    amortRows += '<td style="padding:7px 10px;border-bottom:1px solid #e8e8e0;text-align:right;font-family:monospace">\u20b1' + s.payment.toLocaleString() + '</td>';
+    amortRows += '<td style="padding:7px 10px;border-bottom:1px solid #e8e8e0;text-align:right;font-family:monospace;color:#2d8a6a">\u20b1' + s.principal.toLocaleString() + '</td>';
+    amortRows += '<td style="padding:7px 10px;border-bottom:1px solid #e8e8e0;text-align:right;font-family:monospace;color:#c04060">\u20b1' + s.interest.toLocaleString() + '</td>';
+    amortRows += '<td style="padding:7px 10px;border-bottom:1px solid #e8e8e0;text-align:right;font-family:monospace">\u20b1' + s.balance.toLocaleString() + '</td>';
+    amortRows += '<td style="padding:7px 10px;border-bottom:1px solid #e8e8e0;text-align:center">' + (isPaid?'\u2705':isCurrent?'\u23f3':'\u2014') + '</td>';
+    amortRows += '</tr>';
+  });
+
+  // Issues section
+  let issuesHTML = '';
+  if (totalLateFees > 0 || totalSkipped > 0 || carryover > 0) {
+    issuesHTML += '<div class="sec-title" style="border-left-color:#c04060">Payment Issues</div>';
+    issuesHTML += '<div class="info-grid" style="margin-bottom:16px">';
+    if (totalLateFees > 0) issuesHTML += '<div class="info-item"><span class="info-key">\u23f0 Total Late Fees</span><span class="info-val" style="color:#c04060">\u20b1' + totalLateFees.toLocaleString() + '</span></div>';
+    if (totalSkipped  > 0) issuesHTML += '<div class="info-item"><span class="info-key">\u23ed\ufe0f Months Skipped</span><span class="info-val" style="color:#b87020">' + totalSkipped + ' month(s)</span></div>';
+    if (carryover     > 0) issuesHTML += '<div class="info-item"><span class="info-key">\u26a0\ufe0f Carryover Balance</span><span class="info-val" style="color:#c04060">\u20b1' + carryover.toLocaleString() + '</span></div>';
+    issuesHTML += '</div>';
+    if (carryover > 0) issuesHTML += '<div class="alert alert-red">\u26a0\ufe0f Outstanding carryover balance of \u20b1' + carryover.toLocaleString() + '. Includes unpaid amounts plus 5% interest.</div>';
+  }
+
+  const html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + loan.label + ' Payment Report</title>'
+    + '<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;color:#1a1a0a;background:#fff;padding:32px;font-size:13px}'
+    + '.hdr{display:flex;justify-content:space-between;margin-bottom:24px;padding-bottom:16px;border-bottom:3px solid #0A0C0A}'
+    + '.brand{font-size:22px;font-weight:900;color:#0A0C0A}.brand span{color:#22C483}'
+    + '.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}'
+    + '.sum-box{background:#f5f5f0;border-radius:10px;padding:14px}'
+    + '.sum-label{font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}'
+    + '.sum-val{font-size:20px;font-weight:900}.sum-sub{font-size:11px;color:#888;margin-top:2px}'
+    + '.info-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:24px}'
+    + '.info-item{background:#faf9f5;border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between}'
+    + '.info-key{font-size:12px;color:#888}.info-val{font-size:12px;font-weight:700}'
+    + '.sec-title{font-size:13px;font-weight:800;color:#0A0C0A;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;padding:6px 12px;background:#f0f0ea;border-left:4px solid #22C483;border-radius:0 6px 6px 0}'
+    + 'table{width:100%;border-collapse:collapse;margin-bottom:24px}'
+    + 'th{background:#0A0C0A;color:#fff;padding:9px 10px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px}'
+    + '.alert{padding:10px 14px;border-radius:8px;margin-bottom:16px;font-size:12px}'
+    + '.alert-red{background:#fde8ec;border:1px solid #f0a0b0;color:#800020}'
+    + '.footer{margin-top:32px;padding-top:16px;border-top:1px solid #e0e0d8;text-align:center;color:#aaa;font-size:11px}'
+    + '@media print{.no-print{display:none}}'
+    + '</style></head><body>'
+    + '<div class="hdr"><div><div class="brand">Formula<span>Ko</span> BudgetBuddy</div><div style="font-size:12px;color:#888;margin-top:4px">Loan Payment Report</div></div>'
+    + '<div style="text-align:right"><div style="font-size:16px;font-weight:800;margin-bottom:4px">' + loan.label + '</div><div style="font-size:11px;color:#888">Generated: ' + genDate + '</div><div style="margin-top:4px;font-size:12px;font-weight:700;color:' + (pct>=100?'#1aad72':'#b87020') + '">' + pct + '% Paid (' + paidCt + '/' + totalPds + ')</div></div></div>'
+    + '<div class="summary">'
+    + '<div class="sum-box"><div class="sum-label">Payment per Period</div><div class="sum-val" style="color:#22C483">' + loan.payment + '</div><div class="sum-sub">' + (loan.freq==='monthly'?'Monthly':loan.freq==='semi'?'Semi-monthly':'Weekly') + '</div></div>'
+    + '<div class="sum-box"><div class="sum-label">Progress</div><div class="sum-val">' + paidCt + ' / ' + totalPds + '</div><div class="sum-sub">' + (totalPds-paidCt) + ' remaining</div></div>'
+    + '<div class="sum-box"><div class="sum-label">Total Interest</div><div class="sum-val" style="color:#c04060">' + loan.interest + '</div><div class="sum-sub">of ' + loan.total + ' total</div></div>'
+    + '</div>'
+    + '<div class="sec-title">Loan Details</div>'
+    + '<div class="info-grid">'
+    + '<div class="info-item"><span class="info-key">Principal</span><span class="info-val">\u20b1' + Number(loan.principal).toLocaleString() + '</span></div>'
+    + '<div class="info-item"><span class="info-key">Interest Rate</span><span class="info-val">' + rateLabel + '</span></div>'
+    + '<div class="info-item"><span class="info-key">Interest Method</span><span class="info-val">' + methodLabel + '</span></div>'
+    + '<div class="info-item"><span class="info-key">Loan Term</span><span class="info-val">' + loan.term + ' ' + loan.termUnit + '</span></div>'
+    + '<div class="info-item"><span class="info-key">Start Period</span><span class="info-val">' + (schedule[0]?.label||'\u2014') + '</span></div>'
+    + '<div class="info-item"><span class="info-key">End Date</span><span class="info-val">' + (loan.endDate||'\u2014') + '</span></div>'
+    + '</div>'
+    + issuesHTML
+    + '<div class="sec-title">Payment History (' + history.length + ' records)</div>'
+    + '<table><tr><th>Period</th><th>Type</th><th style="text-align:right">Amount</th><th style="text-align:right">Extra/Unpaid</th><th>Date</th><th>Notes</th></tr>'
+    + histRows + '</table>'
+    + '<div class="sec-title">Amortization Schedule</div>'
+    + '<table><tr><th>Period</th><th style="text-align:right">Payment</th><th style="text-align:right">Principal</th><th style="text-align:right">Interest</th><th style="text-align:right">Balance</th><th style="text-align:center">Status</th></tr>'
+    + amortRows + '</table>'
+    + '<div class="footer"><strong>FormulaKo BudgetBuddy</strong> — Loan Payment Report<br>Generated on ' + genDate + '</div>'
+    + '<div class="no-print" style="text-align:center;margin-top:24px">'
+    + '<button onclick="window.print()" style="padding:12px 28px;background:#22C483;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;margin-right:8px">\ud83d\udda8\ufe0f Print / Save as PDF</button>'
+    + '<button onclick="window.close()" style="padding:12px 28px;background:#f5f5f0;color:#1a1a0a;border:1px solid #ddd;border-radius:12px;font-size:14px;cursor:pointer">\u2715 Close</button>'
+    + '</div></body></html>';
+
+  const blob = new Blob([html], {type:'text/html'});
+  const url  = URL.createObjectURL(blob);
+  const win  = window.open(url, '_blank');
+  if (!win) {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = loan.label.replace(/[^a-z0-9]/gi,'_') + '_PaymentReport.html';
+    a.click();
+  }
+  toast('\ud83d\udcc4 Report ready \u2014 tap Print to save as PDF!');
 }
 
 
