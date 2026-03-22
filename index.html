@@ -2744,9 +2744,17 @@ function selFreq(freq, el) {
 }
 
 function selRateType(type, el) {
-  rateType = type;
-  document.getElementById('rate-type-annual').classList.toggle('on',  type==='annual');
-  document.getElementById('rate-type-monthly').classList.toggle('on', type==='monthly');
+  rateType = type; // 'annual' or 'monthly' only
+  document.querySelectorAll('#rate-type-annual, #rate-type-monthly').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  // Update hint
+  const rate = parseFloat(document.getElementById('loan-rate').value) || 0;
+  const hint = document.getElementById('loan-rate-hint');
+  if (hint && rate > 0) {
+    hint.textContent = type === 'monthly'
+      ? '= ' + (rate * 12).toFixed(2) + '% annual'
+      : '= ' + (rate / 12).toFixed(4) + '% /month';
+  }
   computeLoan();
 }
 
@@ -2775,16 +2783,16 @@ function computeLoan() {
     return;
   }
 
-  // Convert rate to annual
+  // Convert input rate to annual (rateType = 'annual' or 'monthly')
   const annualRate  = rateType === 'monthly' ? inputRate * 12 : inputRate;
   const monthlyRate = annualRate / 100 / 12;
   const dailyRate   = annualRate / 100 / 365;
 
-  // Rate hint
+  // Rate hint — show conversion
   const hint = document.getElementById('loan-rate-hint');
   if (hint) hint.textContent = rateType === 'monthly'
-    ? '= ' + annualRate.toFixed(2) + '% annual'
-    : '= ' + (monthlyRate * 100).toFixed(4) + '% /month';
+    ? '= ' + annualRate.toFixed(2) + '% p.a.'
+    : '= ' + (monthlyRate * 100).toFixed(4) + '% /mo';
 
   // Start date
   const startMonthEl = document.getElementById('loan-start-month');
@@ -3014,8 +3022,10 @@ function loadSavedLoan(id) {
   ['monthly','semi','weekly'].forEach(f =>
     document.getElementById('freq-'+f).classList.toggle('on', f===payFreq)
   );
-  document.getElementById('rate-type-annual').classList.toggle('on',  rateType==='annual');
-  document.getElementById('rate-type-monthly').classList.toggle('on', rateType==='monthly');
+  // Restore rate type buttons
+  document.querySelectorAll('#rate-type-annual, #rate-type-monthly').forEach(b => b.classList.remove('on'));
+  const rateBtn = document.getElementById('rate-type-' + (rateType||'annual'));
+  if (rateBtn) rateBtn.classList.add('on');
   document.getElementById('method-amort').className = 'type-opt'+(interestMethod==='amort'?' on-a':'');
   document.getElementById('method-addon').className = 'type-opt'+(interestMethod==='addon'?' on-b':'');
   computeLoan();
@@ -3056,16 +3066,20 @@ function renderSavedLoans() {
 // ── Loan year dropdown init ────────────────
 function initLoanYearDropdown() {
   const yearEl = document.getElementById('loan-start-year');
-  if (!yearEl || yearEl.options.length > 0) return;
+  if (!yearEl) return;
+  yearEl.innerHTML = ''; // reset first
   const now = new Date();
-  for (let y=now.getFullYear(); y<=now.getFullYear()+10; y++) {
+  const thisYear = now.getFullYear();
+  // Show 3 years back + current + 10 years forward
+  for (let y = thisYear - 3; y <= thisYear + 10; y++) {
     const opt = document.createElement('option');
-    opt.value=y; opt.textContent=y;
-    if (y===now.getFullYear()) opt.selected=true;
+    opt.value = y;
+    opt.textContent = y;
+    if (y === thisYear) opt.selected = true;
     yearEl.appendChild(opt);
   }
   const monthEl = document.getElementById('loan-start-month');
-  if (monthEl) monthEl.value = now.getMonth()+1;
+  if (monthEl) monthEl.value = now.getMonth() + 1;
 }
 // Load saved loans on init
 window.addEventListener('DOMContentLoaded', () => {
