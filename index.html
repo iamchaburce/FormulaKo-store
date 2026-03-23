@@ -1391,6 +1391,62 @@ h1, h2, h3, .section-title-syne { font-family: 'Syne', sans-serif !important; }
     </div>
   </div>
 
+
+  <!-- ══ BULK PAST PAYMENTS MODAL ══ -->
+  <div class="overlay" id="modal-bulk-payment">
+    <div class="sheet" onclick="event.stopPropagation()" style="max-height:90vh">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">📅 Enter Past Payments</div>
+      <input type="hidden" id="bpm-loan-id">
+
+      <div style="font-size:12px;color:var(--mut2);margin-bottom:16px;line-height:1.6;padding:10px 12px;background:var(--surf2);border-radius:12px">
+        💡 Select which months have been paid, mark any late fees or skips, then tap Save All.
+      </div>
+
+      <!-- Default payment type for bulk -->
+      <div class="field-lbl" style="margin-bottom:8px">Default Type for All</div>
+      <div style="display:flex;gap:6px;margin-bottom:16px">
+        <button class="ftab on" id="bpm-default-normal" onclick="setBulkDefault('normal',this)">✅ Full</button>
+        <button class="ftab" id="bpm-default-late"   onclick="setBulkDefault('late',this)">⏰ Late</button>
+        <button class="ftab" id="bpm-default-partial" onclick="setBulkDefault('partial',this)">💸 Partial</button>
+        <button class="ftab" id="bpm-default-skip"   onclick="setBulkDefault('skip',this)">⏭️ Skip</button>
+      </div>
+
+      <!-- Late fee settings (shown when default is late) -->
+      <div id="bpm-latefee-settings" style="display:none;margin-bottom:14px;padding:12px;background:var(--surf2);border-radius:12px">
+        <div class="field-lbl" style="margin-bottom:8px">Default Late Fee</div>
+        <div style="display:flex;gap:8px">
+          <div style="flex:1">
+            <div style="font-size:10px;color:var(--mut2);margin-bottom:4px">Fixed (₱)</div>
+            <input class="field-in" id="bpm-fixed-fee" type="number" placeholder="500" value="500" style="padding:8px 12px">
+          </div>
+          <div style="flex:1">
+            <div style="font-size:10px;color:var(--mut2);margin-bottom:4px">Or % of payment</div>
+            <input class="field-in" id="bpm-pct-fee" type="number" placeholder="10" style="padding:8px 12px">
+          </div>
+        </div>
+        <div style="font-size:10px;color:var(--mut);margin-top:6px">Leave % blank to use fixed amount. Enter both to use lower of the two.</div>
+      </div>
+
+      <!-- Payment periods list -->
+      <div id="bpm-periods-list" style="max-height:45vh;overflow-y:auto"></div>
+
+      <!-- Summary -->
+      <div id="bpm-summary" style="margin-top:12px;padding:12px;background:var(--surf2);border-radius:12px;display:none">
+        <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:800">
+          <span>Total payments to record:</span>
+          <span id="bpm-count" style="color:var(--acc)">0</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--mut2);margin-top:4px">
+          <span>Total late fees:</span>
+          <span id="bpm-total-fees" style="color:var(--acc4)">₱0</span>
+        </div>
+      </div>
+
+      <button class="submit-btn" onclick="saveBulkPayments()" style="margin-top:14px">💾 Save All Past Payments</button>
+    </div>
+  </div>
+
   <!-- Sync Bar -->
   <div class="sync-bar" id="sync-bar"><span id="sync-msg">⟳ Syncing...</span></div>
 
@@ -3684,12 +3740,13 @@ function renderLoanTracker() {
       })() : ''}
 
       <!-- Action buttons -->
-      <div style="padding:10px 16px;display:flex;gap:8px;align-items:center">
+      <div style="padding:10px 16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
         ${!isDone ? `
-        <button onclick="openPaymentModal(${loan.id})" style="flex:1;padding:10px;background:${paidThisMonth?'var(--surf2)':'var(--acc)'};color:${paidThisMonth?'var(--mut2)':'var(--bg)'};border:none;border-radius:12px;font-size:13px;font-weight:800;cursor:${paidThisMonth?'default':'pointer'};opacity:${paidThisMonth?'0.6':'1'}" ${paidThisMonth?'disabled':''}>
+        <button onclick="openPaymentModal(${loan.id})" style="flex:1;min-width:120px;padding:10px;background:${paidThisMonth?'var(--surf2)':'var(--acc)'};color:${paidThisMonth?'var(--mut2)':'var(--bg)'};border:none;border-radius:12px;font-size:13px;font-weight:800;cursor:${paidThisMonth?'default':'pointer'};opacity:${paidThisMonth?'0.6':'1'}" ${paidThisMonth?'disabled':''}>
           ${paidThisMonth ? '✅ Paid this month' : '💳 Record Payment'}
         </button>
-        <button onclick="undoLoanPaid(${loan.id})" style="padding:10px 14px;background:var(--surf2);border:1px solid var(--bdr);border-radius:12px;font-size:12px;font-weight:700;color:var(--mut2);cursor:pointer;font-family:'DM Sans',sans-serif" title="Undo last payment">↩</button>
+        <button onclick="openBulkPaymentModal(${loan.id})" style="padding:10px 12px;background:var(--surf2);border:1px solid var(--acc2);border-radius:12px;font-size:12px;font-weight:700;color:var(--acc2);cursor:pointer" title="Enter past payments in bulk">📅 Past</button>
+        <button onclick="undoLoanPaid(${loan.id})" style="padding:10px 12px;background:var(--surf2);border:1px solid var(--bdr);border-radius:12px;font-size:12px;font-weight:700;color:var(--mut2);cursor:pointer" title="Undo last payment">↩</button>
         ` : `<div style="flex:1;text-align:center;font-size:13px;font-weight:700;color:var(--acc)">🎉 Loan fully paid!</div>`}
         <button onclick="toggleLoanHistory(${loan.id})" style="padding:10px 14px;background:var(--surf2);border:1px solid var(--bdr);border-radius:12px;font-size:12px;font-weight:700;color:var(--mut2);cursor:pointer;font-family:'DM Sans',sans-serif" title="Toggle history">📋</button>
         <button onclick="downloadLoanPDF(${loan.id})" style="padding:10px 14px;background:var(--surf2);border:1px solid var(--bdr);border-radius:12px;font-size:12px;color:var(--acc2);cursor:pointer;font-family:'DM Sans',sans-serif" title="Download PDF">⬇️</button>
@@ -4268,6 +4325,272 @@ function downloadLoanPDF(loanId) {
     a.click();
   }
   toast('\ud83d\udcc4 Report ready \u2014 tap Print to save as PDF!');
+}
+
+
+
+// ══════════════════════════════════════════════
+//  BULK PAST PAYMENTS SYSTEM
+// ══════════════════════════════════════════════
+let _bulkDefault = 'normal';
+let _bulkLoanId  = null;
+
+function openBulkPaymentModal(loanId) {
+  const loan = savedLoans.find(l => l.id === loanId);
+  if (!loan || !loan.schedule) return toast('⚠️ No schedule found — save loan from calculator first');
+
+  _bulkLoanId  = loanId;
+  _bulkDefault = 'normal';
+  document.getElementById('bpm-loan-id').value = loanId;
+
+  // Reset defaults
+  ['normal','late','partial','skip'].forEach(t => {
+    const b = document.getElementById('bpm-default-' + t);
+    if (b) b.classList.toggle('on', t === 'normal');
+  });
+  document.getElementById('bpm-latefee-settings').style.display = 'none';
+
+  renderBulkPeriods(loan);
+  document.getElementById('modal-bulk-payment').classList.add('open');
+}
+
+function setBulkDefault(type, el) {
+  _bulkDefault = type;
+  ['normal','late','partial','skip'].forEach(t => {
+    const b = document.getElementById('bpm-default-' + t);
+    if (b) b.classList.toggle('on', t === type);
+  });
+  document.getElementById('bpm-latefee-settings').style.display =
+    type === 'late' ? 'block' : 'none';
+
+  // Update all uncustomized rows
+  const loan = savedLoans.find(l => l.id === _bulkLoanId);
+  if (loan) renderBulkPeriods(loan);
+}
+
+function renderBulkPeriods(loan) {
+  const schedule   = loan.schedule || [];
+  const paidCount  = loan.paidCount || 0;
+  const history    = loan.paymentHistory || [];
+  const container  = document.getElementById('bpm-periods-list');
+  if (!container) return;
+
+  // Show unpaid periods only (from paidCount onward, up to today)
+  const today     = new Date();
+  const allPeriods = schedule.filter((s, i) => {
+    // Include all future periods up to current month
+    return i >= paidCount;
+  });
+
+  if (!allPeriods.length) {
+    container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--mut2);font-size:13px">✅ All periods are already recorded!</div>';
+    document.getElementById('bpm-summary').style.display = 'none';
+    return;
+  }
+
+  container.innerHTML = allPeriods.map((s, relIdx) => {
+    const absIdx  = paidCount + relIdx;
+    const periodAmt = s.payment;
+
+    return `<div id="bpm-row-${absIdx}" style="border:1px solid var(--bdr);border-radius:14px;padding:12px 14px;margin-bottom:8px;background:var(--surf)">
+      <!-- Row header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--txt)">${s.label}</div>
+          <div style="font-size:11px;color:var(--mut2)">Regular: ${fmt(s.payment)} · Principal: ${fmt(s.principal)} · Interest: ${fmt(s.interest)}</div>
+        </div>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;font-weight:700;color:var(--acc)">
+          <input type="checkbox" id="bpm-check-${absIdx}" checked
+            onchange="toggleBulkRow(${absIdx})"
+            style="width:18px;height:18px;accent-color:var(--acc);cursor:pointer">
+          Include
+        </label>
+      </div>
+
+      <!-- Row details (shown when included) -->
+      <div id="bpm-detail-${absIdx}">
+        <!-- Payment type per row -->
+        <div style="display:flex;gap:5px;margin-bottom:8px">
+          <button onclick="setBulkRowType(${absIdx},'normal',this)" class="ftab on" id="bpm-rt-${absIdx}-normal" style="padding:4px 10px;font-size:11px">✅ Full</button>
+          <button onclick="setBulkRowType(${absIdx},'late',this)"   class="ftab"    id="bpm-rt-${absIdx}-late"   style="padding:4px 10px;font-size:11px">⏰ Late</button>
+          <button onclick="setBulkRowType(${absIdx},'partial',this)" class="ftab"   id="bpm-rt-${absIdx}-partial" style="padding:4px 10px;font-size:11px">💸 Partial</button>
+          <button onclick="setBulkRowType(${absIdx},'skip',this)"   class="ftab"    id="bpm-rt-${absIdx}-skip"   style="padding:4px 10px;font-size:11px">⏭️ Skip</button>
+        </div>
+
+        <!-- Conditional fields per type -->
+        <div id="bpm-fields-${absIdx}-late" style="display:none;margin-bottom:6px">
+          <div style="display:flex;gap:8px;align-items:center">
+            <span style="font-size:11px;color:var(--mut2);flex-shrink:0">Late fee (₱):</span>
+            <input type="number" id="bpm-fee-${absIdx}" placeholder="500" value="500"
+              style="flex:1;padding:6px 10px;background:var(--surf2);border:1px solid var(--bdr);border-radius:10px;color:var(--txt);font-size:12px"
+              oninput="updateBulkSummary()">
+          </div>
+        </div>
+        <div id="bpm-fields-${absIdx}-partial" style="display:none;margin-bottom:6px">
+          <div style="display:flex;gap:8px;align-items:center">
+            <span style="font-size:11px;color:var(--mut2);flex-shrink:0">Amount paid (₱):</span>
+            <input type="number" id="bpm-partial-${absIdx}" placeholder="${periodAmt}" value="${periodAmt}"
+              style="flex:1;padding:6px 10px;background:var(--surf2);border:1px solid var(--bdr);border-radius:10px;color:var(--txt);font-size:12px"
+              oninput="updateBulkSummary()">
+          </div>
+        </div>
+
+        <!-- Date -->
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:11px;color:var(--mut2);flex-shrink:0">Date:</span>
+          <input type="date" id="bpm-date-${absIdx}"
+            style="flex:1;padding:6px 10px;background:var(--surf2);border:1px solid var(--bdr);border-radius:10px;color:var(--txt);font-size:12px">
+          <input type="text" id="bpm-notes-${absIdx}" placeholder="Notes (optional)"
+            style="flex:1;padding:6px 10px;background:var(--surf2);border:1px solid var(--bdr);border-radius:10px;color:var(--txt);font-size:12px">
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Apply default type to all rows
+  allPeriods.forEach((s, relIdx) => {
+    const absIdx = paidCount + relIdx;
+    setBulkRowType(absIdx, _bulkDefault, null);
+  });
+
+  updateBulkSummary();
+  document.getElementById('bpm-summary').style.display = 'block';
+}
+
+function toggleBulkRow(absIdx) {
+  const checked = document.getElementById('bpm-check-' + absIdx)?.checked;
+  const detail  = document.getElementById('bpm-detail-' + absIdx);
+  if (detail) detail.style.opacity = checked ? '1' : '0.4';
+  updateBulkSummary();
+}
+
+function setBulkRowType(absIdx, type, el) {
+  ['normal','late','partial','skip'].forEach(t => {
+    const b = document.getElementById(`bpm-rt-${absIdx}-${t}`);
+    if (b) b.classList.toggle('on', t === type);
+    const f = document.getElementById(`bpm-fields-${absIdx}-${t}`);
+    if (f) f.style.display = (t === type && t !== 'normal' && t !== 'skip') ? 'block' : 'none';
+  });
+  updateBulkSummary();
+}
+
+function updateBulkSummary() {
+  const loan     = savedLoans.find(l => l.id === _bulkLoanId);
+  if (!loan) return;
+  const paidCount = loan.paidCount || 0;
+  let count = 0, totalFees = 0;
+
+  loan.schedule.forEach((s, i) => {
+    if (i < paidCount) return;
+    const absIdx  = i;
+    const checked = document.getElementById('bpm-check-' + absIdx)?.checked;
+    if (!checked) return;
+    count++;
+    const activeType = ['normal','late','partial','skip'].find(t => {
+      const b = document.getElementById(`bpm-rt-${absIdx}-${t}`);
+      return b && b.classList.contains('on');
+    }) || 'normal';
+    if (activeType === 'late') {
+      totalFees += parseFloat(document.getElementById('bpm-fee-' + absIdx)?.value || 0);
+    }
+  });
+
+  const countEl = document.getElementById('bpm-count');
+  const feesEl  = document.getElementById('bpm-total-fees');
+  if (countEl) countEl.textContent = count;
+  if (feesEl)  feesEl.textContent  = fmt(totalFees);
+}
+
+function saveBulkPayments() {
+  const loan = savedLoans.find(l => l.id === _bulkLoanId);
+  if (!loan) return;
+
+  const paidCount  = loan.paidCount || 0;
+  const schedule   = loan.schedule  || [];
+  if (!loan.paymentHistory) loan.paymentHistory = [];
+
+  let newPaidCount  = paidCount;
+  let carryover     = loan.carryoverBalance || 0;
+  let totalLateFees = loan.totalLateFees || 0;
+  let totalSkipped  = loan.totalSkipped  || 0;
+  let recordCount   = 0;
+
+  // Process each period in order
+  schedule.forEach((s, i) => {
+    if (i < paidCount) return; // already recorded
+    const absIdx  = i;
+    const checked = document.getElementById('bpm-check-' + absIdx)?.checked;
+    if (!checked) return; // user skipped this row
+
+    const activeType = ['normal','late','partial','skip'].find(t => {
+      const b = document.getElementById(`bpm-rt-${absIdx}-${t}`);
+      return b && b.classList.contains('on');
+    }) || 'normal';
+
+    const date   = document.getElementById('bpm-date-' + absIdx)?.value || '';
+    const notes  = document.getElementById('bpm-notes-' + absIdx)?.value || '';
+    const carryInt = Math.round(carryover * 0.05);
+    const totalDue = s.payment + carryover + carryInt;
+
+    if (activeType === 'normal') {
+      loan.paymentHistory.push({
+        period: absIdx + 1, label: s.label, type: 'normal',
+        amount: totalDue, lateFee: 0, carryover: 0, date, notes
+      });
+      newPaidCount = absIdx + 1;
+      carryover    = 0;
+
+    } else if (activeType === 'late') {
+      const fee = parseFloat(document.getElementById('bpm-fee-' + absIdx)?.value || 0);
+      loan.paymentHistory.push({
+        period: absIdx + 1, label: s.label, type: 'late',
+        amount: totalDue + fee, lateFee: fee, carryover: 0, date, notes
+      });
+      newPaidCount  = absIdx + 1;
+      totalLateFees += fee;
+      carryover     = 0;
+
+    } else if (activeType === 'partial') {
+      const paid    = parseFloat(document.getElementById('bpm-partial-' + absIdx)?.value || 0);
+      const unpaid  = Math.max(0, totalDue - paid);
+      const newCarry = Math.round(unpaid * 1.05);
+      loan.paymentHistory.push({
+        period: absIdx + 1, label: s.label, type: 'partial',
+        amount: paid, unpaid, carryoverAdded: newCarry, lateFee: 0, date, notes
+      });
+      carryover = newCarry;
+
+    } else if (activeType === 'skip') {
+      const skipInt  = Math.round(s.payment * 0.05);
+      const newCarry = (carryover + carryInt) + s.payment + skipInt;
+      loan.paymentHistory.push({
+        period: absIdx + 1, label: s.label, type: 'skip',
+        amount: 0, unpaid: s.payment, interest: skipInt,
+        carryoverAdded: newCarry, lateFee: 0, date: date || new Date().toISOString().split('T')[0], notes: notes || 'Skipped'
+      });
+      totalSkipped++;
+      carryover = newCarry;
+    }
+    recordCount++;
+  });
+
+  // Update loan state
+  loan.paidCount         = newPaidCount;
+  loan.carryoverBalance  = carryover;
+  loan.totalLateFees     = totalLateFees;
+  loan.totalSkipped      = totalSkipped;
+
+  // Set lastPaidMonth to the last normal/late payment
+  const lastPaid = [...loan.paymentHistory].reverse().find(h => h.type === 'normal' || h.type === 'late');
+  if (lastPaid) {
+    loan.lastPaidMonth = new Date().toLocaleDateString('en-PH', {month:'short', year:'numeric'});
+  }
+
+  try { localStorage.setItem('fk-loans', JSON.stringify(savedLoans)); } catch(e) {}
+  document.getElementById('modal-bulk-payment').classList.remove('open');
+  renderLoanTracker();
+  renderSavedLoans();
+  toast('✅ ' + recordCount + ' payment records saved!');
 }
 
 
